@@ -6,4 +6,4 @@
 
 Files: `index.html` (site entry), `tallow_blend_pro_v5.html` (versioned copy).
 
-**Product image:** Cards use `assets/crown-breeds-jar.png` if present; otherwise `assets/crown-breeds-jar.svg` (vector stand-in). To use your photo, save it as `assets/crown-breeds-jar.png` in this repo.
+**Product image:** Jar cards use `assets/6b3190c7-9d63-4dd4-bb6c-77f8847764a9.png`. If that file is missing, the UI falls back to `assets/crown-breeds-jar.svg`.

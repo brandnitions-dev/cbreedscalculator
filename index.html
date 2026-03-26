@@ -669,8 +669,10 @@
 
 <script>
 var useCase='face';
-/** PNG if you add assets/crown-breeds-jar.png; falls back to SVG */
-var JAR_IMG_BASE='assets/crown-breeds-jar';
+/** Your product photo (commit this file with the repo) */
+var JAR_IMG_SRC='assets/6b3190c7-9d63-4dd4-bb6c-77f8847764a9.png';
+/** Optional vector fallback if PNG fails to load */
+var JAR_IMG_FALLBACK='assets/crown-breeds-jar.svg';
 
 function appendJarCard(chips,i){
   var card=document.createElement('div');
@@ -681,8 +683,8 @@ function appendJarCard(chips,i){
   img.className='jar-thumb';
   img.alt='Crown Breeds jar — 50 ml unit #'+(i+1);
   img.loading='lazy';
-  img.src=JAR_IMG_BASE+'.png';
-  img.onerror=function(){this.onerror=null;this.src=JAR_IMG_BASE+'.svg';};
+  img.src=JAR_IMG_SRC;
+  img.onerror=function(){this.onerror=null;this.src=JAR_IMG_FALLBACK;};
   media.appendChild(img);
   var meta=document.createElement('div');
   meta.className='jar-card-meta';
