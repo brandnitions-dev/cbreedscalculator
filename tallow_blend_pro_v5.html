@@ -369,16 +369,79 @@
       margin: 8px 0 10px;
     }
 
-    .chips {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
-      gap: 12px;
+    .jar-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      max-width: 12rem;
+      margin: 0 auto;
     }
 
-    @media (min-width: 420px) {
-      .chips {
-        grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    .jar-count-badge {
+      display: inline-flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .jar-count-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .jar-count-mult {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .jar-count-desc {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      width: 100%;
+      text-align: center;
+    }
+
+    @media (min-width: 380px) {
+      .jar-count-desc {
+        width: auto;
+        text-align: left;
       }
+    }
+
+    .jar-leftover-strip {
+      width: 100%;
+      max-width: 12rem;
+      text-align: center;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text);
+      border: 1px dashed var(--border-strong);
+      background: var(--surface-2);
+    }
+
+    .jar-leftover-strip--none {
+      font-weight: 500;
+      color: var(--text-muted);
+      border-style: solid;
+      border-color: var(--border);
     }
 
     .jar-card {
@@ -400,11 +463,9 @@
       box-shadow: var(--shadow-md);
     }
 
-    .jar-card--leftover {
-      border-style: dashed;
-      opacity: 0.85;
-      justify-content: center;
-      min-height: 8rem;
+    .jar-card--single {
+      width: 100%;
+      max-width: 11rem;
     }
 
     .jar-card-media {
@@ -418,13 +479,6 @@
       border-radius: var(--radius-sm);
       padding: 6px;
       border: 1px solid var(--border);
-    }
-
-    .jar-card--leftover .jar-card-media {
-      max-width: 3.5rem;
-      aspect-ratio: 1;
-      background: transparent;
-      border-style: dashed;
     }
 
     .jar-thumb {
@@ -469,15 +523,6 @@
       font-size: 0.5625rem;
       color: var(--text-muted);
       margin-top: 2px;
-    }
-
-    .jar-card--leftover .jar-card-vol {
-      font-size: 1rem;
-    }
-
-    .jar-card--leftover .jar-leftover-hint {
-      font-size: 0.625rem;
-      color: var(--text-muted);
     }
 
     .footnote {
@@ -662,7 +707,7 @@
 </div>
 
 <div class="sec">50 ml containers</div>
-<div id="chips" class="chips"></div>
+<div id="chips" class="jar-preview" aria-live="polite"></div>
 <p class="footnote" id="chips-note"></p>
 
 </div>
@@ -674,14 +719,14 @@ var JAR_IMG_SRC='assets/6b3190c7-9d63-4dd4-bb6c-77f8847764a9.png';
 /** Optional vector fallback if PNG fails to load */
 var JAR_IMG_FALLBACK='assets/crown-breeds-jar.svg';
 
-function appendJarCard(chips,i){
+function buildSingleJarCard(){
   var card=document.createElement('div');
-  card.className='jar-card';
+  card.className='jar-card jar-card--single';
   var media=document.createElement('div');
   media.className='jar-card-media';
   var img=document.createElement('img');
   img.className='jar-thumb';
-  img.alt='Crown Breeds jar — 50 ml unit #'+(i+1);
+  img.alt='Crown Breeds — 50 ml jar';
   img.loading='lazy';
   img.src=JAR_IMG_SRC;
   img.onerror=function(){this.onerror=null;this.src=JAR_IMG_FALLBACK;};
@@ -689,30 +734,33 @@ function appendJarCard(chips,i){
   var meta=document.createElement('div');
   meta.className='jar-card-meta';
   meta.innerHTML='<span class="jar-card-brand">Crown Breeds</span>'+
-    '<strong class="jar-card-vol">50 ml · unit #'+(i+1)+'</strong>'+
+    '<strong class="jar-card-vol">50 ml jar</strong>'+
     '<span class="jar-card-d1">Hydrating Formula</span>'+
     '<span class="jar-card-d2">Anti-Aging Properties</span>'+
     '<span class="jar-card-wt">Net 50g / 1.7 oz</span>';
   card.appendChild(media);
   card.appendChild(meta);
-  chips.appendChild(card);
+  return card;
 }
 
-function appendLeftoverCard(chips,mlStr){
-  var card=document.createElement('div');
-  card.className='jar-card jar-card--leftover';
-  var media=document.createElement('div');
-  media.className='jar-card-media';
-  media.setAttribute('aria-hidden','true');
-  media.innerHTML='<span style="font-size:1.35rem;opacity:.45;line-height:1" title="Leftover">◷</span>';
-  var meta=document.createElement('div');
-  meta.className='jar-card-meta';
-  meta.innerHTML='<span class="jar-leftover-hint">Leftover</span>'+
-    '<strong class="jar-card-vol">'+mlStr+' ml</strong>'+
-    '<span class="jar-card-d1">Below one full 50 ml jar</span>';
-  card.appendChild(media);
-  card.appendChild(meta);
-  chips.appendChild(card);
+/** One preview jar + count badge + leftover line */
+function renderJarPreview(root,full,leftoverStr,leftoverNum){
+  root.innerHTML='';
+  var badge=document.createElement('div');
+  badge.className='jar-count-badge';
+  badge.innerHTML='<span class="jar-count-num">'+full+'</span>'+
+    '<span class="jar-count-mult">×</span>'+
+    '<span class="jar-count-desc">full 50 ml jar'+(full===1?'':'s')+'</span>';
+  root.appendChild(badge);
+  root.appendChild(buildSingleJarCard());
+  var strip=document.createElement('div');
+  strip.className='jar-leftover-strip'+(leftoverNum>0.1?'':' jar-leftover-strip--none');
+  if(leftoverNum>0.1){
+    strip.textContent='Leftover: '+leftoverStr+' ml';
+  }else{
+    strip.textContent='Leftover: none (fills complete 50 ml jars only)';
+  }
+  root.appendChild(strip);
 }
 
 var banners={
@@ -777,14 +825,12 @@ function render(v){
 
   var full=Math.floor(total/50);
   var leftover=fmt(total%50,1);
-  var chips=document.getElementById('chips');
-  chips.innerHTML='';
-  for(var i=0;i<full;i++){appendJarCard(chips,i);}
-  if(leftover>0.1){appendLeftoverCard(chips,leftover);}
+  var leftoverNum=parseFloat(leftover);
+  renderJarPreview(document.getElementById('chips'),full,leftover,leftoverNum);
   document.getElementById('chips-note').textContent=
-    full+' full container'+(full!==1?'s':'')+
-    (leftover>0.1?' + '+leftover+' ml leftover':'')+
-    ' from '+fmt(total,1)+' ml total batch';
+    full+'× 50 ml jar'+(full!==1?'s':'')+
+    (leftoverNum>0.1?' + '+leftover+' ml leftover':'')+
+    ' · '+fmt(total,1)+' ml total batch';
 }
 
 function fromJojoba(){
