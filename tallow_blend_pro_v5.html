@@ -1,0 +1,284 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.w{padding:1rem 0;color:var(--color-text-primary);font-size:14px}
+.use-toggle{display:flex;gap:6px;margin-bottom:10px}
+.use-btn{padding:5px 14px;font-size:12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer}
+.use-btn.active{background:var(--color-background-secondary);font-weight:500;border-color:var(--color-border-primary)}
+.banner{border-radius:var(--border-radius-md);padding:7px 11px;font-size:11px;line-height:1.5;margin-bottom:14px}
+.container{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.group-header{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.group-title{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase}
+.group-pct{font-size:11px;font-weight:500;margin-left:auto}
+.pill{display:inline-flex;font-size:9px;padding:1px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.p-teal  {background:#E1F5EE;color:#0F6E56}
+.p-purple{background:#EEEDFE;color:#3C3489}
+.p-amber {background:#FAEEDA;color:#854F0B}
+.p-coral {background:#FAECE7;color:#712B13}
+.p-gray  {background:#F1EFE8;color:#5F5E5A}
+.ing-row{display:grid;grid-template-columns:3px 1fr auto;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ing-row:last-child{border-bottom:none}
+.accent{flex-shrink:0}
+.ing-body{padding:10px 14px;display:flex;flex-direction:column;gap:3px}
+.ing-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.ing-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.ing-sub{font-size:10px;font-family:var(--font-mono);color:var(--color-text-secondary)}
+.ing-meta{font-size:11px;color:var(--color-text-secondary);line-height:1.5;margin-top:1px}
+.ing-val{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding:10px 14px;border-left:0.5px solid var(--color-border-tertiary);min-width:86px}
+.val-num{font-size:16px;font-weight:500;color:var(--color-text-primary);text-align:right;white-space:nowrap}
+.val-input{width:68px;font-size:16px;font-weight:500;text-align:right;padding:3px 5px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);outline:none}
+.val-input:focus{border-color:var(--color-border-primary)}
+.val-unit{font-size:10px;color:var(--color-text-secondary);margin-top:2px;text-align:right}
+.source-tag{font-size:9px;padding:1px 6px;border-radius:20px;background:var(--color-background-success);color:var(--color-text-success);font-weight:500}
+.group-sep{height:2px;background:var(--color-border-secondary)}
+.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 0}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem 1rem}
+.mlbl{font-size:10px;color:var(--color-text-secondary);margin-bottom:2px}
+.mval{font-size:19px;font-weight:500;color:var(--color-text-primary)}
+.munit{font-size:10px;color:var(--color-text-secondary)}
+.bar-wrap{height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;display:flex;margin:10px 0 5px}
+.seg{height:100%;transition:width .2s}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--color-text-secondary)}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sec{font-size:10px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin:4px 0 6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:3px 10px;font-size:12px;color:var(--color-text-primary)}
+.chip.partial{opacity:.5}
+.footnote{font-size:11px;color:var(--color-text-secondary);margin-top:6px;line-height:1.5}
+</style>
+
+<div class="w">
+
+<div class="use-toggle">
+  <button class="use-btn active" id="btn-face" onclick="setUse('face')">Sensitive skin / face — 1% EO</button>
+  <button class="use-btn" id="btn-body" onclick="setUse('body')">General body — 2% EO</button>
+</div>
+<div class="banner" id="banner"></div>
+
+<div class="container">
+
+  <div class="group-header" style="background:#E1F5EE">
+    <span class="group-title" style="color:#0F6E56">EO dilution base</span>
+    <span class="pill p-teal">jojoba anchors the essential oil %</span>
+    <span class="group-pct" style="color:#0F6E56" id="pct-dil">—%</span>
+  </div>
+
+  <div class="ing-row">
+    <div class="accent" style="background:#5DCAA5"></div>
+    <div class="ing-body">
+      <div class="ing-top">
+        <span class="ing-name">Jojoba oil</span>
+        <span class="source-tag" id="tag-jojoba">source</span>
+        <span class="ing-sub">nJoJo — master variable</span>
+      </div>
+      <div class="ing-meta">Wax ester that mirrors skin's own sebum. Absorbs clean with no residue — the anchor every other ingredient scales from.</div>
+    </div>
+    <div class="ing-val">
+      <input class="val-input" id="jojoba" type="number" min="1" value="20" step="0.5" oninput="fromJojoba()">
+      <span class="val-unit">ml</span>
+    </div>
+  </div>
+
+  <div class="ing-row">
+    <div class="accent" style="background:#AFA9EC"></div>
+    <div class="ing-body">
+      <div class="ing-top">
+        <span class="ing-name">Essential oils</span>
+        <span class="pill p-purple" id="eo-pill">1% — face safe</span>
+        <span class="ing-sub" id="eo-fml">nJoJo ÷ 5</span>
+      </div>
+      <div class="ing-meta" id="eo-meta">1% dilution — dermatologist-safe for facial and sensitive skin daily use. Jojoba volume is the direct reference for EO drop count.</div>
+    </div>
+    <div class="ing-val">
+      <span class="val-num" id="eo-drops">—</span>
+      <span class="val-unit" id="eo-unit">drops</span>
+    </div>
+  </div>
+
+  <div class="group-sep"></div>
+
+  <div class="group-header" style="background:#FAEEDA">
+    <span class="group-title" style="color:#854F0B">Skin benefit carriers</span>
+    <span class="pill p-amber">active compounds — scent stays behind EO</span>
+    <span class="group-pct" style="color:#854F0B" id="pct-car">—%</span>
+  </div>
+
+  <div class="ing-row">
+    <div class="accent" style="background:#FAC775"></div>
+    <div class="ing-body">
+      <div class="ing-top">
+        <span class="ing-name">Ingredient A — major carrier</span>
+        <span class="pill p-amber">nJoJo ÷ 2</span>
+      </div>
+      <div class="ing-meta">Mild-scented, high-benefit oil — sesame, rosehip, marula. At half the jojoba volume it delivers real therapeutic value without competing with the EO fragrance.</div>
+    </div>
+    <div class="ing-val">
+      <span class="val-num" id="ing-a">—</span>
+      <span class="val-unit">ml</span>
+    </div>
+  </div>
+
+  <div class="ing-row">
+    <div class="accent" style="background:#EF9F27"></div>
+    <div class="ing-body">
+      <div class="ing-top">
+        <span class="ing-name">Ingredient B — minor carrier</span>
+        <span class="pill p-amber">A ÷ 2</span>
+      </div>
+      <div class="ing-meta">Potent but strongly scented oils — black seed, neem, sea buckthorn. Kept at A÷2 so its natural odour stays buried. You get the active compounds; the EO scent still glows on top.</div>
+    </div>
+    <div class="ing-val">
+      <span class="val-num" id="ing-b">—</span>
+      <span class="val-unit">ml</span>
+    </div>
+  </div>
+
+  <div class="group-sep"></div>
+
+  <div class="group-header" style="background:#F1EFE8">
+    <span class="group-title" style="color:#444441">Tallow — main base</span>
+    <span class="pill p-gray">~84–85% of total batch</span>
+    <span class="group-pct" style="color:#444441" id="pct-tal">—%</span>
+  </div>
+
+  <div class="ing-row">
+    <div class="accent" style="background:#888780"></div>
+    <div class="ing-body">
+      <div class="ing-top">
+        <span class="ing-name">Beef tallow</span>
+        <span class="source-tag" id="tag-tallow" style="display:none">source</span>
+        <span class="ing-sub">(J + A + B) × 5.43</span>
+      </div>
+      <div class="ing-meta">Structurally closest fat to human skin lipids — rich in palmitic, stearic and oleic acids. The ×5.43 multiplier holds it at ~84–85% of the total batch: a firm, protective base that carries the oil blend deep into the skin.</div>
+    </div>
+    <div class="ing-val">
+      <input class="val-input" id="tallow" type="number" min="1" step="1" value="189.05" oninput="fromTallow()">
+      <span class="val-unit">ml</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="totals">
+  <div class="metric"><div class="mlbl">Oil mixture</div><span class="mval" id="m-oils">—</span><span class="munit"> ml</span></div>
+  <div class="metric"><div class="mlbl">Total batch</div><span class="mval" id="m-total">—</span><span class="munit"> ml</span></div>
+  <div class="metric"><div class="mlbl">Tallow ratio</div><span class="mval" id="m-ratio">—</span><span class="munit"> %</span></div>
+</div>
+
+<div class="bar-wrap">
+  <div class="seg" id="b-jojoba" style="background:#5DCAA5"></div>
+  <div class="seg" id="b-eo"     style="background:#AFA9EC"></div>
+  <div class="seg" id="b-a"      style="background:#FAC775"></div>
+  <div class="seg" id="b-b"      style="background:#EF9F27"></div>
+  <div class="seg" id="b-tal"    style="background:#D3D1C7"></div>
+</div>
+<div class="legend">
+  <div class="li"><div class="dot" style="background:#5DCAA5"></div>Jojoba</div>
+  <div class="li"><div class="dot" style="background:#AFA9EC"></div>EO</div>
+  <div class="li"><div class="dot" style="background:#FAC775"></div>Ing. A</div>
+  <div class="li"><div class="dot" style="background:#EF9F27"></div>Ing. B</div>
+  <div class="li"><div class="dot" style="background:#D3D1C7"></div>Tallow</div>
+</div>
+
+<div class="sec">50 ml containers</div>
+<div id="chips" class="chips"></div>
+<p class="footnote" id="chips-note"></p>
+
+</div>
+
+<script>
+var useCase='face';
+var banners={
+  face:{bg:'#EEEDFE',color:'#3C3489',text:'Sensitive skin & face — EO at 1% dilution. Safe for daily facial use on reactive and post-procedure skin. Fragrance is present but gentle.'},
+  body:{bg:'#FAEEDA',color:'#633806',text:'General body use — EO at 2% dilution. Suitable for massage, dry elbows, knees and feet. Avoid broken skin, mucous membranes and facial use at this concentration.'}
+};
+
+function setUse(u){
+  useCase=u;
+  document.getElementById('btn-face').classList.toggle('active',u==='face');
+  document.getElementById('btn-body').classList.toggle('active',u==='body');
+  var b=banners[u]; var el=document.getElementById('banner');
+  el.style.background=b.bg; el.style.color=b.color; el.textContent=b.text;
+  var pill=document.getElementById('eo-pill');
+  if(u==='face'){
+    pill.className='pill p-purple'; pill.textContent='1% — face safe';
+    document.getElementById('eo-fml').textContent='nJoJo ÷ 5';
+    document.getElementById('eo-meta').textContent='1% dilution — dermatologist-safe for facial and sensitive skin daily use. Jojoba volume is the direct reference for EO drop count.';
+  } else {
+    pill.className='pill p-amber'; pill.textContent='2% — body use';
+    document.getElementById('eo-fml').textContent='nJoJo ÷ 2.5';
+    document.getElementById('eo-meta').textContent='2% dilution — drop count doubles, no other ratios change. Standard professional dilution for body products over larger skin surface areas.';
+  }
+  fromJojoba();
+}
+
+function calc(j){
+  var eoDrops=useCase==='body'?(j/5)*2:(j/5);
+  var eoml=eoDrops*0.05;
+  var a=j/2; var b=a/2;
+  var t=(j+a+b)*5.43;
+  return{j:j,eoDrops:eoDrops,eoml:eoml,a:a,b:b,t:t};
+}
+function calcFromTallow(t){return calc(t/(1.75*5.43));}
+function fmt(n,d){return parseFloat(n.toFixed(d===undefined?2:d));}
+
+function render(v){
+  document.getElementById('eo-drops').textContent=fmt(v.eoDrops,1)+' ('+fmt(v.eoml,3)+' ml)';
+  document.getElementById('eo-unit').textContent='drops';
+  document.getElementById('ing-a').textContent=fmt(v.a,1);
+  document.getElementById('ing-b').textContent=fmt(v.b,1);
+
+  var oils=v.j+v.a+v.b+v.eoml;
+  var total=oils+v.t;
+
+  document.getElementById('m-oils').textContent=fmt(oils,1);
+  document.getElementById('m-total').textContent=fmt(total,1);
+  document.getElementById('m-ratio').textContent=fmt(v.t/total*100,1);
+
+  var dilVol=v.j+v.eoml;
+  var carVol=v.a+v.b;
+  document.getElementById('pct-dil').textContent=fmt(dilVol/total*100,1)+'%';
+  document.getElementById('pct-car').textContent=fmt(carVol/total*100,1)+'%';
+  document.getElementById('pct-tal').textContent=fmt(v.t/total*100,1)+'%';
+
+  function p(n){return(n/total*100).toFixed(2)+'%';}
+  document.getElementById('b-jojoba').style.width=p(v.j);
+  document.getElementById('b-eo').style.width=p(v.eoml);
+  document.getElementById('b-a').style.width=p(v.a);
+  document.getElementById('b-b').style.width=p(v.b);
+  document.getElementById('b-tal').style.width=p(v.t);
+
+  var full=Math.floor(total/50);
+  var leftover=fmt(total%50,1);
+  var chips=document.getElementById('chips');
+  chips.innerHTML='';
+  for(var i=0;i<full;i++){var c=document.createElement('div');c.className='chip';c.textContent='50 ml #'+(i+1);chips.appendChild(c);}
+  if(leftover>0.1){var c=document.createElement('div');c.className='chip partial';c.textContent=leftover+' ml';chips.appendChild(c);}
+  document.getElementById('chips-note').textContent=
+    full+' full container'+(full!==1?'s':'')+
+    (leftover>0.1?' + '+leftover+' ml leftover':'')+
+    ' from '+fmt(total,1)+' ml total batch';
+}
+
+function fromJojoba(){
+  var j=parseFloat(document.getElementById('jojoba').value);
+  if(isNaN(j)||j<=0)return;
+  var v=calc(j);
+  document.getElementById('tallow').value=v.t.toFixed(2);
+  document.getElementById('tag-jojoba').style.display='';
+  document.getElementById('tag-tallow').style.display='none';
+  render(v);
+}
+function fromTallow(){
+  var t=parseFloat(document.getElementById('tallow').value);
+  if(isNaN(t)||t<=0)return;
+  var v=calcFromTallow(t);
+  document.getElementById('jojoba').value=v.j.toFixed(2);
+  document.getElementById('tag-tallow').style.display='';
+  document.getElementById('tag-jojoba').style.display='none';
+  render(v);
+}
+
+setUse('face');
+</script>
