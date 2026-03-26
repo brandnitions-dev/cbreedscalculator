@@ -370,25 +370,114 @@
     }
 
     .chips {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+      gap: 12px;
     }
 
-    .chip {
+    @media (min-width: 420px) {
+      .chips {
+        grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+      }
+    }
+
+    .jar-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      font-size: 0.8125rem;
-      font-weight: 500;
-      color: var(--text);
+      border-radius: var(--radius-md);
+      padding: 10px 10px 12px;
       box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      transition: box-shadow 0.15s, border-color 0.15s;
     }
 
-    .chip.partial {
-      opacity: 0.65;
+    .jar-card:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-md);
+    }
+
+    .jar-card--leftover {
       border-style: dashed;
+      opacity: 0.85;
+      justify-content: center;
+      min-height: 8rem;
+    }
+
+    .jar-card-media {
+      width: 100%;
+      max-width: 5.5rem;
+      aspect-ratio: 7 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .jar-card--leftover .jar-card-media {
+      max-width: 3.5rem;
+      aspect-ratio: 1;
+      background: transparent;
+      border-style: dashed;
+    }
+
+    .jar-thumb {
+      width: 100%;
+      height: 100%;
+      max-height: 6.5rem;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    .jar-card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .jar-card-brand {
+      font-size: 0.5625rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .jar-card-vol {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+    }
+
+    .jar-card-d1,
+    .jar-card-d2 {
+      font-size: 0.625rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .jar-card-wt {
+      font-size: 0.5625rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .jar-card--leftover .jar-card-vol {
+      font-size: 1rem;
+    }
+
+    .jar-card--leftover .jar-leftover-hint {
+      font-size: 0.625rem;
+      color: var(--text-muted);
     }
 
     .footnote {
@@ -580,6 +669,50 @@
 
 <script>
 var useCase='face';
+/** PNG if you add assets/crown-breeds-jar.png; falls back to SVG */
+var JAR_IMG_BASE='assets/crown-breeds-jar';
+
+function appendJarCard(chips,i){
+  var card=document.createElement('div');
+  card.className='jar-card';
+  var media=document.createElement('div');
+  media.className='jar-card-media';
+  var img=document.createElement('img');
+  img.className='jar-thumb';
+  img.alt='Crown Breeds jar — 50 ml unit #'+(i+1);
+  img.loading='lazy';
+  img.src=JAR_IMG_BASE+'.png';
+  img.onerror=function(){this.onerror=null;this.src=JAR_IMG_BASE+'.svg';};
+  media.appendChild(img);
+  var meta=document.createElement('div');
+  meta.className='jar-card-meta';
+  meta.innerHTML='<span class="jar-card-brand">Crown Breeds</span>'+
+    '<strong class="jar-card-vol">50 ml · unit #'+(i+1)+'</strong>'+
+    '<span class="jar-card-d1">Hydrating Formula</span>'+
+    '<span class="jar-card-d2">Anti-Aging Properties</span>'+
+    '<span class="jar-card-wt">Net 50g / 1.7 oz</span>';
+  card.appendChild(media);
+  card.appendChild(meta);
+  chips.appendChild(card);
+}
+
+function appendLeftoverCard(chips,mlStr){
+  var card=document.createElement('div');
+  card.className='jar-card jar-card--leftover';
+  var media=document.createElement('div');
+  media.className='jar-card-media';
+  media.setAttribute('aria-hidden','true');
+  media.innerHTML='<span style="font-size:1.35rem;opacity:.45;line-height:1" title="Leftover">◷</span>';
+  var meta=document.createElement('div');
+  meta.className='jar-card-meta';
+  meta.innerHTML='<span class="jar-leftover-hint">Leftover</span>'+
+    '<strong class="jar-card-vol">'+mlStr+' ml</strong>'+
+    '<span class="jar-card-d1">Below one full 50 ml jar</span>';
+  card.appendChild(media);
+  card.appendChild(meta);
+  chips.appendChild(card);
+}
+
 var banners={
   face:{bg:'#e0e7ff',color:'#312e81',text:'Sensitive skin & face — EO at 1% dilution. Safe for daily facial use on reactive and post-procedure skin. Fragrance is present but gentle.'},
   body:{bg:'#fef3c7',color:'#78350f',text:'General body use — EO at 2% dilution. Suitable for massage, dry elbows, knees and feet. Avoid broken skin, mucous membranes and facial use at this concentration.'}
@@ -644,8 +777,8 @@ function render(v){
   var leftover=fmt(total%50,1);
   var chips=document.getElementById('chips');
   chips.innerHTML='';
-  for(var i=0;i<full;i++){var c=document.createElement('div');c.className='chip';c.textContent='50 ml #'+(i+1);chips.appendChild(c);}
-  if(leftover>0.1){var c=document.createElement('div');c.className='chip partial';c.textContent=leftover+' ml';chips.appendChild(c);}
+  for(var i=0;i<full;i++){appendJarCard(chips,i);}
+  if(leftover>0.1){appendLeftoverCard(chips,leftover);}
   document.getElementById('chips-note').textContent=
     full+' full container'+(full!==1?'s':'')+
     (leftover>0.1?' + '+leftover+' ml leftover':'')+
