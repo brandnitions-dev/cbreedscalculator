@@ -1,6 +1,7 @@
 # Crown Breeds — Tallow blend calculator
 
-Static calculator: open **`index.html`** locally or use **GitHub Pages** after you enable it (Settings → Pages → branch `main`, folder `/`).
+- **Repo:** https://github.com/brandnitions-dev/cbreedscalculator  
+- **Live (GitHub Pages):** https://brandnitions-dev.github.io/cbreedscalculator/  
+- **Pages config:** branch `main`, folder `/` (root)
 
-- `index.html` — same as `tallow_blend_pro_v5.html` (site entry point)
-- `tallow_blend_pro_v5.html` — versioned filename
+Files: `index.html` (site entry), `tallow_blend_pro_v5.html` (versioned copy).
