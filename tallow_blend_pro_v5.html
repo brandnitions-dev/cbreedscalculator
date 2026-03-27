@@ -52,9 +52,17 @@
       color: var(--text);
       background: var(--surface-2);
       min-height: 100dvh;
-      padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      overflow-x: clip;
+      padding: max(12px, env(safe-area-inset-top)) clamp(12px, 4vw, 32px) max(24px, env(safe-area-inset-bottom)) clamp(12px, 4vw, 32px);
     }
-    .w { max-width: 42rem; margin: 0 auto; padding: 0.5rem 0 2rem; }
+    /* Full-width shell; content uses fluid side padding from body */
+    .w {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0.5rem 0 2rem;
+      box-sizing: border-box;
+    }
 
     .lab-bar {
       border: 1px solid var(--border);
@@ -78,6 +86,10 @@
     }
     @media (min-width: 560px) {
       .lab-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 900px) {
+      .lab-grid { grid-template-columns: repeat(3, 1fr); }
+      .lab-field:nth-child(3) { grid-column: 1 / -1; }
     }
     .lab-field label {
       display: block;
@@ -175,6 +187,8 @@
     }
 
     .container {
+      width: 100%;
+      max-width: 100%;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       overflow: hidden;
@@ -299,15 +313,9 @@
 
     .totals {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr));
       gap: 10px;
       margin: 16px 0 0;
-    }
-    @media (min-width: 400px) {
-      .totals { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (min-width: 640px) {
-      .totals.cols-4 { grid-template-columns: repeat(4, 1fr); }
     }
 
     .metric {
@@ -350,6 +358,17 @@
       margin: 20px 0 10px;
     }
 
+    .dual-panels {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (min-width: 960px) {
+      .dual-panels {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+    }
     .summary-panel, .proc-panel {
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
@@ -358,6 +377,8 @@
       margin-top: 12px;
       box-shadow: var(--shadow-sm);
     }
+    .dual-panels .summary-panel,
+    .dual-panels .proc-panel { margin-top: 0; }
     .summary-panel h3, .proc-panel h3 {
       font-size: 0.625rem;
       font-weight: 700;
@@ -366,7 +387,8 @@
       color: var(--text-muted);
       margin-bottom: 10px;
     }
-    .summary-table { width: 100%; font-size: 0.8125rem; border-collapse: collapse; }
+    .summary-table { width: 100%; font-size: 0.8125rem; border-collapse: collapse; table-layout: fixed; }
+    .summary-table td:first-child { word-break: break-word; }
     .summary-table th, .summary-table td {
       text-align: left;
       padding: 6px 8px;
@@ -427,8 +449,23 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      max-width: 12rem;
-      margin: 0 auto;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+    }
+    @media (min-width: 640px) {
+      .jar-preview {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-end;
+      }
+      .jar-preview .jar-leftover-strip {
+        flex: 1 1 100%;
+        max-width: min(36rem, 100%);
+        margin-left: auto;
+        margin-right: auto;
+      }
     }
     .jar-count-badge {
       display: inline-flex;
@@ -459,7 +496,7 @@
     }
     .jar-leftover-strip {
       width: 100%;
-      max-width: 12rem;
+      max-width: min(12rem, 100%);
       text-align: center;
       padding: 10px 12px;
       border-radius: var(--radius-md);
@@ -714,7 +751,7 @@
 
 </div>
 
-<div class="totals cols-4">
+<div class="totals">
   <div class="metric"><div class="mlbl">Oil mixture</div><span class="mval" id="m-oils">—</span><span class="munit"> ml</span></div>
   <div class="metric"><div class="mlbl">Total batch</div><span class="mval" id="m-total">—</span><span class="munit"> ml</span></div>
   <div class="metric"><div class="mlbl">Tallow ratio</div><span class="mval" id="m-ratio">—</span><span class="munit"> %</span></div>
@@ -738,26 +775,28 @@
   <div class="li"><div class="dot" style="background:#D3D1C7"></div>Tallow</div>
 </div>
 
-<div class="summary-panel">
-  <h3>Batch summary</h3>
-  <table class="summary-table" id="batch-summary">
-    <thead><tr><th>Ingredient</th><th class="num">ml</th><th class="num">%</th></tr></thead>
-    <tbody id="batch-summary-body"></tbody>
-  </table>
-</div>
+<div class="dual-panels">
+  <div class="summary-panel">
+    <h3>Batch summary</h3>
+    <table class="summary-table" id="batch-summary">
+      <thead><tr><th>Ingredient</th><th class="num">ml</th><th class="num">%</th></tr></thead>
+      <tbody id="batch-summary-body"></tbody>
+    </table>
+  </div>
 
-<div class="proc-panel" id="proc-panel" tabindex="0" onfocus="onProcInteract()" onclick="onProcInteract()">
-  <h3>Production process</h3>
-  <ol class="proc-steps" id="proc-steps"></ol>
-  <div class="proc-temp-row">
-    <label for="proc-temp">Track batch temperature (°C) — optional</label>
-    <input type="number" id="proc-temp" class="lab-num" step="0.5" placeholder="e.g. 48" inputmode="decimal"
-      onfocus="onProcInteract()" oninput="onTempInput()">
-    <div class="temp-warn-static">
-      Reference: <strong>60°C</strong> — risk of degrading actives and essential oils.
-      <strong>&lt;40°C</strong> — risk of poor mixing / grainy texture when incorporating tallow.
+  <div class="proc-panel" id="proc-panel" tabindex="0" onfocus="onProcInteract()" onclick="onProcInteract()">
+    <h3>Production process</h3>
+    <ol class="proc-steps" id="proc-steps"></ol>
+    <div class="proc-temp-row">
+      <label for="proc-temp">Track batch temperature (°C) — optional</label>
+      <input type="number" id="proc-temp" class="lab-num" step="0.5" placeholder="e.g. 48" inputmode="decimal"
+        onfocus="onProcInteract()" oninput="onTempInput()">
+      <div class="temp-warn-static">
+        Reference: <strong>60°C</strong> — risk of degrading actives and essential oils.
+        <strong>&lt;40°C</strong> — risk of poor mixing / grainy texture when incorporating tallow.
+      </div>
+      <div id="temp-live" class="temp-warn-live" role="status"></div>
     </div>
-    <div id="temp-live" class="temp-warn-live" role="status"></div>
   </div>
 </div>
 
