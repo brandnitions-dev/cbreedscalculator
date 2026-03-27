@@ -60,7 +60,7 @@
       width: 100%;
       max-width: 100%;
       margin: 0;
-      padding: 0.5rem 0 2rem;
+      padding: 0.35rem 0 1.25rem;
       box-sizing: border-box;
     }
 
@@ -323,7 +323,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr));
       gap: 10px;
-      margin: 16px 0 0;
+      margin: 12px 0 0;
     }
 
     .metric {
@@ -350,31 +350,19 @@
       border-radius: 999px;
       overflow: hidden;
       display: flex;
-      margin: 14px 0 8px;
+      margin: 10px 0 6px;
     }
     .seg { height: 100%; transition: width 0.25s ease; min-width: 0; }
-    .legend { display: flex; gap: 12px 16px; flex-wrap: wrap; margin-bottom: 16px; }
+    .legend { display: flex; gap: 10px 14px; flex-wrap: wrap; margin-bottom: 8px; }
     .li { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); }
     .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-    .charts-grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: 1fr;
-      margin-top: 4px;
-      margin-bottom: 4px;
-      max-width: 26rem;
-      margin-left: auto;
-      margin-right: auto;
-    }
     .chart-widget {
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       background: var(--surface);
-      padding: 14px 16px;
+      padding: 12px 14px;
       box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
       min-width: 0;
     }
     .chart-widget h3 {
@@ -386,18 +374,17 @@
       margin-bottom: 4px;
     }
     .chart-widget .chart-desc {
-      font-size: 0.75rem;
+      font-size: 0.6875rem;
       color: var(--text-muted);
-      line-height: 1.45;
-      margin-bottom: 10px;
+      line-height: 1.4;
+      margin-bottom: 8px;
     }
     .chart-canvas-wrap {
       position: relative;
-      flex: 1;
-      min-height: 220px;
-      height: min(42vw, 280px);
-      max-height: 300px;
       width: 100%;
+      height: 240px;
+      min-height: 220px;
+      max-height: 260px;
     }
     .sec {
       font-size: 0.625rem;
@@ -405,18 +392,33 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin: 20px 0 10px;
+      margin: 14px 0 8px;
     }
+    .sec.sec--tight { margin-top: 10px; }
 
     .dual-panels {
       display: grid;
-      gap: 12px;
-      margin-top: 12px;
+      gap: 10px;
+      margin-top: 8px;
+      grid-template-columns: 1fr;
     }
-    @media (min-width: 960px) {
+    @media (min-width: 880px) {
       .dual-panels {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+        grid-template-rows: auto auto;
         align-items: start;
+      }
+      .dual-panels .summary-panel {
+        grid-column: 1;
+        grid-row: 1;
+      }
+      .dual-panels .chart-widget {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      .dual-panels .proc-panel {
+        grid-column: 1 / -1;
+        grid-row: 2;
       }
     }
     .summary-panel, .proc-panel {
@@ -829,24 +831,22 @@
   <div class="li"><div class="dot" style="background:#D3D1C7"></div>Tallow</div>
 </div>
 
-<div class="sec">Composition analytics</div>
-<div class="charts-grid" role="region" aria-label="Batch composition pie chart">
-  <div class="chart-widget">
-    <h3>Volume share — doughnut</h3>
-    <p class="chart-desc">Each arc is that ingredient’s percent of total batch volume (ml). Legend matches the bar above.</p>
-    <div class="chart-canvas-wrap">
-      <canvas id="chart-pie" aria-label="Doughnut chart of batch composition by volume percent"></canvas>
-    </div>
-  </div>
-</div>
-
-<div class="dual-panels">
+<div class="sec">Batch breakdown</div>
+<div class="dual-panels" role="region" aria-label="Summary, composition chart, and production steps">
   <div class="summary-panel">
     <h3>Batch summary</h3>
     <table class="summary-table" id="batch-summary">
       <thead><tr><th>Ingredient</th><th class="num">ml</th><th class="num">%</th></tr></thead>
       <tbody id="batch-summary-body"></tbody>
     </table>
+  </div>
+
+  <div class="chart-widget">
+    <h3>Volume share</h3>
+    <p class="chart-desc">Percent of total batch (ml) per ingredient — same colors as the bar above.</p>
+    <div class="chart-canvas-wrap">
+      <canvas id="chart-pie" aria-label="Doughnut chart of batch composition by volume percent"></canvas>
+    </div>
   </div>
 
   <div class="proc-panel" id="proc-panel" tabindex="0" onfocus="onProcInteract()" onclick="onProcInteract()">
@@ -865,7 +865,7 @@
   </div>
 </div>
 
-<div class="sec">50 ml containers</div>
+<div class="sec sec--tight">50 ml containers</div>
 <div id="chips" class="jar-preview" aria-live="polite"></div>
 <p class="footnote" id="chips-note"></p>
 
