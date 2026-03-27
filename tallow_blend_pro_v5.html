@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <title>Tallow blend calculator</title>
+  <title>Tallow balm — formulation &amp; production</title>
   <style>
     :root {
       --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -22,6 +22,9 @@
       --border-strong: #cbd5e1;
       --focus: #6366f1;
       --focus-ring: rgba(99, 102, 241, 0.35);
+      --warn-bg: #fff7ed;
+      --warn-border: #fdba74;
+      --warn-text: #9a3412;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -34,16 +37,14 @@
         --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
         --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.45);
         --focus-ring: rgba(129, 140, 248, 0.45);
+        --warn-bg: #422006;
+        --warn-border: #b45309;
+        --warn-text: #fed7aa;
       }
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-      scroll-behavior: smooth;
-    }
-
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
     body {
       font-family: var(--font-sans);
       font-size: 15px;
@@ -53,20 +54,92 @@
       min-height: 100dvh;
       padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
     }
+    .w { max-width: 42rem; margin: 0 auto; padding: 0.5rem 0 2rem; }
 
-    .w {
-      max-width: 42rem;
-      margin: 0 auto;
-      padding: 0.5rem 0 2rem;
-    }
-
-    .use-toggle {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+    .lab-bar {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      padding: 12px 14px;
       margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .lab-bar-title {
+      font-size: 0.5625rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .lab-grid {
+      display: grid;
+      gap: 12px;
+    }
+    @media (min-width: 560px) {
+      .lab-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .lab-field label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .lab-select, .lab-num {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 10px;
+      font-size: 0.8125rem;
+      font-family: inherit;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+    }
+    .lab-select:focus, .lab-num:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+    .lab-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+    .lab-check input { width: 18px; height: 18px; accent-color: var(--focus); }
+
+    .texture-toggle { display: flex; flex-wrap: wrap; gap: 8px; }
+    .texture-btn {
+      flex: 1 1 auto;
+      min-height: 44px;
+      padding: 10px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .texture-btn.active {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 2px var(--focus-ring);
     }
 
+    .warn-banner {
+      display: none;
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      border: 1px solid var(--warn-border);
+      background: var(--warn-bg);
+      color: var(--warn-text);
+    }
+
+    .use-toggle { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
     .use-btn {
       flex: 1 1 auto;
       min-height: 48px;
@@ -83,19 +156,9 @@
       box-shadow: var(--shadow-sm);
       transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
     }
-
-    .use-btn:hover {
-      border-color: var(--border-strong);
-      box-shadow: var(--shadow-md);
-    }
-
+    .use-btn:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
     .use-btn:active { transform: scale(0.98); }
-
-    .use-btn:focus-visible {
-      outline: 2px solid var(--focus);
-      outline-offset: 2px;
-    }
-
+    .use-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
     .use-btn.active {
       background: var(--surface-2);
       border-color: var(--focus);
@@ -128,7 +191,6 @@
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
     }
-
     .group-title {
       font-size: 0.625rem;
       font-weight: 600;
@@ -136,11 +198,7 @@
       text-transform: uppercase;
       width: 100%;
     }
-
-    @media (min-width: 480px) {
-      .group-title { width: auto; }
-    }
-
+    @media (min-width: 480px) { .group-title { width: auto; } }
     .group-pct {
       font-size: 0.8125rem;
       font-weight: 600;
@@ -158,19 +216,19 @@
       white-space: nowrap;
       max-width: 100%;
     }
-
     .p-teal   { background: #d1fae5; color: #065f46; }
     .p-purple { background: #e0e7ff; color: #3730a3; }
     .p-amber  { background: #fef3c7; color: #92400e; }
     .p-coral  { background: #ffe4e6; color: #9f1239; }
     .p-gray   { background: #e7e5e4; color: #44403c; }
-
+    .p-rose   { background: #fce7f3; color: #9d174d; }
     @media (prefers-color-scheme: dark) {
       .p-teal   { background: #064e3b; color: #a7f3d0; }
       .p-purple { background: #312e81; color: #c7d2fe; }
       .p-amber  { background: #78350f; color: #fde68a; }
       .p-coral  { background: #881337; color: #fecdd3; }
       .p-gray   { background: #292524; color: #d6d3d1; }
+      .p-rose   { background: #831843; color: #fbcfe8; }
     }
 
     .ing-row {
@@ -179,11 +237,8 @@
       border-bottom: 1px solid var(--border);
       align-items: stretch;
     }
-
     .ing-row:last-child { border-bottom: none; }
-
     .accent { min-height: 100%; }
-
     .ing-body {
       padding: 14px 16px;
       display: flex;
@@ -191,32 +246,10 @@
       gap: 6px;
       min-width: 0;
     }
-
-    .ing-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .ing-name {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .ing-sub {
-      font-size: 0.6875rem;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-    }
-
-    .ing-meta {
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      line-height: 1.55;
-    }
-
+    .ing-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ing-name { font-size: 0.9375rem; font-weight: 600; color: var(--text); }
+    .ing-sub { font-size: 0.6875rem; font-family: var(--font-mono); color: var(--text-muted); }
+    .ing-meta { font-size: 0.8125rem; color: var(--text-muted); line-height: 1.55; }
     .ing-val {
       display: flex;
       flex-direction: column;
@@ -228,15 +261,10 @@
       min-width: 5.5rem;
       background: var(--surface-2);
     }
-
-    .val-num {
-      font-size: 1.0625rem;
-      font-weight: 600;
-      color: var(--text);
-      text-align: right;
-      white-space: nowrap;
-    }
-
+    .val-num { font-size: 1.0625rem; font-weight: 600; color: var(--text); text-align: right; white-space: nowrap; }
+    .eo-stack { text-align: right; }
+    .eo-main { font-size: 0.9375rem; font-weight: 600; font-family: var(--font-mono); color: var(--text); line-height: 1.3; }
+    .eo-sub { font-size: 0.625rem; color: var(--text-muted); margin-top: 2px; }
     .val-input {
       width: 100%;
       max-width: 5.5rem;
@@ -253,18 +281,8 @@
       outline: none;
       transition: border-color 0.15s, box-shadow 0.15s;
     }
-
-    .val-input:focus {
-      border-color: var(--focus);
-      box-shadow: 0 0 0 3px var(--focus-ring);
-    }
-
-    .val-unit {
-      font-size: 0.6875rem;
-      color: var(--text-muted);
-      text-align: right;
-    }
-
+    .val-input:focus { border-color: var(--focus); box-shadow: 0 0 0 3px var(--focus-ring); }
+    .val-unit { font-size: 0.6875rem; color: var(--text-muted); text-align: right; }
     .source-tag {
       font-size: 0.625rem;
       padding: 3px 8px;
@@ -273,15 +291,11 @@
       color: #166534;
       font-weight: 600;
     }
-
     @media (prefers-color-scheme: dark) {
       .source-tag { background: #14532d; color: #bbf7d0; }
     }
 
-    .group-sep {
-      height: 3px;
-      background: var(--border);
-    }
+    .group-sep { height: 3px; background: var(--border); }
 
     .totals {
       display: grid;
@@ -289,9 +303,11 @@
       gap: 10px;
       margin: 16px 0 0;
     }
-
     @media (min-width: 400px) {
-      .totals { grid-template-columns: repeat(3, 1fr); }
+      .totals { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 640px) {
+      .totals.cols-4 { grid-template-columns: repeat(4, 1fr); }
     }
 
     .metric {
@@ -301,7 +317,6 @@
       padding: 14px 16px;
       box-shadow: var(--shadow-sm);
     }
-
     .mlbl {
       font-size: 0.625rem;
       font-weight: 600;
@@ -310,18 +325,8 @@
       color: var(--text-muted);
       margin-bottom: 4px;
     }
-
-    .mval {
-      font-size: 1.375rem;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-
-    .munit {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
+    .mval { font-size: 1.25rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+    .munit { font-size: 0.75rem; color: var(--text-muted); }
 
     .bar-wrap {
       height: 10px;
@@ -331,34 +336,10 @@
       display: flex;
       margin: 14px 0 8px;
     }
-
-    .seg {
-      height: 100%;
-      transition: width 0.25s ease;
-      min-width: 0;
-    }
-
-    .legend {
-      display: flex;
-      gap: 12px 16px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .li {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .seg { height: 100%; transition: width 0.25s ease; min-width: 0; }
+    .legend { display: flex; gap: 12px 16px; flex-wrap: wrap; margin-bottom: 16px; }
+    .li { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
     .sec {
       font-size: 0.625rem;
@@ -366,8 +347,80 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin: 8px 0 10px;
+      margin: 20px 0 10px;
     }
+
+    .summary-panel, .proc-panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      padding: 14px 16px;
+      margin-top: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .summary-panel h3, .proc-panel h3 {
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .summary-table { width: 100%; font-size: 0.8125rem; border-collapse: collapse; }
+    .summary-table th, .summary-table td {
+      text-align: left;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-table th { color: var(--text-muted); font-weight: 600; font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .summary-table td.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+    .proc-steps { font-size: 0.8125rem; color: var(--text); counter-reset: step; list-style: none; }
+    .proc-steps li {
+      position: relative;
+      padding-left: 1.75rem;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .proc-steps li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1.25rem;
+      height: 1.25rem;
+      font-size: 0.625rem;
+      font-weight: 700;
+      line-height: 1.25rem;
+      text-align: center;
+      border-radius: 4px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .proc-temp-row { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .proc-temp-row label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; }
+    .temp-warn-static {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--border-strong);
+    }
+    .temp-warn-live {
+      display: none;
+      margin-top: 8px;
+      font-size: 0.75rem;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--warn-border);
+      background: var(--warn-bg);
+      color: var(--warn-text);
+    }
+    .temp-warn-live.show { display: block; }
 
     .jar-preview {
       display: flex;
@@ -377,7 +430,6 @@
       max-width: 12rem;
       margin: 0 auto;
     }
-
     .jar-count-badge {
       display: inline-flex;
       align-items: baseline;
@@ -391,22 +443,8 @@
       box-shadow: var(--shadow-sm);
       font-variant-numeric: tabular-nums;
     }
-
-    .jar-count-num {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--text);
-      line-height: 1;
-    }
-
-    .jar-count-mult {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      line-height: 1;
-    }
-
+    .jar-count-num { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); line-height: 1; }
+    .jar-count-mult { font-size: 1.125rem; font-weight: 700; color: var(--text-muted); line-height: 1; }
     .jar-count-desc {
       font-size: 0.6875rem;
       font-weight: 600;
@@ -416,14 +454,9 @@
       width: 100%;
       text-align: center;
     }
-
     @media (min-width: 380px) {
-      .jar-count-desc {
-        width: auto;
-        text-align: left;
-      }
+      .jar-count-desc { width: auto; text-align: left; }
     }
-
     .jar-leftover-strip {
       width: 100%;
       max-width: 12rem;
@@ -436,14 +469,12 @@
       border: 1px dashed var(--border-strong);
       background: var(--surface-2);
     }
-
     .jar-leftover-strip--none {
       font-weight: 500;
       color: var(--text-muted);
       border-style: solid;
       border-color: var(--border);
     }
-
     .jar-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -455,19 +486,8 @@
       align-items: center;
       text-align: center;
       gap: 8px;
-      transition: box-shadow 0.15s, border-color 0.15s;
     }
-
-    .jar-card:hover {
-      border-color: var(--border-strong);
-      box-shadow: var(--shadow-md);
-    }
-
-    .jar-card--single {
-      width: 100%;
-      max-width: 11rem;
-    }
-
+    .jar-card--single { width: 100%; max-width: 11rem; }
     .jar-card-media {
       width: 100%;
       max-width: 5.5rem;
@@ -480,23 +500,8 @@
       padding: 6px;
       border: 1px solid var(--border);
     }
-
-    .jar-thumb {
-      width: 100%;
-      height: 100%;
-      max-height: 6.5rem;
-      object-fit: contain;
-      object-position: center;
-    }
-
-    .jar-card-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      width: 100%;
-      min-width: 0;
-    }
-
+    .jar-thumb { width: 100%; height: 100%; max-height: 6.5rem; object-fit: contain; object-position: center; }
+    .jar-card-meta { display: flex; flex-direction: column; gap: 3px; width: 100%; min-width: 0; }
     .jar-card-brand {
       font-size: 0.5625rem;
       font-weight: 700;
@@ -504,52 +509,19 @@
       text-transform: uppercase;
       color: var(--text-muted);
     }
+    .jar-card-vol { font-size: 0.8125rem; font-weight: 700; color: var(--text); line-height: 1.25; }
+    .jar-card-d1, .jar-card-d2 { font-size: 0.625rem; color: var(--text-muted); line-height: 1.35; }
+    .jar-card-wt { font-size: 0.5625rem; color: var(--text-muted); margin-top: 2px; }
 
-    .jar-card-vol {
-      font-size: 0.8125rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.25;
-    }
+    .footnote { font-size: 0.8125rem; color: var(--text-muted); margin-top: 10px; line-height: 1.55; }
 
-    .jar-card-d1,
-    .jar-card-d2 {
-      font-size: 0.625rem;
-      color: var(--text-muted);
-      line-height: 1.35;
-    }
-
-    .jar-card-wt {
-      font-size: 0.5625rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .footnote {
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      margin-top: 10px;
-      line-height: 1.55;
-    }
-
-    /* Mobile: stack ingredient rows */
     @media (max-width: 520px) {
       .ing-row {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto;
       }
-
-      .accent {
-        grid-row: 1;
-        height: 4px;
-        width: 100%;
-      }
-
-      .ing-body {
-        grid-row: 2;
-        padding-bottom: 10px;
-      }
-
+      .accent { grid-row: 1; height: 4px; width: 100%; }
+      .ing-body { grid-row: 2; padding-bottom: 10px; }
       .ing-val {
         grid-row: 3;
         flex-direction: row;
@@ -559,21 +531,53 @@
         border-top: 1px solid var(--border);
         padding: 12px 16px;
       }
-
-      .val-input {
-        max-width: 7rem;
-      }
-
-      .group-header .group-pct {
-        margin-left: 0;
-        width: 100%;
-      }
+      .val-input { max-width: 7rem; }
+      .group-header .group-pct { margin-left: 0; width: 100%; }
     }
   </style>
 </head>
 <body>
 
 <div class="w">
+
+<div class="lab-bar" id="lab-controls">
+  <div class="lab-bar-title">Formulation controls</div>
+  <div class="lab-grid">
+    <div class="lab-field">
+      <label for="potency-b">Potency of Ingredient B</label>
+      <select id="potency-b" class="lab-select" aria-describedby="strong-oil-warn">
+        <option value="2">Mild oils — B = A ÷ 2</option>
+        <option value="3">Moderate oils — B = A ÷ 3</option>
+        <option value="4">Strong oils (black seed, neem, etc.) — B = A ÷ 4</option>
+      </select>
+    </div>
+    <div class="lab-field">
+      <label>Texture mode</label>
+      <div class="texture-toggle" role="group" aria-label="Texture mode">
+        <button type="button" class="texture-btn active" id="texture-firm" onclick="setTexture(true)">Firm balm ×5.43</button>
+        <button type="button" class="texture-btn" id="texture-soft" onclick="setTexture(false)">Softer cream ×5.0</button>
+      </div>
+    </div>
+    <div class="lab-field">
+      <label>Vitamin E (tocopherol)</label>
+      <div class="lab-check">
+        <input type="checkbox" id="vit-toggle" checked onchange="syncFromControls()">
+        <span>Include antioxidant (0.3–0.5% of batch)</span>
+      </div>
+      <label for="vit-pct" style="margin-top:8px">Concentration</label>
+      <select id="vit-pct" class="lab-select" onchange="syncFromControls()">
+        <option value="0.003">0.3%</option>
+        <option value="0.004" selected>0.4% (default)</option>
+        <option value="0.005">0.5%</option>
+      </select>
+      <p class="ing-meta" style="margin-top:6px">Prevents oxidation of unsaturated oils and improves shelf stability.</p>
+    </div>
+  </div>
+</div>
+
+<div id="strong-oil-warn" class="warn-banner" role="alert">
+  Strong oils (e.g. black seed, neem) may affect scent profile and skin sensitivity. Keep within recommended range and patch-test when changing oils.
+</div>
 
 <div class="use-toggle">
   <button type="button" class="use-btn active" id="btn-face" onclick="setUse('face')">Sensitive skin / face — 1% EO</button>
@@ -613,11 +617,13 @@
         <span class="pill p-purple" id="eo-pill">1% — face safe</span>
         <span class="ing-sub" id="eo-fml">nJoJo ÷ 5</span>
       </div>
-      <div class="ing-meta" id="eo-meta">1% dilution — dermatologist-safe for facial and sensitive skin daily use. Jojoba volume is the direct reference for EO drop count.</div>
+      <div class="ing-meta" id="eo-meta">1% dilution — dermatologist-safe for facial and sensitive skin daily use. Jojoba volume is the direct reference for EO volume.</div>
     </div>
     <div class="ing-val">
-      <span class="val-num" id="eo-drops">—</span>
-      <span class="val-unit" id="eo-unit">drops</span>
+      <div class="eo-stack" id="eo-display">
+        <div class="eo-main" id="eo-main">—</div>
+        <div class="eo-sub">1 ml = 20 drops (standard)</div>
+      </div>
     </div>
   </div>
 
@@ -649,9 +655,9 @@
     <div class="ing-body">
       <div class="ing-top">
         <span class="ing-name">Ingredient B — minor carrier</span>
-        <span class="pill p-amber">A ÷ 2</span>
+        <span class="pill p-amber" id="ing-b-pill">A ÷ 2</span>
       </div>
-      <div class="ing-meta">Potent but strongly scented oils — black seed, neem, sea buckthorn. Kept at A÷2 so its natural odour stays buried. You get the active compounds; the EO scent still glows on top.</div>
+      <div class="ing-meta" id="ing-b-meta">Potent oils — ratio scales with potency setting above.</div>
     </div>
     <div class="ing-val">
       <span class="val-num" id="ing-b">—</span>
@@ -661,9 +667,32 @@
 
   <div class="group-sep"></div>
 
+  <div class="group-header" style="background:#fce7f3">
+    <span class="group-title" style="color:#9d174d">Vitamin E (tocopherol)</span>
+    <span class="pill p-rose" id="vit-pill">antioxidant</span>
+    <span class="group-pct" style="color:#9d174d" id="pct-vit">—%</span>
+  </div>
+
+  <div class="ing-row">
+    <div class="accent" style="background:#f472b6"></div>
+    <div class="ing-body">
+      <div class="ing-top">
+        <span class="ing-name">Vitamin E</span>
+        <span class="ing-sub" id="vit-fmla">% of total batch</span>
+      </div>
+      <div class="ing-meta">Oil-soluble antioxidant; extend shelf life when unsaturated carriers are used.</div>
+    </div>
+    <div class="ing-val">
+      <span class="val-num" id="vit-ml">—</span>
+      <span class="val-unit">ml</span>
+    </div>
+  </div>
+
+  <div class="group-sep"></div>
+
   <div class="group-header" style="background:#e7e5e4">
     <span class="group-title" style="color:#44403c">Tallow — main base</span>
-    <span class="pill p-gray">~84–85% of total batch</span>
+    <span class="pill p-gray" id="tallow-pill-pct">~84–85% of batch</span>
     <span class="group-pct" style="color:#44403c" id="pct-tal">—%</span>
   </div>
 
@@ -673,9 +702,9 @@
       <div class="ing-top">
         <span class="ing-name">Beef tallow</span>
         <span class="source-tag" id="tag-tallow" style="display:none">source</span>
-        <span class="ing-sub">(J + A + B) × 5.43</span>
+        <span class="ing-sub" id="tallow-fmla">(J + A + B) × multiplier</span>
       </div>
-      <div class="ing-meta">Structurally closest fat to human skin lipids — rich in palmitic, stearic and oleic acids. The ×5.43 multiplier holds it at ~84–85% of the total batch: a firm, protective base that carries the oil blend deep into the skin.</div>
+      <div class="ing-meta">Skin-analog lipids. Multiplier from texture mode (5.43 firm / 5.0 softer).</div>
     </div>
     <div class="ing-val">
       <input class="val-input" id="tallow" type="number" min="1" step="1" value="189.05" inputmode="decimal" aria-label="Beef tallow milliliters" oninput="fromTallow()">
@@ -685,10 +714,11 @@
 
 </div>
 
-<div class="totals">
+<div class="totals cols-4">
   <div class="metric"><div class="mlbl">Oil mixture</div><span class="mval" id="m-oils">—</span><span class="munit"> ml</span></div>
   <div class="metric"><div class="mlbl">Total batch</div><span class="mval" id="m-total">—</span><span class="munit"> ml</span></div>
   <div class="metric"><div class="mlbl">Tallow ratio</div><span class="mval" id="m-ratio">—</span><span class="munit"> %</span></div>
+  <div class="metric"><div class="mlbl">Est. shelf life</div><span class="mval" id="m-shelf" style="font-size:1rem">—</span><span class="munit" id="m-shelf-sub"></span></div>
 </div>
 
 <div class="bar-wrap" role="img" aria-label="Batch composition by volume">
@@ -696,6 +726,7 @@
   <div class="seg" id="b-eo"     style="background:#AFA9EC"></div>
   <div class="seg" id="b-a"      style="background:#FAC775"></div>
   <div class="seg" id="b-b"      style="background:#EF9F27"></div>
+  <div class="seg" id="b-vit"    style="background:#f9a8d4"></div>
   <div class="seg" id="b-tal"    style="background:#D3D1C7"></div>
 </div>
 <div class="legend">
@@ -703,7 +734,31 @@
   <div class="li"><div class="dot" style="background:#AFA9EC"></div>EO</div>
   <div class="li"><div class="dot" style="background:#FAC775"></div>Ing. A</div>
   <div class="li"><div class="dot" style="background:#EF9F27"></div>Ing. B</div>
+  <div class="li"><div class="dot" style="background:#f9a8d4"></div>Vit E</div>
   <div class="li"><div class="dot" style="background:#D3D1C7"></div>Tallow</div>
+</div>
+
+<div class="summary-panel">
+  <h3>Batch summary</h3>
+  <table class="summary-table" id="batch-summary">
+    <thead><tr><th>Ingredient</th><th class="num">ml</th><th class="num">%</th></tr></thead>
+    <tbody id="batch-summary-body"></tbody>
+  </table>
+</div>
+
+<div class="proc-panel" id="proc-panel" tabindex="0" onfocus="onProcInteract()" onclick="onProcInteract()">
+  <h3>Production process</h3>
+  <ol class="proc-steps" id="proc-steps"></ol>
+  <div class="proc-temp-row">
+    <label for="proc-temp">Track batch temperature (°C) — optional</label>
+    <input type="number" id="proc-temp" class="lab-num" step="0.5" placeholder="e.g. 48" inputmode="decimal"
+      onfocus="onProcInteract()" oninput="onTempInput()">
+    <div class="temp-warn-static">
+      Reference: <strong>60°C</strong> — risk of degrading actives and essential oils.
+      <strong>&lt;40°C</strong> — risk of poor mixing / grainy texture when incorporating tallow.
+    </div>
+    <div id="temp-live" class="temp-warn-live" role="status"></div>
+  </div>
 </div>
 
 <div class="sec">50 ml containers</div>
@@ -714,10 +769,31 @@
 
 <script>
 var useCase='face';
-/** Your product photo (commit this file with the repo) */
+var DROPS_PER_ML=20;
 var JAR_IMG_SRC='assets/6b3190c7-9d63-4dd4-bb6c-77f8847764a9.png';
-/** Optional vector fallback if PNG fails to load */
 var JAR_IMG_FALLBACK='assets/crown-breeds-jar.svg';
+
+function getBDiv(){return parseInt(document.getElementById('potency-b').value,10)||2;}
+function getTallowMult(){return document.getElementById('texture-firm').classList.contains('active')?5.43:5.0;}
+function vitOn(){return document.getElementById('vit-toggle').checked;}
+function vitPct(){return parseFloat(document.getElementById('vit-pct').value)||0.004;}
+
+/** j + j/2 + j/(2*bd) */
+function carrierFactor(bd){return 1+0.5+0.5/bd;}
+
+function setTexture(firm){
+  document.getElementById('texture-firm').classList.toggle('active',firm);
+  document.getElementById('texture-soft').classList.toggle('active',!firm);
+  syncFromControls();
+}
+
+function syncFromControls(){
+  document.getElementById('strong-oil-warn').style.display=getBDiv()===4?'block':'none';
+  if(document.getElementById('tag-tallow').style.display!=='none')fromTallow();
+  else fromJojoba();
+}
+
+document.getElementById('potency-b').addEventListener('change',syncFromControls);
 
 function buildSingleJarCard(){
   var card=document.createElement('div');
@@ -743,7 +819,6 @@ function buildSingleJarCard(){
   return card;
 }
 
-/** One preview jar + count badge + leftover line */
 function renderJarPreview(root,full,leftoverStr,leftoverNum){
   root.innerHTML='';
   var badge=document.createElement('div');
@@ -755,11 +830,7 @@ function renderJarPreview(root,full,leftoverStr,leftoverNum){
   root.appendChild(buildSingleJarCard());
   var strip=document.createElement('div');
   strip.className='jar-leftover-strip'+(leftoverNum>0.1?'':' jar-leftover-strip--none');
-  if(leftoverNum>0.1){
-    strip.textContent='Leftover: '+leftoverStr+' ml';
-  }else{
-    strip.textContent='Leftover: none (fills complete 50 ml jars only)';
-  }
+  strip.textContent=leftoverNum>0.1?('Leftover: '+leftoverStr+' ml'):'Leftover: none (fills complete 50 ml jars only)';
   root.appendChild(strip);
 }
 
@@ -778,59 +849,166 @@ function setUse(u){
   if(u==='face'){
     pill.className='pill p-purple'; pill.textContent='1% — face safe';
     document.getElementById('eo-fml').textContent='nJoJo ÷ 5';
-    document.getElementById('eo-meta').textContent='1% dilution — dermatologist-safe for facial and sensitive skin daily use. Jojoba volume is the direct reference for EO drop count.';
+    document.getElementById('eo-meta').textContent='1% dilution — dermatologist-safe for facial and sensitive skin daily use. Jojoba volume sets EO volume (ml); drops shown at 1 ml = 20 drops.';
   } else {
     pill.className='pill p-amber'; pill.textContent='2% — body use';
     document.getElementById('eo-fml').textContent='nJoJo ÷ 2.5';
-    document.getElementById('eo-meta').textContent='2% dilution — drop count doubles, no other ratios change. Standard professional dilution for body products over larger skin surface areas.';
+    document.getElementById('eo-meta').textContent='2% dilution — double the face rate. Standard for body over larger areas.';
   }
   fromJojoba();
 }
 
+/**
+ * Core ratios (unchanged logic, extended):
+ * A = j/2, B = A/bd, tallow = (j+A+B)*mult, EO ml from legacy drop model (×0.05 per recipe drop)
+ */
 function calc(j){
-  var eoDrops=useCase==='body'?(j/5)*2:(j/5);
-  var eoml=eoDrops*0.05;
-  var a=j/2; var b=a/2;
-  var t=(j+a+b)*5.43;
-  return{j:j,eoDrops:eoDrops,eoml:eoml,a:a,b:b,t:t};
+  var bd=getBDiv();
+  var mult=getTallowMult();
+  var a=j/2;
+  var b=a/bd;
+  var carrier=j+a+b;
+  var eoRecipeDrops=useCase==='body'?(j/5)*2:(j/5);
+  var eoml=eoRecipeDrops*0.05;
+  var t=carrier*mult;
+  var oilsCore=j+a+b+eoml;
+  var vitE=0;
+  var total;
+  if(vitOn()){
+    var r=vitPct();
+    total=(oilsCore+t)/(1-r);
+    vitE=total*r;
+  }else{
+    total=oilsCore+t;
+  }
+  var oils=oilsCore+vitE;
+  return{j:j,a:a,b:b,bd:bd,mult:mult,t:t,eoml:eoml,eoRecipeDrops:eoRecipeDrops,carrier:carrier,oilsCore:oilsCore,vitE:vitE,total:total,oils:oils};
 }
-function calcFromTallow(t){return calc(t/(1.75*5.43));}
+
+function calcFromTallow(t){
+  var bd=getBDiv();
+  var mult=getTallowMult();
+  var f=carrierFactor(bd);
+  var j=t/(mult*f);
+  return calc(j);
+}
+
 function fmt(n,d){return parseFloat(n.toFixed(d===undefined?2:d));}
 
+function onProcInteract(){
+  /* section engaged — static warnings already visible */
+}
+
+function onTempInput(){
+  var live=document.getElementById('temp-live');
+  var raw=document.getElementById('proc-temp').value;
+  var v=parseFloat(raw);
+  live.classList.remove('show');
+  live.textContent='';
+  if(raw===''||isNaN(v))return;
+  live.classList.add('show');
+  if(v>=60){
+    live.textContent='Warning: at '+v+'°C — risk of degrading active compounds and essential oils. Cool before adding EOs.';
+  }else if(v<40){
+    live.textContent='Warning: below '+v+'°C — risk of poor mixing and grainy texture when blending melted tallow with oils.';
+  }else if(v>55){
+    live.textContent='Note: above 55°C — approaching upper end of safe EO addition zone; target ≤50°C for essential oils.';
+  }else if(v>=45&&v<=55){
+    live.textContent='Within typical target band (45–55°C) for adding carriers and preparing for EO addition below ~50°C.';
+  }else{
+    live.textContent='Temperature logged. Add essential oils once cooled to below ~50°C.';
+  }
+}
+
+function renderProcSteps(mult){
+  var ol=document.getElementById('proc-steps');
+  ol.innerHTML='';
+  var steps=[
+    'Melt tallow slowly (double boiler recommended).',
+    'Cool to ~50°C (target working range 45–55°C before adding heat-sensitive components).',
+    'Add carrier oils (jojoba, A, B'+(vitOn()?', Vitamin E':'')+'). Mix thoroughly 2–5 minutes.',
+    'Add essential oils while batch is below ~50°C.',
+    (vitOn()?'Optional: hold ~50°C for 5–10 minutes for homogenization.':'Optional: hold ~50°C briefly for homogenization.'),
+    'Cool slowly to set. Optional: whip during cool-down for lighter texture (especially at ×'+fmt(mult,2)+' tallow multiplier).'
+  ];
+  steps.forEach(function(s){
+    var li=document.createElement('li');
+    li.textContent=s;
+    ol.appendChild(li);
+  });
+}
+
+function renderSummary(v){
+  var tb=document.getElementById('batch-summary-body');
+  tb.innerHTML='';
+  var T=v.total;
+  function row(name,ml){
+    var pct=T>0?(ml/T*100):0;
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+name+'</td><td class="num">'+fmt(ml,3)+'</td><td class="num">'+fmt(pct,2)+'%</td>';
+    tb.appendChild(tr);
+  }
+  row('Jojoba',v.j);
+  row('Essential oils (~'+Math.round(v.eoml*DROPS_PER_ML)+' drops @ 20/ml)',v.eoml);
+  row('Ingredient A',v.a);
+  row('Ingredient B',v.b);
+  if(vitOn())row('Vitamin E (tocopherol)',v.vitE);
+  row('Beef tallow',v.t);
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td><strong>Total</strong></td><td class="num"><strong>'+fmt(T,3)+'</strong></td><td class="num">100%</td>';
+  tb.appendChild(tr);
+}
+
 function render(v){
-  document.getElementById('eo-drops').textContent=fmt(v.eoDrops,1)+' ('+fmt(v.eoml,3)+' ml)';
-  document.getElementById('eo-unit').textContent='drops';
-  document.getElementById('ing-a').textContent=fmt(v.a,1);
-  document.getElementById('ing-b').textContent=fmt(v.b,1);
+  var bd=v.bd;
+  document.getElementById('ing-b-pill').textContent='A ÷ '+bd;
+  document.getElementById('tallow-fmla').textContent='(J + A + B) × '+fmt(v.mult,2);
+  document.getElementById('tallow-pill-pct').textContent=v.mult>=5.4?'~84–85% tallow':'Softer cream — lower tallow %';
 
-  var oils=v.j+v.a+v.b+v.eoml;
-  var total=oils+v.t;
+  var dropsApprox=Math.round(v.eoml*DROPS_PER_ML);
+  document.getElementById('eo-main').textContent=fmt(v.eoml,3)+' ml (≈ '+dropsApprox+' drops)';
 
-  document.getElementById('m-oils').textContent=fmt(oils,1);
-  document.getElementById('m-total').textContent=fmt(total,1);
-  document.getElementById('m-ratio').textContent=fmt(v.t/total*100,1);
+  document.getElementById('ing-a').textContent=fmt(v.a,2);
+  document.getElementById('ing-b').textContent=fmt(v.b,2);
+
+  document.getElementById('vit-ml').textContent=vitOn()?fmt(v.vitE,3):'—';
+  document.getElementById('vit-fmla').textContent=vitOn()?(fmt(vitPct()*100,2)+'% of total batch'):'Off';
+  document.getElementById('vit-pill').textContent=vitOn()?'antioxidant on':'off';
+
+  document.getElementById('m-oils').textContent=fmt(v.oils,2);
+  document.getElementById('m-total').textContent=fmt(v.total,2);
+  document.getElementById('m-ratio').textContent=fmt(v.t/v.total*100,1);
+
+  document.getElementById('m-shelf').textContent=vitOn()?'9–12 mo':'4–6 mo';
+  document.getElementById('m-shelf-sub').textContent=vitOn()?' w/ Vit E':' w/o Vit E';
 
   var dilVol=v.j+v.eoml;
   var carVol=v.a+v.b;
-  document.getElementById('pct-dil').textContent=fmt(dilVol/total*100,1)+'%';
-  document.getElementById('pct-car').textContent=fmt(carVol/total*100,1)+'%';
-  document.getElementById('pct-tal').textContent=fmt(v.t/total*100,1)+'%';
+  var T=v.total;
+  document.getElementById('pct-dil').textContent=fmt(dilVol/T*100,1)+'%';
+  document.getElementById('pct-car').textContent=fmt(carVol/T*100,1)+'%';
+  document.getElementById('pct-tal').textContent=fmt(v.t/T*100,1)+'%';
+  document.getElementById('pct-vit').textContent=vitOn()?fmt(v.vitE/T*100,2)+'%':'—';
 
-  function p(n){return(n/total*100).toFixed(2)+'%';}
+  function p(n){return T>0?(n/T*100).toFixed(2)+'%':'0%';}
   document.getElementById('b-jojoba').style.width=p(v.j);
   document.getElementById('b-eo').style.width=p(v.eoml);
   document.getElementById('b-a').style.width=p(v.a);
   document.getElementById('b-b').style.width=p(v.b);
+  document.getElementById('b-vit').style.width=vitOn()?p(v.vitE):'0%';
   document.getElementById('b-tal').style.width=p(v.t);
 
-  var full=Math.floor(total/50);
-  var leftover=fmt(total%50,1);
+  var full=Math.floor(T/50);
+  var leftover=fmt(T%50,2);
   var leftoverNum=parseFloat(leftover);
   renderJarPreview(document.getElementById('chips'),full,leftover,leftoverNum);
   document.getElementById('chips-note').textContent=
     full+'× 50 ml jar'+(full!==1?'s':'')+
     (leftoverNum>0.1?' + '+leftover+' ml leftover':'')+
-    ' · '+fmt(total,1)+' ml total batch';
+    ' · '+fmt(T,2)+' ml total batch';
+
+  renderSummary(v);
+  renderProcSteps(v.mult);
 }
 
 function fromJojoba(){
@@ -842,6 +1020,7 @@ function fromJojoba(){
   document.getElementById('tag-tallow').style.display='none';
   render(v);
 }
+
 function fromTallow(){
   var t=parseFloat(document.getElementById('tallow').value);
   if(isNaN(t)||t<=0)return;
@@ -852,6 +1031,7 @@ function fromTallow(){
   render(v);
 }
 
+document.getElementById('strong-oil-warn').style.display=getBDiv()===4?'block':'none';
 setUse('face');
 </script>
 </body>
