@@ -589,7 +589,7 @@
 
   <div class="group-header" style="background:#d1fae5">
     <span class="group-title" style="color:#065f46">EO dilution base</span>
-    <span class="pill p-teal">jojoba anchors the essential oil %</span>
+    <span class="pill p-teal">jojoba anchors EO % · ×2.5 top-note</span>
     <span class="group-pct" style="color:#065f46" id="pct-dil">—%</span>
   </div>
 
@@ -770,6 +770,8 @@
 <script>
 var useCase='face';
 var DROPS_PER_ML=20;
+/** Multiplier on legacy jojoba-tied EO ml — stronger, noticeable top note */
+var EO_SCENT_MULTIPLIER=2.5;
 var JAR_IMG_SRC='assets/6b3190c7-9d63-4dd4-bb6c-77f8847764a9.png';
 var JAR_IMG_FALLBACK='assets/crown-breeds-jar.svg';
 
@@ -835,8 +837,8 @@ function renderJarPreview(root,full,leftoverStr,leftoverNum){
 }
 
 var banners={
-  face:{bg:'#e0e7ff',color:'#312e81',text:'Sensitive skin & face — EO at 1% dilution. Safe for daily facial use on reactive and post-procedure skin. Fragrance is present but gentle.'},
-  body:{bg:'#fef3c7',color:'#78350f',text:'General body use — EO at 2% dilution. Suitable for massage, dry elbows, knees and feet. Avoid broken skin, mucous membranes and facial use at this concentration.'}
+  face:{bg:'#e0e7ff',color:'#312e81',text:'Sensitive skin & face — EO at 1% dilution (jojoba anchor), scaled ×2.5 for a clearer top note. Patch-test if skin is reactive. Fragrance is more present than the base rate.'},
+  body:{bg:'#fef3c7',color:'#78350f',text:'General body use — EO at 2% dilution vs jojoba anchor, scaled ×2.5 for scent presence. Suitable for larger areas; avoid broken skin, mucous membranes, and do not use facial strength assumptions here on the face.'}
 };
 
 function setUse(u){
@@ -849,18 +851,18 @@ function setUse(u){
   if(u==='face'){
     pill.className='pill p-purple'; pill.textContent='1% — face safe';
     document.getElementById('eo-fml').textContent='nJoJo ÷ 5';
-    document.getElementById('eo-meta').textContent='1% dilution — dermatologist-safe for facial and sensitive skin daily use. Jojoba volume sets EO volume (ml); drops shown at 1 ml = 20 drops.';
+    document.getElementById('eo-meta').textContent='1% dilution vs jojoba anchor, then ×'+EO_SCENT_MULTIPLIER+' for top-note presence. Jojoba sets EO (ml); drops at 1 ml = 20. Patch-test sensitive skin.';
   } else {
     pill.className='pill p-amber'; pill.textContent='2% — body use';
     document.getElementById('eo-fml').textContent='nJoJo ÷ 2.5';
-    document.getElementById('eo-meta').textContent='2% dilution — double the face rate. Standard for body over larger areas.';
+    document.getElementById('eo-meta').textContent='2% dilution vs jojoba (double face rate), then ×'+EO_SCENT_MULTIPLIER+' for scent. Body-oriented; not for face at this tier.';
   }
   fromJojoba();
 }
 
 /**
  * Core ratios (unchanged logic, extended):
- * A = j/2, B = A/bd, tallow = (j+A+B)*mult, EO ml from legacy drop model (×0.05 per recipe drop)
+ * A = j/2, B = A/bd, tallow = (j+A+B)*mult, EO ml from legacy drop model (×0.05 per recipe drop × EO_SCENT_MULTIPLIER)
  */
 function calc(j){
   var bd=getBDiv();
@@ -869,7 +871,7 @@ function calc(j){
   var b=a/bd;
   var carrier=j+a+b;
   var eoRecipeDrops=useCase==='body'?(j/5)*2:(j/5);
-  var eoml=eoRecipeDrops*0.05;
+  var eoml=eoRecipeDrops*0.05*EO_SCENT_MULTIPLIER;
   var t=carrier*mult;
   var oilsCore=j+a+b+eoml;
   var vitE=0;
