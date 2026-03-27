@@ -363,9 +363,9 @@
       grid-template-columns: 1fr;
       margin-top: 4px;
       margin-bottom: 4px;
-    }
-    @media (min-width: 800px) {
-      .charts-grid { grid-template-columns: 1fr 1fr; align-items: stretch; }
+      max-width: 26rem;
+      margin-left: auto;
+      margin-right: auto;
     }
     .chart-widget {
       border: 1px solid var(--border);
@@ -399,10 +399,6 @@
       max-height: 300px;
       width: 100%;
     }
-    @media (min-width: 800px) {
-      .chart-canvas-wrap { height: 260px; min-height: 260px; }
-    }
-
     .sec {
       font-size: 0.625rem;
       font-weight: 600;
@@ -834,19 +830,12 @@
 </div>
 
 <div class="sec">Composition analytics</div>
-<div class="charts-grid" role="region" aria-label="Batch composition charts">
+<div class="charts-grid" role="region" aria-label="Batch composition pie chart">
   <div class="chart-widget">
     <h3>Volume share — doughnut</h3>
     <p class="chart-desc">Each arc is that ingredient’s percent of total batch volume (ml). Legend matches the bar above.</p>
     <div class="chart-canvas-wrap">
       <canvas id="chart-pie" aria-label="Doughnut chart of batch composition by volume percent"></canvas>
-    </div>
-  </div>
-  <div class="chart-widget">
-    <h3>Ratio profile — radar</h3>
-    <p class="chart-desc">One axis per component; distance from center = share of batch (%). Compare carrier load vs tallow vs EO at a glance.</p>
-    <div class="chart-canvas-wrap">
-      <canvas id="chart-radar" aria-label="Radar chart of each ingredient as percent of batch"></canvas>
     </div>
   </div>
 </div>
@@ -894,7 +883,6 @@ var JAR_IMG_SRC='assets/6b3190c7-9d63-4dd4-bb6c-77f8847764a9.png';
 var JAR_IMG_FALLBACK='assets/crown-breeds-jar.svg';
 
 var chartPie=null;
-var chartRadar=null;
 var COMP_LABELS=['Jojoba','Essential oils','Ingredient A','Ingredient B','Vitamin E','Tallow'];
 var COMP_COLORS=['#5DCAA5','#AFA9EC','#FAC775','#EF9F27','#f9a8d4','#D3D1C7'];
 
@@ -981,79 +969,6 @@ function updateCompositionCharts(v){
     d0.borderColor=chartBorderSlice();
     chartPie.options.plugins.legend.labels.color=chartTextMuted();
     chartPie.update();
-  }
-
-  var radarOpts={
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{
-        callbacks:{
-          label:function(ctx){
-            var i=ctx.dataIndex;
-            var ds=ctx.dataset;
-            var p=ds.data&&ds.data[i]!==undefined?ds.data[i]:0;
-            var m=ds.ml&&ds.ml[i]!==undefined?ds.ml[i]:0;
-            return' '+COMP_LABELS[i]+': '+fmt(p,1)+'% · '+fmt(m,2)+' ml';
-          }
-        }
-      }
-    },
-    scales:{
-      r:{
-        beginAtZero:true,
-        min:0,
-        max:100,
-        ticks:{
-          stepSize:25,
-          showLabelBackdrop:false,
-          color:chartTextMuted(),
-          font:{size:9}
-        },
-        grid:{color:chartIsDark()?'#334155':'#e2e8f0'},
-        angleLines:{color:chartIsDark()?'#334155':'#e2e8f0'},
-        pointLabels:{
-          color:chartTextMuted(),
-          font:{size:10,family:'system-ui,Segoe UI,sans-serif'}
-        }
-      }
-    }
-  };
-
-  if(!chartRadar){
-    chartRadar=new Chart(document.getElementById('chart-radar'),{
-      type:'radar',
-      data:{
-        labels:COMP_LABELS,
-        datasets:[{
-          label:'% of batch',
-          data:s.pct.slice(),
-          ml:s.ml.slice(),
-          fill:true,
-          backgroundColor:chartIsDark()?'rgba(129,140,248,0.12)':'rgba(99,102,241,0.12)',
-          borderColor:'#6366f1',
-          borderWidth:2,
-          pointRadius:4,
-          pointHoverRadius:5,
-          pointBackgroundColor:COMP_COLORS,
-          pointBorderColor:COMP_COLORS.map(function(){return chartBorderSlice();}),
-          pointBorderWidth:1
-        }]
-      },
-      options:radarOpts
-    });
-  }else{
-    var rd=chartRadar.data.datasets[0];
-    rd.data=s.pct.slice();
-    rd.ml=s.ml.slice();
-    rd.pointBackgroundColor=COMP_COLORS;
-    rd.pointBorderColor=COMP_COLORS.map(function(){return chartBorderSlice();});
-    chartRadar.options.scales.r.grid.color=chartIsDark()?'#334155':'#e2e8f0';
-    chartRadar.options.scales.r.angleLines.color=chartIsDark()?'#334155':'#e2e8f0';
-    chartRadar.options.scales.r.ticks.color=chartTextMuted();
-    chartRadar.options.scales.r.pointLabels.color=chartTextMuted();
-    chartRadar.update();
   }
 }
 
