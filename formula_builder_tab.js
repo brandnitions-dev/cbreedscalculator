@@ -223,15 +223,24 @@ function fbUpdateBenefits(f){
 function fbUpdateSynergies(f){
   const cont=document.getElementById("fb-synergyList");cont.innerHTML="";
   const eoIds=f.eoSplit.map(r=>r.ingId),aIds=f.aSplit.map(r=>r.ingId),bIds=f.bSplit.map(r=>r.ingId);
+  const hasAny=aIds.length+bIds.length+eoIds.length>0;
   const msgs=[];
   if(eoIds.includes("neroli")&&eoIds.includes("frankincense"))msgs.push({t:"good",m:"Neroli + frankincense — exceptional anti-aging synergy"});
   if(eoIds.includes("neroli")&&eoIds.includes("carrotseed"))msgs.push({t:"good",m:"Neroli + carrot seed — brightening powerhouse"});
   if(eoIds.includes("neroli")&&eoIds.includes("geranium"))msgs.push({t:"good",m:"Neroli + geranium — balanced floral, sebum control"});
   if(eoIds.includes("neroli")&&eoIds.includes("patchouli"))msgs.push({t:"good",m:"Neroli + patchouli — scent beautifully anchored and long-lasting"});
   if(eoIds.includes("helichrysum")&&bIds.includes("tamanu"))msgs.push({t:"good",m:"Helichrysum + tamanu — elite scarring formula"});
-  if(eoIds.includes("lavender")&&bIds.includes("calendula"))msgs.push({t:"good",m:"Lavender + calendula — maximally soothing, sensitive skin"});
-  if(eoIds.includes("chamomile")&&bIds.includes("calendula"))msgs.push({t:"good",m:"Chamomile + calendula — strongest anti-inflammatory combo"});
-  if(aIds.includes("rosehip")&&eoIds.includes("carrotseed"))msgs.push({t:"good",m:"Rosehip + carrot seed — double vitamin A anti-aging action"});
+  if(eoIds.includes("lavender")&&bIds.includes("calendula"))msgs.push({t:"good",m:"Lavender EO + calendula B — maximally soothing, sensitive skin"});
+  if(eoIds.includes("chamomile")&&bIds.includes("calendula"))msgs.push({t:"good",m:"Chamomile EO + calendula B — strong anti-inflammatory pairing"});
+  if(eoIds.includes("lavender")&&eoIds.includes("chamomile"))msgs.push({t:"good",m:"Lavender + chamomile EOs — calming, sleep-friendly profile"});
+  if(eoIds.includes("frankincense")&&eoIds.includes("sandalwood"))msgs.push({t:"good",m:"Frankincense + sandalwood — classic resinous base, long wear"});
+  if(eoIds.includes("frankincense")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Frankincense + lavender — approachable resin-floral balance"});
+  if(eoIds.includes("frankincense")&&eoIds.includes("helichrysum"))msgs.push({t:"good",m:"Frankincense + helichrysum — repair and elasticity focus"});
+  if(eoIds.includes("geranium")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Geranium + lavender — fresh rosy herbal blend"});
+  if(eoIds.includes("rose")&&eoIds.includes("geranium"))msgs.push({t:"good",m:"Rose + geranium — lush floral; watch cost if shares are high"});
+  if(eoIds.includes("patchouli")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Patchouli + lavender — popular woody-floral anchor"});
+  if(aIds.includes("rosehip")&&eoIds.includes("carrotseed"))msgs.push({t:"good",m:"Rosehip + carrot seed EO — double vitamin A direction"});
+  if(aIds.includes("rosehip")&&eoIds.includes("frankincense"))msgs.push({t:"good",m:"Rosehip + frankincense EO — regeneration and barrier support"});
   if(aIds.includes("pomegranate")&&eoIds.includes("frankincense"))msgs.push({t:"good",m:"Pomegranate + frankincense — collagen-focused formula"});
   if(bIds.includes("bakuchiol")&&eoIds.includes("frankincense"))msgs.push({t:"good",m:"Bakuchiol + frankincense — plant retinol-alternative blend"});
   if(aIds.includes("hemp")&&bIds.includes("blackseed"))msgs.push({t:"good",m:"Hemp + black seed — serious anti-acne, anti-inflammatory formula"});
@@ -241,10 +250,28 @@ function fbUpdateSynergies(f){
   if(eoIds.includes("yylang"))msgs.push({t:"warn",m:"Ylang ylang in blend — verify its share stays under 0.8% of total batch"});
   if(eoIds.includes("clarysage"))msgs.push({t:"warn",m:"Clary sage — do not use in formulas for pregnant users"});
   if(f.eoSplit.length>=4)msgs.push({t:"warn",m:"4+ EOs — structure as top/mid/base to avoid scent clash"});
+  if(f.eoSplit.length>=2&&f.eoSplit.length<4)msgs.push({t:"info",m:"Several EOs — assign top / heart / base roles so the scent reads clearly in balm."});
   if(aIds.includes("seabuck"))msgs.push({t:"warn",m:"Sea buckthorn — will visibly tint the balm orange"});
   if(aIds.includes("turmeric")||bIds.includes("turmeric"))msgs.push({t:"warn",m:"Turmeric CO2 — will stain yellow, patch-test on skin before use"});
-  if(!msgs.length){cont.innerHTML='<div class="fb-synergy-item" style="color:var(--color-text-tertiary)">Add ingredients to see notes</div>';return;}
-  msgs.forEach(m=>{const d=document.createElement("div");d.className="fb-synergy-item "+(m.t==="good"?"fb-synergy-good":"fb-synergy-warn");d.textContent=(m.t==="good"?"✓ ":"! ")+m.m;cont.appendChild(d);});
+  var strongBids=["blackseed","neem","turmeric"];
+  if(bIds.some(function(id){return strongBids.indexOf(id)>=0;}))msgs.push({t:"info",m:"Strong B-phase oil(s) — citrus, resin, or spice EOs usually mask medicinal bases best."});
+  if(!hasAny){
+    cont.innerHTML='<div class="fb-synergy-item fb-synergy-info">· Add carriers, actives, and EOs with + above. This panel lists curated pairs, cautions, and a short blend summary.</div>';
+    return;
+  }
+  if(!msgs.length)msgs.push({t:"info",m:"No named library pair matched this exact mix — that is normal. Use sliders and the colored tips under each oil (left) for guidance."});
+  msgs.push({t:"info",m:"Blend snapshot: "+f.aSplit.length+" major carrier(s) · "+f.bSplit.length+" minor active(s) · "+f.eoSplit.length+" essential oil(s)."});
+  msgs.forEach(function(m){
+    var d=document.createElement("div");
+    var cls="fb-synergy-item ";
+    var pre="";
+    if(m.t==="good"){cls+="fb-synergy-good";pre="✓ ";}
+    else if(m.t==="warn"){cls+="fb-synergy-warn";pre="! ";}
+    else{cls+="fb-synergy-info";pre="· ";}
+    d.className=cls;
+    d.textContent=pre+m.m;
+    cont.appendChild(d);
+  });
 }
 
 function fbUpdateWarnings(f){
