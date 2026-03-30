@@ -119,7 +119,7 @@ function fbRenderPool(pool){
 
     const pctSpan=document.createElement("span");pctSpan.className="fb-ing-pct";pctSpan.id="fb-pct_"+row.id;pctSpan.textContent=pct+"%";
     const mlSpan=document.createElement("span");mlSpan.className="fb-ing-ml";mlSpan.id="fb-ml_"+row.id;mlSpan.textContent=ml+"ml";
-    const rm=document.createElement("button");rm.className="fb-remove-btn";rm.textContent="×";rm.addEventListener("click",()=>fbRemoveIng(pool,row.id));
+    const rm=document.createElement("button");rm.type="button";rm.className="fb-remove-btn";rm.setAttribute("aria-label","Remove");rm.textContent="×";rm.addEventListener("click",()=>fbRemoveIng(pool,row.id));
     top.appendChild(sel);top.appendChild(pctSpan);top.appendChild(mlSpan);top.appendChild(rm);
 
     const sliderRow=document.createElement("div");sliderRow.className="fb-slider-row";
