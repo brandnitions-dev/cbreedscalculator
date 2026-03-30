@@ -25,6 +25,26 @@ const FB_ING={
      tips:{low:"Trace repair activity — minimal tinting at this level.",mid:"Good repair dose — omega-7 active, slight orange tint likely.",high:"Strong sea buckthorn — powerful repair but significant orange pigment. Patch test color."}},
     {id:"chia",name:"Chia seed",desc:"One of the highest plant sources of omega-3. Soothing and film-forming. Relatively new in cosmetics.",benefits:{barrier:3,antiinflammatory:2,moisturizing:2},
      tips:{low:"Gentle omega-3 addition — light film-forming effect.",mid:"Good barrier and soothing dose.",high:"Chia-dominant A — strong omega-3 barrier formula."}},
+    {id:"squalane",name:"Squalane",desc:"Hydrogenated squalene — weightless slip, biomimetic to skin lipids. Stable and almost scent-free; non-comedogenic for most.",benefits:{barrier:3,moisturizing:3,softening:2,antiaging:2},
+     tips:{low:"Trace silkiness — improves spread without weight.",mid:"Noticeably elegant, skin-identical feel.",high:"Squalane-forward A — refined texture that stays behind your EO story."}},
+    {id:"grapeseed",name:"Grapeseed",desc:"High linoleic, light dry-touch oil. Popular on oilier or congestion-prone skin; relatively fast to oxidize — lean on vitamin E in base.",benefits:{acne:2,barrier:2,antioxidant:2,moisturizing:1},
+     tips:{low:"Light astringent slip — minimal heaviness.",mid:"Good linoleic support for blemish-prone skin.",high:"Grapeseed-dominant — very light; use fresh, quality oil."}},
+    {id:"meadowfoam",name:"Meadowfoam",desc:"Long-chain fatty acids — extends oxidative life of softer oils, adds cushioned film without heavy greasiness.",benefits:{barrier:3,moisturizing:2,softening:2},
+     tips:{low:"Subtle extender — helps protect fragile oils in the mix.",mid:"Good cushion and stability contribution.",high:"Meadowfoam-forward — plush, long-wearing after-feel."}},
+    {id:"ricebran",name:"Rice bran",desc:"Gamma-oryzanol and ferulic acid — brightening-leaning antioxidant support. Medium body; classic in Asian skin care.",benefits:{brightening:2,antioxidant:3,moisturizing:2,antiaging:1},
+     tips:{low:"Light nutrient boost for tone and oxidative cover.",mid:"Working antioxidant dose — pairs with vitamin E.",high:"Rice bran–heavy — richer feel, stronger brightening story."}},
+    {id:"sunflower",name:"Sunflower (high linoleic)",desc:"Linoleic-rich grades support barrier repair; neutral, affordable carrier when cosmetic-grade and cold-pressed.",benefits:{barrier:3,soothing:2,moisturizing:2},
+     tips:{low:"Gentle barrier filler — stays behind the scent.",mid:"Solid linoleic support for compromised barriers.",high:"Sunflower-dominant — economical, calming base."}},
+    {id:"macadamia",name:"Macadamia",desc:"Palmitoleic acid (omega-7) mirrors youthful skin sebum — lush on mature or very dry skin, silky dry-down.",benefits:{moisturizing:3,antiaging:2,softening:3,barrier:2},
+     tips:{low:"Hint of richness — subtle mature-skin support.",mid:"Good omega-7 dose — silky, nourishing.",high:"Macadamia-led — lush, elegant dry-skin formula."}},
+    {id:"eveprim",name:"Evening primrose",desc:"GLA-rich — traditional support for hormonal skin, redness, and barrier stress when the oil is fresh.",benefits:{antiinflammatory:3,barrier:2,soothing:2,healing:1},
+     tips:{low:"Gentle GLA hint — mild calming.",mid:"Meaningful GLA activity — soothing barrier support.",high:"Primrose-forward — watch freshness (polyunsaturated)."}},
+    {id:"borage",name:"Borage",desc:"Among the highest dietary GLA sources — intense for very dry, flaky, or stressed skin; heavier feel.",benefits:{barrier:3,moisturizing:3,antiinflammatory:2,healing:2},
+     tips:{low:"Light GLA addition.",mid:"Strong barrier and calming dose.",high:"Borage-dominant — very rich; winter or dermatitis-prone angle."}},
+    {id:"pricklypear",name:"Prickly pear seed",desc:"Luxury line — very high tocopherols and linoleic acid; fast absorption, dry finish, strong antioxidant story.",benefits:{antioxidant:3,brightening:2,barrier:2,antiaging:2},
+     tips:{low:"Trace luxury antioxidant.",mid:"Clear antioxidant + tone support.",high:"Prickly pear–led — premium, serum-light major carrier."}},
+    {id:"watermelon",name:"Watermelon seed",desc:"Ultra-light ‘dry’ oil — high linoleic, minimal shine; good when you want Ingredient A without heaviness.",benefits:{acne:2,moisturizing:1,barrier:2,softening:2},
+     tips:{low:"Barely-there slip.",mid:"Featherweight texture for congestion-prone skin.",high:"Watermelon-dominant — major carrier that still feels weightless."}},
   ],
   b:[
     {id:"blackseed",name:"Black seed",potency:"strong",desc:"Thymoquinone is the active — one of the most potent anti-inflammatory plant compounds known. Strong scent.",benefits:{acne:3,antiinflammatory:3,antimicrobial:3},
@@ -45,6 +65,18 @@ const FB_ING={
      tips:{low:"Light antioxidant and cleansing touch.",mid:"Good antioxidant presence — mild brightening effect.",high:"Strong moringa — good cleansing and antioxidant layer."}},
     {id:"camellia",name:"Camellia seed",potency:"mild",desc:"Traditional Japanese geisha oil. High oleic, absorbs very fast, extremely elegant skin feel.",benefits:{antiaging:2,moisturizing:2,brightening:1},
      tips:{low:"Trace elegance — subtle fast-absorbing quality.",mid:"Good camellia dose — noticeably elegant, fast-absorbing formula.",high:"Camellia-dominant B — very elegant, fast-absorbing finish. Japanese artisan quality."}},
+    {id:"gotukola",name:"Gotu kola (Centella)",potency:"moderate",desc:"Asiaticoside / madecassoside family — traditional firmness, scar, and circulation herb; mild earthy green note.",benefits:{firming:3,healing:3,antiaging:2,scarring:2},
+     tips:{low:"Intro centella without dominating scent.",mid:"Solid firming and repair tone.",high:"Centella-heavy B — intentional herbal direction; patch-test tint on fair balm."}},
+    {id:"buriti",name:"Buriti",potency:"strong",desc:"Extremely rich in beta-carotene — barrier and photo-damage narrative; deep orange-red — will color the balm strongly.",benefits:{antioxidant:3,barrier:3,healing:2,antiaging:2},
+     tips:{low:"Trace carotenoid glow — warm tint begins.",mid:"Noticeable orange tone — patch-test skin and fabrics.",high:"Buriti-led — treat as color cosmetic adjuvant; reserve for specialty SKUs."}},
+    {id:"andiroba",name:"Andiroba",potency:"moderate",desc:"Amazonian limonoid-rich oil — traditional use for irritation, muscle, and outdoor skin; distinctive forest note.",benefits:{antiinflammatory:3,moisturizing:2,barrier:2,healing:2},
+     tips:{low:"Mild rainforest herbal presence.",mid:"Good irritation-support dose.",high:"Andiroba-forward — pair with wood, resin, or spice EOs."}},
+    {id:"raspberry",name:"Raspberry seed",potency:"mild",desc:"Ellagic acid and EFAs — literature on UV-absorbing fractions (not a replacement for sunscreen). Light, luxury feel.",benefits:{antioxidant:3,barrier:2,antiaging:1},
+     tips:{low:"Outdoor-athlete antioxidant angle.",mid:"Stronger antioxidant story — still not SPF.",high:"Raspberry seed–led — ‘second line’ after daily SPF habits."}},
+    {id:"coffeeoil",name:"Green coffee",potency:"mild",desc:"Chlorogenic acid / caffeine traces — firming and ‘de-puff’ folklore; roasty aroma builds with share.",benefits:{antioxidant:2,brightening:1,firming:2},
+     tips:{low:"Subtle eye-area / toning story.",mid:"Roasty note emerges.",high:"Coffee-heavy B — lean into mocha with vanilla, cacao, or spice EOs."}},
+    {id:"pumpkin",name:"Pumpkin seed",potency:"mild",desc:"Zinc and phytosterols — mineral-rich soothing nutrition; warm nutty scent.",benefits:{barrier:2,soothing:2,moisturizing:2,healing:1},
+     tips:{low:"Mineral-rich nuance.",mid:"Good soothing nutrition dose.",high:"Pumpkin-led — cozy nutty carrier; beautiful in autumn gourmand scents."}},
   ],
   eo:[
     {id:"neroli",name:"Neroli",desc:"Linalool and nerolidol drive skin cell regeneration. One of the finest floral EOs in existence.",benefits:{antiaging:3,brightening:2,regenerating:3,calming:2},
@@ -71,12 +103,32 @@ const FB_ING={
      tips:{low:"Safe range for ylang — floral depth without sensitization risk.",mid:"Approaching limit — monitor total batch % to stay under 0.8%.",high:"Danger zone — ylang ylang at high share within EO pool risks sensitization. Lower this."}},
     {id:"clarysage",name:"Clary sage",desc:"Sclareol mimics estrogen — great for hormonal acne and skin. Avoid during pregnancy.",benefits:{acne:2,antiinflammatory:2,calming:1},
      tips:{low:"Gentle hormonal skin support.",mid:"Good sclareol activity — hormonal acne addressed.",high:"Strong clary sage — effective for hormonal skin but ensure no pregnant users."}},
+    {id:"teatree",name:"Tea tree",desc:"Terpinen-4-ol — reference antimicrobial for blemish protocols. Potent; can irritate sensitive face skin at high share in the EO pool.",benefits:{acne:3,antimicrobial:3,antiinflammatory:2},
+     tips:{low:"Balanced tea tree — clean medicinal accent.",mid:"Strong blemish focus — watch irritation on delicate facial skin.",high:"High share risk — think body, scalp, or spot mindset; keep total EO dilution conservative."}},
+    {id:"rosemary",name:"Rosemary (skin-safe ct)",desc:"Antioxidant diterpenes — lipid ‘stability’ story in balms; camphoraceous. Prefer cosmetic / skin-grade; avoid on broken skin.",benefits:{antioxidant:3,antiaging:2,regenerating:1},
+     tips:{low:"Clean herbal lift — antioxidant top note.",mid:"Spa-herbal heart — classic with lavender.",high:"Rosemary-forward — very camphoraceous; dial back if it screams ‘VapoRub’."}},
+    {id:"myrrh",name:"Myrrh",desc:"Furanosesquiterpenes — ancient resin for barrier and ritual scent; excellent fixative; thick, precious.",benefits:{healing:3,antiaging:2,calming:2},
+     tips:{low:"Resinous whisper — depth and longevity.",mid:"Classic myrrh repair story.",high:"Myrrh-dominant — resin takes over; a little reads like a lot."}},
+    {id:"copaiba",name:"Copaiba",desc:"Beta-caryophyllene-rich oleoresin — soothing, woody-soft; gentler than hot spice EOs.",benefits:{antiinflammatory:3,soothing:3,calming:2},
+     tips:{low:"Soft woody base — bridges florals and resins.",mid:"Strong soothing backbone.",high:"Copaiba-led — sweet wood dominant; gorgeous under neroli."}},
+    {id:"palmarosa",name:"Palmarosa",desc:"Geraniol-rich — moisture balance and light microbe-unfriendly character; rosy note at a fraction of rose otto cost.",benefits:{moisturizing:2,regenerating:2,acne:1,brightening:1},
+     tips:{low:"Rosy refresh without rose budget.",mid:"Hydration-balancing floral heart.",high:"Palmarosa-forward — geranium’s brighter cousin; still patch-test."}},
+    {id:"vetiver",name:"Vetiver",desc:"Heavy sesquiterpene base — grounding, fixative; traditional cicatrizant associations; earthy smoke.",benefits:{calming:3,healing:2,regenerating:1,antiaging:1},
+     tips:{low:"Smoke-root anchor — extends top notes.",mid:"Rich earthy perfume base.",high:"Vetiver-forward — smoky dominant; pair with citrus tops."}},
+    {id:"bluetansy",name:"Blue tansy",desc:"Chamazulene — strongly anti-inflammatory, premium ‘blue’ EO; tints balm blue-green at meaningful %.",benefits:{antiinflammatory:3,soothing:3,calming:3},
+     tips:{low:"Azure hint — calm-skin prestige note.",mid:"Visible color likely — lean into ‘blue balm’ SKU.",high:"Blue tansy–heavy — costly and pigmented; small specialty batches only."}},
+    {id:"manuka",name:"Manuka",desc:"East Cape–style leptospermone story — gentler antimicrobial feel than tea tree; honey-floral.",benefits:{antimicrobial:2,soothing:2,healing:2},
+     tips:{low:"Soft antiseptic honey lift.",mid:"Blemish care with less clinic vibe.",high:"Manuka-forward — honey dominant; premium EO spend."}},
+    {id:"cypress",name:"Cypress",desc:"Monoterpene astringency — oil-control and ‘toning’ narrative; crisp forest.",benefits:{acne:2,antiinflammatory:1,calming:1},
+     tips:{low:"Fresh conifer lift.",mid:"Body-care astringent / leg-circulation angle.",high:"Cypress-forward — cologne-forest; gender-neutral."}},
+    {id:"cedarwood",name:"Cedarwood Atlas",desc:"Sesquiterpene wood — soft blanket under florals; acne and stress associations in aromatherapy.",benefits:{acne:2,calming:3,antimicrobial:1},
+     tips:{low:"Creamy wood cushion.",mid:"Stable base for neroli or rose.",high:"Cedar-heavy — cozy winter lumberyard vibe."}},
   ]
 };
 
 const FB_COLORS={tallow:"#B4B2A9",beeswax:"#FAC775",jojoba:"#97C459",vite:"#F0997B",a0:"#85B7EB",a1:"#5DCAA5",a2:"#AFA9EC",a3:"#ED93B1",b0:"#D85A30",b1:"#993C1D",b2:"#BA7517",eo0:"#534AB7",eo1:"#3C3489",eo2:"#7F77DD",eo3:"#0F6E56",eo4:"#185FA5",eo5:"#993556"};
-const BENEFIT_LABELS=["antiaging","moisturizing","barrier","scarring","brightening","acne","antiinflammatory","antioxidant","healing","soothing","calming","regenerating","firming","softening"];
-const FB_BENEFIT_COLORS={antiaging:"#534AB7",moisturizing:"#1D9E75",barrier:"#639922",scarring:"#D85A30",brightening:"#FAC775",acne:"#185FA5",antiinflammatory:"#0F6E56",antioxidant:"#BA7517",healing:"#5DCAA5",soothing:"#AFA9EC",calming:"#ED93B1",regenerating:"#7F77DD",firming:"#D4537E",softening:"#9FE1CB"};
+const BENEFIT_LABELS=["antiaging","moisturizing","barrier","scarring","brightening","acne","antiinflammatory","antioxidant","healing","soothing","calming","regenerating","firming","softening","antimicrobial","antifungal"];
+const FB_BENEFIT_COLORS={antiaging:"#534AB7",moisturizing:"#1D9E75",barrier:"#639922",scarring:"#D85A30",brightening:"#FAC775",acne:"#185FA5",antiinflammatory:"#0F6E56",antioxidant:"#BA7517",healing:"#5DCAA5",soothing:"#AFA9EC",calming:"#ED93B1",regenerating:"#7F77DD",firming:"#D4537E",softening:"#9FE1CB",antimicrobial:"#6B4E9E",antifungal:"#2E6B5C"};
 
 var fbMode="face",fbBatchSize=100,fbPools={a:[],b:[],eo:[]},fbIdCtr=0;
 
@@ -91,7 +143,7 @@ function fbSetMode(el,m){document.querySelectorAll("#panel-builder .fb-mbtn").fo
 document.getElementById("fb-batchSize").addEventListener("input",function(){fbBatchSize=+this.value;document.getElementById("fb-batchSizeVal").textContent=fbBatchSize+" ml";fbUpdate();});
 
 function fbAddIng(pool){
-  const limits={a:4,b:3,eo:6};
+  const limits={a:4,b:3,eo:8};
   if(fbPools[pool].length>=limits[pool])return;
   const used=fbPools[pool].map(r=>r.ingId);
   const avail=FB_ING[pool].filter(i=>!used.includes(i.id));
@@ -236,6 +288,11 @@ function fbUpdateSynergies(f){
   if(eoIds.includes("frankincense")&&eoIds.includes("sandalwood"))msgs.push({t:"good",m:"Frankincense + sandalwood — classic resinous base, long wear"});
   if(eoIds.includes("frankincense")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Frankincense + lavender — approachable resin-floral balance"});
   if(eoIds.includes("frankincense")&&eoIds.includes("helichrysum"))msgs.push({t:"good",m:"Frankincense + helichrysum — repair and elasticity focus"});
+  if(eoIds.includes("teatree")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Tea tree + lavender — classic balanced antimicrobial accord"});
+  if(eoIds.includes("manuka")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Manuka + lavender — honey-herbal sensitive-skin angle"});
+  if(eoIds.includes("bluetansy")&&eoIds.includes("chamomile"))msgs.push({t:"good",m:"Blue tansy + chamomile — maximum visible calm (watch color/cost)"});
+  if(eoIds.includes("copaiba")&&eoIds.includes("palmarosa"))msgs.push({t:"good",m:"Copaiba + palmarosa — soft wood + rosy hydration"});
+  if(eoIds.includes("rosemary")&&eoIds.includes("cedarwood"))msgs.push({t:"good",m:"Rosemary + cedar — spa forest cologne base"});
   if(eoIds.includes("geranium")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Geranium + lavender — fresh rosy herbal blend"});
   if(eoIds.includes("rose")&&eoIds.includes("geranium"))msgs.push({t:"good",m:"Rose + geranium — lush floral; watch cost if shares are high"});
   if(eoIds.includes("patchouli")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Patchouli + lavender — popular woody-floral anchor"});
@@ -245,6 +302,8 @@ function fbUpdateSynergies(f){
   if(bIds.includes("bakuchiol")&&eoIds.includes("frankincense"))msgs.push({t:"good",m:"Bakuchiol + frankincense — plant retinol-alternative blend"});
   if(aIds.includes("hemp")&&bIds.includes("blackseed"))msgs.push({t:"good",m:"Hemp + black seed — serious anti-acne, anti-inflammatory formula"});
   if(aIds.includes("rosehip")&&bIds.includes("tamanu"))msgs.push({t:"good",m:"Rosehip + tamanu — powerful scarring and skin repair combo"});
+  if(aIds.includes("pomegranate")&&bIds.includes("gotukola"))msgs.push({t:"good",m:"Pomegranate + gotu kola — collagen + firmness stack"});
+  if(bIds.includes("raspberry")&&eoIds.includes("carrotseed"))msgs.push({t:"good",m:"Raspberry seed + carrot seed — outdoor antioxidant / tone angle"});
   if(bIds.includes("blackseed")&&bIds.includes("neem"))msgs.push({t:"warn",m:"Black seed + neem — very strong scent stack, lower both sliders"});
   if(bIds.includes("turmeric")&&bIds.includes("blackseed"))msgs.push({t:"warn",m:"Turmeric + black seed both strong — keep each at minimum weight"});
   if(eoIds.includes("yylang"))msgs.push({t:"warn",m:"Ylang ylang in blend — verify its share stays under 0.8% of total batch"});
@@ -252,6 +311,7 @@ function fbUpdateSynergies(f){
   if(f.eoSplit.length>=4)msgs.push({t:"warn",m:"4+ EOs — structure as top/mid/base to avoid scent clash"});
   if(f.eoSplit.length>=2&&f.eoSplit.length<4)msgs.push({t:"info",m:"Several EOs — assign top / heart / base roles so the scent reads clearly in balm."});
   if(aIds.includes("seabuck"))msgs.push({t:"warn",m:"Sea buckthorn — will visibly tint the balm orange"});
+  if(bIds.includes("buriti"))msgs.push({t:"warn",m:"Buriti — intense orange-red tint; treat like a color cosmetic"});
   if(aIds.includes("turmeric")||bIds.includes("turmeric"))msgs.push({t:"warn",m:"Turmeric CO2 — will stain yellow, patch-test on skin before use"});
   var strongBids=["blackseed","neem","turmeric"];
   if(bIds.some(function(id){return strongBids.indexOf(id)>=0;}))msgs.push({t:"info",m:"Strong B-phase oil(s) — citrus, resin, or spice EOs usually mask medicinal bases best."});
@@ -278,8 +338,10 @@ function fbUpdateWarnings(f){
   const strongB=f.bSplit.filter(r=>FB_ING.b.find(x=>x.id===r.ingId)?.potency==="strong");
   document.getElementById("fb-bWarning").innerHTML=strongB.length>=2?'<div class="fb-warn">Two strong B oils combined — potency stacks. Lower both sliders to minimum.</div>':"";
   document.getElementById("fb-aWarning").innerHTML="";
-  document.getElementById("fb-eoWarning").innerHTML=f.eoSplit.length>=5?'<div class="fb-warn">5+ EOs — structure as top/mid/base notes to keep scent coherent.</div>':"";
-  const hasUnsat=f.aSplit.some(r=>["rosehip","hemp","pomegranate","seabuck","chia"].includes(r.ingId))||f.bSplit.some(r=>["blackseed","tamanu","turmeric"].includes(r.ingId));
+  document.getElementById("fb-eoWarning").innerHTML=f.eoSplit.length>=7?'<div class="fb-warn">7+ EOs — structure as top/mid/base notes to keep scent coherent.</div>':"";
+  const unsatA=["rosehip","hemp","pomegranate","seabuck","chia","grapeseed","eveprim","borage","pricklypear","watermelon","ricebran","sunflower"];
+  const unsatB=["blackseed","tamanu","turmeric","raspberry","buriti","andiroba"];
+  const hasUnsat=f.aSplit.some(r=>unsatA.indexOf(r.ingId)>=0)||f.bSplit.some(r=>unsatB.indexOf(r.ingId)>=0);
   document.getElementById("fb-statShelf").textContent=hasUnsat?"8–10mo":"12–18mo";
   document.getElementById("fb-statTotal").textContent=fbBatchSize;
 }
