@@ -746,7 +746,7 @@
 
 <section id="section-setup" class="flow-section" aria-labelledby="heading-setup">
 <h2 class="flow-heading" id="heading-setup"><span class="flow-num">1</span> Setup &amp; controls</h2>
-<p class="flow-lead">Choose <strong>recipe architecture</strong> first (balanced 55/7/18/12/6 vs legacy jojoba master). Then carriers, tallow load (legacy), vitamin E, and face/body EO tier.</p>
+<p class="flow-lead">Choose <strong>recipe architecture</strong> first (balanced 58/8/11/13/6 vs legacy jojoba master). Then carriers, tallow load (legacy), vitamin E, and face/body EO tier.</p>
 <div class="lab-bar" id="lab-controls">
   <div class="lab-bar-title">Formulation controls</div>
   <div class="lab-grid">
@@ -754,7 +754,7 @@
       <label for="recipe-mode">Recipe architecture</label>
       <select id="recipe-mode" class="lab-select" onchange="onRecipeModeChange()">
         <option value="legacy">Legacy — jojoba master (× tallow load, A/B ratios)</option>
-        <option value="balanced" selected>Balanced structure — 55% tallow · 7% beeswax · 18/12/6% carriers</option>
+        <option value="balanced" selected>Balanced structure — 58% tallow · 8% beeswax · 11/13/6% carriers</option>
       </select>
     </div>
     <div class="lab-field" id="field-legacy-potency">
@@ -791,8 +791,8 @@
   </div>
   <div class="lab-callout" id="callout-balanced" role="note">
     <div class="callout-title">Balanced structure (target % of nominal batch)</div>
-    <p class="ing-meta" style="margin:0 0 10px"><strong>Tallow 55% · Beeswax 7% · Jojoba 18% · Carrier A 12% · Carrier B 6% · Vit&nbsp;E 0.4% · EO 1% (face) / 2% (body).</strong> Tallow + beeswax stabilize the matrix in warm rooms; jojoba keeps slip; lower tallow vs legacy bars tames base odor. <strong>Whip while the blend sets</strong> to reduce grain.</p>
-    <p class="lab-callout-ref">Nominal batch scale = jojoba ÷ 0.18. Vit&nbsp;E uses your concentration % of <em>actual</em> total (after EO); live table shows true %.</p>
+    <p class="ing-meta" style="margin:0 0 10px"><strong>Tallow 58% · Beeswax 8% · Jojoba 11% · Carrier A 13% · Carrier B 6% · Vit&nbsp;E 0.4% · EO 1% (face) / 2% (body).</strong> Tallow up for structure in warm climates; beeswax up for heat stability; jojoba trimmed (still effective) with A lifted to keep carrier benefit. B and Vit&nbsp;E unchanged. Total lands around <strong>~97.4% face / ~98.4% body</strong> before the usual negligible rounding buffer — normal in cosmetic formulation. <strong>Whip while the blend sets</strong> to reduce grain.</p>
+    <p class="lab-callout-ref">Nominal batch scale = jojoba ÷ 0.11. Vit&nbsp;E uses your concentration % of <em>actual</em> total (after EO); live table shows true %.</p>
   </div>
   <div class="lab-callout" id="callout-legacy" role="note" hidden>
     <div class="callout-title">Why ~83–85% tallow is taxing</div>
@@ -952,7 +952,7 @@
       <div class="ing-top">
         <span class="ing-name">Beeswax</span>
         <span class="pill p-gray" id="wax-pill">structural</span>
-        <span class="ing-sub" id="wax-fmla">7% nominal batch</span>
+        <span class="ing-sub" id="wax-fmla">8% nominal batch</span>
       </div>
       <div class="ing-meta" id="wax-meta">Works with tallow for body and warm-ambient stability. Shown only in <strong>Balanced structure</strong> mode; ml tracks jojoba → nominal batch.</div>
     </div>
@@ -1245,7 +1245,7 @@ function setUse(u){
     if(u==='face'){
       pill.className='pill p-purple'; pill.textContent='1% nominal';
       el.style.background='#e0e7ff'; el.style.color='#312e81';
-      el.textContent='Balanced structure — 1% essential oil vs nominal batch. Lower tallow target keeps base odor easier to mask.';
+      el.textContent='Balanced structure — 1% essential oil vs nominal batch. Warm-climate structure band (58/8 tallow/wax) with trimmed jojoba and boosted carrier A.';
     }else{
       pill.className='pill p-amber'; pill.textContent='2% nominal';
       el.style.background='#fef3c7'; el.style.color='#78350f';
@@ -1264,11 +1264,11 @@ function setUse(u){
 }
 
 function calcBalanced(j){
-  var Tref=j/0.18;
-  var a=0.12*Tref;
+  var Tref=j/0.11;
+  var a=0.13*Tref;
   var b=0.06*Tref;
-  var t=0.55*Tref;
-  var wax=0.07*Tref;
+  var t=0.58*Tref;
+  var wax=0.08*Tref;
   var eoFrac=useCase==='face'?0.01:0.02;
   var eoml=eoFrac*Tref;
   var bd=getBDiv();
@@ -1291,8 +1291,8 @@ function calcBalanced(j){
 }
 
 function calcFromTallowBal(tAllow){
-  var Tref=tAllow/0.55;
-  var j=0.18*Tref;
+  var Tref=tAllow/0.58;
+  var j=0.11*Tref;
   return calcBalanced(j);
 }
 
@@ -1424,11 +1424,11 @@ function render(v){
   if(bal){
     document.getElementById('eo-anchor-pill').textContent='EO % of nominal batch · face 1% / body 2%';
     document.getElementById('eo-fml').textContent=useCase==='face'?'1% nominal':'2% nominal';
-    document.getElementById('eo-meta').textContent='Fixed % of nominal batch (jojoba ÷ 0.18). Target table: 1–2% EO. Drops shown at 20/ml for translation only.';
-    document.getElementById('ing-a-pill').textContent='12% nominal';
+    document.getElementById('eo-meta').textContent='Fixed % of nominal batch (jojoba ÷ 0.11). Target table: 1–2% EO. Drops shown at 20/ml for translation only.';
+    document.getElementById('ing-a-pill').textContent='13% nominal';
     document.getElementById('ing-b-pill').textContent='6% nominal';
-    document.getElementById('tallow-fmla').textContent='55% nominal · jojoba ÷ 0.18';
-    document.getElementById('wax-pill').textContent='7% nominal';
+    document.getElementById('tallow-fmla').textContent='58% nominal · jojoba ÷ 0.11';
+    document.getElementById('wax-pill').textContent='8% nominal';
     document.getElementById('wax-fmla').textContent='structure + heat stability';
     document.getElementById('wax-meta').textContent='Melt with tallow. Nominal batch matches jojoba scale.';
     document.getElementById('ing-wax').textContent=fmt(v.wax,2);
@@ -1449,7 +1449,7 @@ function render(v){
 
   var talPct=v.total>0?v.t/v.total*100:0;
   var talLbl=fmt(talPct,1)+'% tallow';
-  if(bal)talLbl+=' — target ~55% nominal';
+  if(bal)talLbl+=' — target ~58% nominal';
   else if(talPct>=72)talLbl+=' — firm / waxy';
   else if(talPct>=52)talLbl+=' — cream band';
   else talLbl+=' — soft / high-carrier';
