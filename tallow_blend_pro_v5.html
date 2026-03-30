@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <title>Crown Breeds — Tallow balm lab</title>
+  <title>Crown Breeds — Tallow balm formulation</title>
   <style>
     :root {
       --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -73,81 +73,87 @@
       outline: none;
       box-shadow: 0 0 0 3px var(--focus-ring);
     }
-    .app-shell {
+    .page-hero {
       position: sticky;
       top: 0;
       z-index: 200;
-      border-bottom: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-    }
-    .app-bar {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      padding: 14px clamp(14px, 4vw, 28px);
       background: #0f172a;
       color: #f1f5f9;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+      box-shadow: var(--shadow-md);
     }
     @media (prefers-color-scheme: dark) {
-      .app-bar { background: #020617; border-bottom: 1px solid #1e293b; }
+      .page-hero { background: #020617; border-bottom-color: #1e293b; }
     }
-    .app-brand { min-width: 0; }
-    .app-name {
-      display: block;
-      font-size: 1.0625rem;
-      font-weight: 650;
-      letter-spacing: -0.02em;
-      line-height: 1.25;
+    .page-hero__inner {
+      max-width: 68rem;
+      margin: 0 auto;
+      padding: 16px clamp(14px, 4vw, 28px) 18px;
     }
-    .app-product {
-      display: block;
+    .page-hero__h1 {
+      font-size: clamp(1.125rem, 2.5vw, 1.35rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.2;
+      color: #f8fafc;
+    }
+    .page-hero__sub {
+      margin-top: 6px;
+      font-size: 0.8125rem;
+      color: #94a3b8;
+      line-height: 1.45;
+      max-width: 40rem;
+    }
+    .page-hero__future {
+      margin-top: 10px;
       font-size: 0.6875rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-    .app-tabs {
-      display: flex;
-      gap: 0;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      padding: 0 clamp(8px, 2vw, 20px);
-      background: var(--surface);
-    }
-    .app-tab {
-      flex: 0 0 auto;
-      appearance: none;
-      border: none;
-      background: transparent;
-      font: inherit;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      padding: 14px 14px 12px;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      white-space: nowrap;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    .app-tab:hover { color: var(--text); }
-    .app-tab.is-active {
-      color: var(--focus);
-      border-bottom-color: var(--focus);
-    }
-    .app-tab:focus-visible {
-      outline: 2px solid var(--focus);
-      outline-offset: -4px;
-      border-radius: var(--radius-sm);
+      letter-spacing: 0.06em;
+      color: #64748b;
     }
     .app-main {
       padding: 0 clamp(12px, 4vw, 32px);
-      padding-top: max(10px, env(safe-area-inset-top));
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-bottom: 28px;
+    }
+    .app-main .w { max-width: 68rem; margin: 0 auto; }
+    .flow-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 12px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .w > .flow-section:first-child .flow-heading { margin-top: 8px; }
+    .flow-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.65rem;
+      height: 1.65rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--focus);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+    .flow-lead {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: -4px 0 14px;
+      max-width: 48rem;
+    }
+    .flow-section {
+      scroll-margin-top: 72px;
     }
     /* Full-width shell; content uses fluid side padding from body */
     .w {
@@ -526,15 +532,7 @@
       box-shadow: var(--shadow-sm);
     }
     .charts-split .summary-panel { margin-top: 0; }
-    #panel-run .proc-panel { margin-top: 0; }
-    .tab-panel[hidden] { display: none !important; }
-    .tab-hint {
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      margin: 0 0 14px;
-      line-height: 1.45;
-      max-width: 56rem;
-    }
+    .section-production .proc-panel { margin-top: 0; }
     .summary-panel h3, .proc-panel h3 {
       font-size: 0.625rem;
       font-weight: 700;
@@ -734,27 +732,21 @@
   </style>
 </head>
 <body>
-<a class="skip-link" href="#panel-setup">Skip to content</a>
-<header class="app-shell">
-  <div class="app-bar">
-    <div class="app-brand">
-      <span class="app-name">Tallow balm formulation</span>
-      <span class="app-product">Crown Breeds · Lab worksheet</span>
-    </div>
+<a class="skip-link" href="#section-setup">Skip to worksheet</a>
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <h1 class="page-hero__h1">Tallow balm formulation</h1>
+    <p class="page-hero__sub">Crown Breeds lab worksheet — architecture, worksheet, batch review, and production on one page.</p>
+    <p class="page-hero__future">Soap and other formulations will get separate tools later.</p>
   </div>
-  <nav class="app-tabs" role="tablist" aria-label="Worksheet sections">
-    <button type="button" class="app-tab is-active" role="tab" id="tab-setup" aria-controls="panel-setup" aria-selected="true" tabindex="0" onclick="setTab('setup')">1 · Setup</button>
-    <button type="button" class="app-tab" role="tab" id="tab-recipe" aria-controls="panel-recipe" aria-selected="false" tabindex="-1" onclick="setTab('recipe')">2 · Formulation</button>
-    <button type="button" class="app-tab" role="tab" id="tab-review" aria-controls="panel-review" aria-selected="false" tabindex="-1" onclick="setTab('review')">3 · Batch review</button>
-    <button type="button" class="app-tab" role="tab" id="tab-run" aria-controls="panel-run" aria-selected="false" tabindex="-1" onclick="setTab('run')">4 · Production</button>
-  </nav>
 </header>
 <main class="app-main" id="main-content">
 
 <div class="w">
 
-<div id="panel-setup" class="tab-panel" role="tabpanel" aria-labelledby="tab-setup">
-<p class="tab-hint">Choose <strong>recipe architecture</strong> first (balanced 55/7/18/12/6 vs legacy jojoba master). Then carriers, tallow load (legacy), vitamin E, and face/body EO tier.</p>
+<section id="section-setup" class="flow-section" aria-labelledby="heading-setup">
+<h2 class="flow-heading" id="heading-setup"><span class="flow-num">1</span> Setup &amp; controls</h2>
+<p class="flow-lead">Choose <strong>recipe architecture</strong> first (balanced 55/7/18/12/6 vs legacy jojoba master). Then carriers, tallow load (legacy), vitamin E, and face/body EO tier.</p>
 <div class="lab-bar" id="lab-controls">
   <div class="lab-bar-title">Formulation controls</div>
   <div class="lab-grid">
@@ -822,10 +814,11 @@
   <button type="button" class="use-btn" id="btn-body" onclick="setUse('body')">General body — 2% EO</button>
 </div>
 <div class="banner" id="banner" role="status"></div>
-</div>
+</section>
 
-<div id="panel-recipe" class="tab-panel" role="tabpanel" aria-labelledby="tab-recipe" hidden>
-<p class="tab-hint">Source from <strong>jojoba</strong> or <strong>tallow</strong>. Balanced mode fixes carrier splits and EO % of nominal batch; legacy mode uses nJoJo ÷ 2 and A÷B potency. Batch review for sign-off.</p>
+<section id="section-worksheet" class="flow-section" aria-labelledby="heading-worksheet">
+<h2 class="flow-heading" id="heading-worksheet"><span class="flow-num">2</span> Formulation worksheet</h2>
+<p class="flow-lead">Source from <strong>jojoba</strong> or <strong>tallow</strong>. Balanced mode fixes carrier splits and EO % of nominal batch; legacy mode uses nJoJo ÷ 2 and A÷B potency.</p>
 <div class="container">
 
   <div class="group-header" style="background:#d1fae5">
@@ -970,10 +963,11 @@
   </div>
 
 </div>
-</div>
+</section>
 
-<div id="panel-review" class="tab-panel" role="tabpanel" aria-labelledby="tab-review" hidden>
-<p class="tab-hint">Key metrics, composition strip, ingredient table, and doughnut chart — snapshot for batch sign-off.</p>
+<section id="section-review" class="flow-section" aria-labelledby="heading-review">
+<h2 class="flow-heading" id="heading-review"><span class="flow-num">3</span> Batch review</h2>
+<p class="flow-lead">Key metrics, composition strip, ingredient table, and doughnut chart — snapshot for batch sign-off.</p>
 <div class="totals">
   <div class="metric"><div class="mlbl">Oil mixture</div><span class="mval" id="m-oils">—</span><span class="munit"> ml</span></div>
   <div class="metric"><div class="mlbl">Total batch</div><span class="mval" id="m-total">—</span><span class="munit"> ml</span></div>
@@ -1018,10 +1012,11 @@
     </div>
   </div>
 </div>
-</div>
+</section>
 
-<div id="panel-run" class="tab-panel" role="tabpanel" aria-labelledby="tab-run" hidden>
-<p class="tab-hint">Floor procedure, temperature checks, and 50 ml pack-out. Log °C when you want documented process control.</p>
+<section id="section-production" class="flow-section section-production" aria-labelledby="heading-production">
+<h2 class="flow-heading" id="heading-production"><span class="flow-num">4</span> Production</h2>
+<p class="flow-lead">Floor procedure, temperature checks, and 50 ml pack-out. Log °C when you want documented process control.</p>
 <div class="proc-panel" id="proc-panel" tabindex="0" onfocus="onProcInteract()" onclick="onProcInteract()">
   <h3>Production process</h3>
   <ol class="proc-steps" id="proc-steps"></ol>
@@ -1040,7 +1035,7 @@
 <div class="sec sec--tight">50 ml containers</div>
 <div id="chips" class="jar-preview" aria-live="polite"></div>
 <p class="footnote" id="chips-note"></p>
-</div>
+</section>
 
 </div>
 </main>
@@ -1152,36 +1147,6 @@ function updateCompositionCharts(v){
     chartPie.update();
   }
 }
-
-var TAB_IDS=['setup','recipe','review','run'];
-function setTab(name){
-  if(TAB_IDS.indexOf(name)<0)return;
-  TAB_IDS.forEach(function(t){
-    var panel=document.getElementById('panel-'+t);
-    var tab=document.getElementById('tab-'+t);
-    if(!panel||!tab)return;
-    var on=(t===name);
-    if(on){
-      panel.removeAttribute('hidden');
-      tab.classList.add('is-active');
-      tab.setAttribute('aria-selected','true');
-      tab.setAttribute('tabindex','0');
-    }else{
-      panel.setAttribute('hidden','');
-      tab.classList.remove('is-active');
-      tab.setAttribute('aria-selected','false');
-      tab.setAttribute('tabindex','-1');
-    }
-  });
-  try{ history.replaceState(null,'','#'+name);}catch(e){}
-  if(name==='review'&&chartPie){
-    requestAnimationFrame(function(){ chartPie.resize(); });
-  }
-}
-window.addEventListener('hashchange',function(){
-  var h=(location.hash||'').replace(/^#/,'');
-  if(TAB_IDS.indexOf(h)>=0)setTab(h);
-});
 
 function isBalanced(){return document.getElementById('recipe-mode').value==='balanced';}
 
@@ -1559,25 +1524,8 @@ function fromTallow(){
 }
 
 syncRecipeModeUI();
-(function(){
-  var h=(location.hash||'').replace(/^#/,'');
-  if(TAB_IDS.indexOf(h)>=0)setTab(h);
-})();
-var tabNav=document.querySelector('.app-tabs');
-if(tabNav)tabNav.addEventListener('keydown',function(e){
-  var cur=0;
-  for(var i=0;i<TAB_IDS.length;i++){
-    if(document.getElementById('tab-'+TAB_IDS[i]).classList.contains('is-active')){cur=i;break;}
-  }
-  var next=cur;
-  if(e.key==='ArrowRight')next=Math.min(TAB_IDS.length-1,cur+1);
-  else if(e.key==='ArrowLeft')next=Math.max(0,cur-1);
-  else if(e.key==='Home')next=0;
-  else if(e.key==='End')next=TAB_IDS.length-1;
-  else return;
-  e.preventDefault();
-  setTab(TAB_IDS[next]);
-  document.getElementById('tab-'+TAB_IDS[next]).focus();
+window.addEventListener('resize',function(){
+  if(chartPie)requestAnimationFrame(function(){ chartPie.resize(); });
 });
 setUse('face');
 </script>
