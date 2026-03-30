@@ -1,0 +1,386 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary)}
+.app{display:grid;grid-template-columns:1fr 320px;gap:20px;padding:1rem 0;align-items:start}
+.section{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:14px}
+.section-title{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em}
+.batch-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.batch-row label{font-size:13px;color:var(--color-text-secondary);white-space:nowrap}
+.batch-row input[type=range]{flex:1}
+.batch-row span{font-size:14px;font-weight:500;min-width:48px;text-align:right}
+.mode-btns{display:flex;gap:8px}
+.mbtn{padding:5px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary)}
+.mbtn.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500;border-color:var(--color-border-primary)}
+.pool-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.pool-label{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.pool-pct{font-size:12px;color:var(--color-text-secondary)}
+.add-btn{padding:4px 12px;font-size:12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);cursor:pointer;background:transparent;color:var(--color-text-secondary);margin-top:4px}
+.add-btn:hover{background:var(--color-background-secondary)}
+.ing-block{margin-bottom:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.ing-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ing-top select{flex:1;font-size:13px;background:transparent;border:none;color:var(--color-text-primary);outline:none;font-weight:500}
+.ing-pct{font-size:12px;font-weight:500;min-width:36px;text-align:right;color:var(--color-text-primary)}
+.ing-ml{font-size:11px;color:var(--color-text-secondary);min-width:42px;text-align:right}
+.remove-btn{background:none;border:none;cursor:pointer;font-size:16px;color:var(--color-text-tertiary);padding:0 2px;line-height:1;flex-shrink:0}
+.remove-btn:hover{color:#E24B4A}
+.slider-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.slider-row input[type=range]{flex:1}
+.slider-label{font-size:11px;color:var(--color-text-tertiary);white-space:nowrap}
+.ing-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:5px}
+.ing-tip{font-size:12px;line-height:1.5;padding:5px 8px;border-radius:var(--border-radius-md);margin-top:4px}
+.tip-low{background:#E6F1FB;color:#0C447C}
+.tip-mid{background:#E1F5EE;color:#085041}
+.tip-high{background:#FAEEDA;color:#633806}
+.tip-warn{background:#FCEBEB;color:#791F1F}
+.warn{font-size:12px;color:#854F0B;background:#FAEEDA;border-radius:var(--border-radius-md);padding:6px 10px;margin-top:8px}
+.beaker-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:14px}
+.beaker-svg{width:180px;height:280px}
+.ratio-card,.benefit-card,.synergy-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:14px}
+.ratio-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.ratio-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ratio-name{font-size:12px;flex:1;color:var(--color-text-primary)}
+.ratio-bar-wrap{width:72px;height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.ratio-bar-fill{height:100%;border-radius:3px}
+.ratio-ml{font-size:12px;font-weight:500;min-width:34px;text-align:right;color:var(--color-text-primary)}
+.ratio-pct{font-size:11px;color:var(--color-text-secondary);min-width:30px;text-align:right}
+.benefit-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.benefit-label{font-size:12px;color:var(--color-text-secondary);width:90px;flex-shrink:0}
+.benefit-track{flex:1;height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.benefit-fill{height:100%;border-radius:3px}
+.benefit-score{font-size:11px;color:var(--color-text-secondary);min-width:24px;text-align:right}
+.synergy-item{font-size:12px;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);line-height:1.5}
+.synergy-item:last-child{border-bottom:none}
+.synergy-good{color:#0F6E56}
+.synergy-warn{color:#854F0B}
+.total-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{text-align:center}
+.stat-val{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stat-lbl{font-size:11px;color:var(--color-text-secondary)}
+.card-title{font-size:13px;font-weight:500;margin-bottom:10px;color:var(--color-text-primary)}
+</style>
+
+<div class="app">
+<div class="left">
+
+<div class="section">
+  <div class="section-title">Batch settings</div>
+  <div class="batch-row">
+    <label>Batch size</label>
+    <input type="range" id="batchSize" min="50" max="500" step="10" value="100">
+    <span id="batchSizeVal">100 ml</span>
+  </div>
+  <div class="batch-row">
+    <label>Use mode</label>
+    <div class="mode-btns">
+      <button class="mbtn active" onclick="setMode(this,'face')">Face (1% EO)</button>
+      <button class="mbtn" onclick="setMode(this,'body')">Body (2% EO)</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="pool-header">
+    <span class="pool-label">Ingredient A — major carriers</span>
+    <span class="pool-pct">13% of batch</span>
+  </div>
+  <div id="aPool"></div>
+  <button class="add-btn" onclick="addIng('a')">+ add carrier oil</button>
+  <div id="aWarning"></div>
+</div>
+
+<div class="section">
+  <div class="pool-header">
+    <span class="pool-label">Ingredient B — minor carriers</span>
+    <span class="pool-pct">6% of batch</span>
+  </div>
+  <div id="bPool"></div>
+  <button class="add-btn" onclick="addIng('b')">+ add active oil</button>
+  <div id="bWarning"></div>
+</div>
+
+<div class="section">
+  <div class="pool-header">
+    <span class="pool-label">Essential oils</span>
+    <span class="pool-pct" id="eoPoolPct">1% of batch</span>
+  </div>
+  <div id="eoPool"></div>
+  <button class="add-btn" onclick="addIng('eo')">+ add essential oil</button>
+  <div id="eoWarning"></div>
+</div>
+
+</div>
+
+<div class="right">
+<div class="beaker-wrap">
+  <svg class="beaker-svg" viewBox="0 0 180 280" xmlns="http://www.w3.org/2000/svg">
+    <defs><clipPath id="glassClip"><path d="M30,20 L30,220 Q30,250 90,250 Q150,250 150,220 L150,20 Z"/></clipPath></defs>
+    <path d="M30,20 L30,220 Q30,250 90,250 Q150,250 150,220 L150,20 Z" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+    <line x1="20" y1="20" x2="160" y2="20" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+    <g id="beakerLayers" clip-path="url(#glassClip)"></g>
+    <line x1="40" y1="80" x2="50" y2="80" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="120" x2="50" y2="120" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="160" x2="50" y2="160" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="200" x2="50" y2="200" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+  </svg>
+</div>
+
+<div class="total-card">
+  <div class="stat"><div class="stat-val" id="statTotal">100</div><div class="stat-lbl">total ml</div></div>
+  <div class="stat"><div class="stat-val" id="statShelf">12mo</div><div class="stat-lbl">est. shelf life</div></div>
+</div>
+
+<div class="ratio-card">
+  <div class="card-title">Formula breakdown</div>
+  <div id="ratioList"></div>
+</div>
+
+<div class="benefit-card">
+  <div class="card-title">Skin benefit profile</div>
+  <div id="benefitBars"></div>
+</div>
+
+<div class="synergy-card">
+  <div class="card-title">Notes & synergies</div>
+  <div id="synergyList"><div class="synergy-item" style="color:var(--color-text-tertiary)">Add ingredients to see notes</div></div>
+</div>
+</div>
+</div>
+
+<script>
+const ING={
+  a:[
+    {id:"rosehip",name:"Rosehip seed",desc:"Rich in trans-retinoic acid & linoleic acid. Star oil for fading scars and evening skin tone.",benefits:{antiaging:3,scarring:3,brightening:2,barrier:1},
+     tips:{low:"Light touch of rosehip — adds gentle brightening without dominating.",mid:"Good working dose — noticeable scar-fading and anti-aging activity.",high:"Dominant rosehip — this is now your hero A oil. Excellent for mature or scarred skin."}},
+    {id:"marula",name:"Marula",desc:"High oleic acid, absorbs fast. Silky elegant feel that pairs perfectly with tallow without competing.",benefits:{antiaging:2,moisturizing:3,barrier:2},
+     tips:{low:"Subtle marula — mostly adding slip and a silky finish.",mid:"Good balance — moisturizing activity noticeable, absorbs clean.",high:"Marula-forward formula — very elegant feel, great for all skin types."}},
+    {id:"sesame",name:"Sesame",desc:"Natural SPF ~4, sesamol is a potent antioxidant. Ayurvedic staple used for millennia on skin.",benefits:{antioxidant:3,antiinflammatory:2,barrier:1},
+     tips:{low:"Mild antioxidant boost — subtle UV defense layer.",mid:"Solid antioxidant presence — sesamol working actively.",high:"Strong sesame presence — good antioxidant shield but slight nutty scent note."}},
+    {id:"baobab",name:"Baobab",desc:"Perfectly balanced omega 3-6-9 profile. Very stable oil with long shelf life — adds velvety skin feel.",benefits:{moisturizing:3,barrier:3,softening:2},
+     tips:{low:"Light barrier support — softening effect begins.",mid:"Good barrier reinforcement — omega balance starting to show.",high:"Baobab-dominant — exceptional barrier and very stable formula."}},
+    {id:"argan",name:"Argan",desc:"High in squalene and vitamin E naturally. Absorbs clean with no residue. Widely studied.",benefits:{antiaging:2,brightening:2,moisturizing:2},
+     tips:{low:"Light argan presence — subtle brightening and slip.",mid:"Good working level — anti-aging and brightening active.",high:"Argan-forward — well-rounded anti-aging carrier, slightly premium feel."}},
+    {id:"almond",name:"Sweet almond",desc:"Gentlest carrier oil available. High in oleic and linoleic. Excellent for sensitive or reactive skin.",benefits:{softening:3,barrier:2,soothing:3},
+     tips:{low:"Mild softening — good base note for sensitive formulas.",mid:"Noticeably gentle and soothing — ideal sensitive skin dose.",high:"Very gentle formula — maximally soothing, great for baby or eczema skin."}},
+    {id:"apricot",name:"Apricot kernel",desc:"Similar to almond but lighter. High gamma-linolenic acid. Good facial carrier for mature skin.",benefits:{brightening:2,antiaging:1,softening:2},
+     tips:{low:"Light brightening touch — subtle glow effect.",mid:"Good balance — brightening and softening both active.",high:"Apricot-dominant A — lightweight, brightening formula."}},
+    {id:"hemp",name:"Hemp seed",desc:"Perfect 3:1 omega 6:3 ratio mirrors healthy skin lipids. Non-comedogenic. Strong for inflammation.",benefits:{acne:3,antiinflammatory:3,barrier:2},
+     tips:{low:"Gentle anti-inflammatory support — mild acne defense.",mid:"Good anti-acne dose — omega balance actively supporting skin.",high:"Hemp-dominant — this is now an anti-inflammatory, anti-acne focused formula."}},
+    {id:"avocado",name:"Avocado",desc:"Penetrates deep skin layers. High in sterols and oleic acid. Best for very dry or cracked skin.",benefits:{moisturizing:3,barrier:3,healing:2},
+     tips:{low:"Deep moisture hint — slightly heavier feel.",mid:"Good deep moisturizing dose — barrier and healing active.",high:"Rich, heavy formula — ideal for very dry, cracked or winter skin."}},
+    {id:"pomegranate",name:"Pomegranate seed",desc:"Rare punicic acid (omega-5). Strong antioxidant. Supports collagen synthesis and skin regeneration.",benefits:{antiaging:3,brightening:3,antioxidant:3},
+     tips:{low:"Trace collagen support — antioxidant activity begins.",mid:"Good anti-aging dose — punicic acid working on skin renewal.",high:"Pomegranate-dominant — premium anti-aging and brightening formula."}},
+    {id:"seabuck",name:"Sea buckthorn",desc:"Exceptional omega-7, rare in plant oils. Powerful repair oil. Very orange — will tint the balm.",benefits:{healing:3,barrier:3,antiaging:2},
+     tips:{low:"Trace repair activity — minimal tinting at this level.",mid:"Good repair dose — omega-7 active, slight orange tint likely.",high:"Strong sea buckthorn — powerful repair but significant orange pigment. Patch test color."}},
+    {id:"chia",name:"Chia seed",desc:"One of the highest plant sources of omega-3. Soothing and film-forming. Relatively new in cosmetics.",benefits:{barrier:3,antiinflammatory:2,moisturizing:2},
+     tips:{low:"Gentle omega-3 addition — light film-forming effect.",mid:"Good barrier and soothing dose.",high:"Chia-dominant A — strong omega-3 barrier formula."}},
+  ],
+  b:[
+    {id:"blackseed",name:"Black seed",potency:"strong",desc:"Thymoquinone is the active — one of the most potent anti-inflammatory plant compounds known. Strong scent.",benefits:{acne:3,antiinflammatory:3,antimicrobial:3},
+     tips:{low:"Safe working dose — thymoquinone active without overwhelming scent.",mid:"Strong medicinal presence — very effective but scent becomes noticeable.",high:"Maximum black seed — highly therapeutic but will challenge your EO scent significantly."}},
+    {id:"neem",name:"Neem",potency:"strong",desc:"Powerful antibacterial and antifungal. Traditional wound-healing. Very pungent — needs strong EO masking.",benefits:{acne:3,antifungal:3,antimicrobial:3},
+     tips:{low:"Minimal neem — antimicrobial effect present, scent manageable.",mid:"Strong neem activity — effective but requires heavy EO masking.",high:"Dominant neem — maximum antimicrobial but very hard to mask scent. Use cautiously."}},
+    {id:"tamanu",name:"Tamanu",potency:"moderate",desc:"Calophyllolide is the key active. One of the best oils in the world for scar tissue remodeling. Deep green.",benefits:{scarring:3,healing:3,antiinflammatory:2},
+     tips:{low:"Light tamanu — scar activity begins, subtle green tint.",mid:"Good scar-remodeling dose — calophyllolide working well.",high:"Strong tamanu presence — elite scarring formula, noticeable green tint."}},
+    {id:"karanja",name:"Karanja",potency:"moderate",desc:"Natural SPF ~20. Pongamol is the active. Milder scent than neem, similar antimicrobial profile.",benefits:{acne:2,antiinflammatory:2,antioxidant:1},
+     tips:{low:"Light UV and antimicrobial support.",mid:"Good sun-defense and anti-acne dose.",high:"Strong karanja — significant UV protection layer added to the formula."}},
+    {id:"turmeric",name:"Turmeric CO2",potency:"strong",desc:"Curcumin is the active — potent anti-inflammatory and brightener. Will stain yellow — dilute carefully.",benefits:{brightening:3,antiinflammatory:3,antioxidant:3},
+     tips:{low:"Trace curcumin — brightening begins, minimal staining.",mid:"Good brightening and anti-inflammatory — slight yellow tint to balm.",high:"Strong turmeric — maximum brightening but significant yellow pigment. Check skin staining."}},
+    {id:"bakuchiol",name:"Bakuchiol",potency:"moderate",desc:"Plant-based retinol alternative. Same receptor activity without irritation or photosensitivity.",benefits:{antiaging:3,firming:3,healing:2},
+     tips:{low:"Gentle retinol-like activity — good for daily use intro.",mid:"Good anti-aging dose — firming and cell renewal active.",high:"Strong bakuchiol — maximum plant retinol effect, safe even for sensitive skin."}},
+    {id:"calendula",name:"Calendula",potency:"mild",desc:"Faradiol is the key active. One of the gentlest and most soothing botanicals. Baby skin safe.",benefits:{soothing:3,healing:3,barrier:2},
+     tips:{low:"Gentle soothing touch — good for sensitive base.",mid:"Good calming and healing dose — barrier support active.",high:"Calendula-dominant B — maximally soothing, ideal for reactive or baby skin formulas."}},
+    {id:"moringa",name:"Moringa",potency:"mild",desc:"Behenic acid gives unusual cleansing properties for an oil. Very stable, long shelf life.",benefits:{antioxidant:2,brightening:2,barrier:1},
+     tips:{low:"Light antioxidant and cleansing touch.",mid:"Good antioxidant presence — mild brightening effect.",high:"Strong moringa — good cleansing and antioxidant layer."}},
+    {id:"camellia",name:"Camellia seed",potency:"mild",desc:"Traditional Japanese geisha oil. High oleic, absorbs very fast, extremely elegant skin feel.",benefits:{antiaging:2,moisturizing:2,brightening:1},
+     tips:{low:"Trace elegance — subtle fast-absorbing quality.",mid:"Good camellia dose — noticeably elegant, fast-absorbing formula.",high:"Camellia-dominant B — very elegant, fast-absorbing finish. Japanese artisan quality."}},
+  ],
+  eo:[
+    {id:"neroli",name:"Neroli",desc:"Linalool and nerolidol drive skin cell regeneration. One of the finest floral EOs in existence.",benefits:{antiaging:3,brightening:2,regenerating:3,calming:2},
+     tips:{low:"Delicate neroli presence — scent hint and gentle regenerating activity.",mid:"Good neroli dose — beautiful scent and active skin regeneration.",high:"Neroli-dominant blend — your signature scent. Luxurious and highly regenerating."}},
+    {id:"lavender",name:"Lavender",desc:"Most studied EO for skin. Linalyl acetate is the calming active. Works for almost every skin concern.",benefits:{calming:3,acne:2,healing:2,soothing:3},
+     tips:{low:"Gentle calming background note.",mid:"Classic lavender presence — calming and healing well balanced.",high:"Lavender-forward blend — strongly calming and skin-healing."}},
+    {id:"frankincense",name:"Frankincense",desc:"Boswellic acids support skin cell regeneration and elasticity. Earthy resinous base note.",benefits:{antiaging:3,scarring:3,regenerating:2},
+     tips:{low:"Subtle resinous depth — light anti-aging activity.",mid:"Good frankincense dose — regeneration and anti-aging active, adds depth to scent.",high:"Frankincense-dominant — deeply anti-aging, strong resinous scent note."}},
+    {id:"rose",name:"Rose otto",desc:"Geraniol and citronellol are the actives. Extremely potent — tiny amount goes very far. Expensive.",benefits:{antiaging:2,brightening:2,calming:3,moisturizing:2},
+     tips:{low:"Correct use of rose otto — potent even at low share.",mid:"Strong rose presence — beautiful but expensive. Watch cost per batch.",high:"Rose-dominant — very intense, this will cost significantly. Consider dropping share."}},
+    {id:"helichrysum",name:"Helichrysum",desc:"Neryl acetate drives regeneration. Called liquid gold for skin repair. Outstanding for scarring.",benefits:{scarring:3,antiaging:3,regenerating:3},
+     tips:{low:"Good starting dose — helichrysum is potent even at low share.",mid:"Strong repair and regeneration — this is the sweet spot for helichrysum.",high:"Helichrysum-dominant — elite repair formula, also expensive at high share."}},
+    {id:"geranium",name:"Geranium",desc:"Balances sebum production. Rosy floral scent pairs beautifully with neroli. Good hormonal skin support.",benefits:{acne:2,antiaging:1,brightening:1,soothing:2},
+     tips:{low:"Light floral bridge — complements neroli gently.",mid:"Good sebum balancing — rosy note blends well in your scent profile.",high:"Geranium-forward — strong sebum control and dominant rosy-floral scent."}},
+    {id:"chamomile",name:"Roman chamomile",desc:"Isobutyl angelate is the active. Strongest anti-inflammatory EO for skin. Very calming on reactive skin.",benefits:{soothing:3,antiinflammatory:3,calming:3},
+     tips:{low:"Gentle anti-inflammatory — good sensitive skin support.",mid:"Strong calming presence — reactive and rosacea skin will love this.",high:"Chamomile-dominant — maximally anti-inflammatory. Formula very suited to sensitive skin."}},
+    {id:"carrotseed",name:"Carrot seed",desc:"High carotol — powerful antioxidant and skin toner. Often paired with neroli in anti-aging blends.",benefits:{antiaging:3,brightening:3,regenerating:2},
+     tips:{low:"Light brightening and antioxidant note.",mid:"Good anti-aging and brightening — carotol working actively.",high:"Carrot seed-dominant — strong brightening and toning. Earthy note becomes noticeable."}},
+    {id:"patchouli",name:"Patchouli",desc:"Patchouli alcohol is regenerative. Deep earthy base note — excellent fixative that extends scent life.",benefits:{antiaging:2,healing:2,moisturizing:1},
+     tips:{low:"Perfect use of patchouli — anchors the blend without dominating.",mid:"Good fixative presence — scent longevity significantly extended.",high:"Strong patchouli — scent becomes earthy-dominant. Intentional or reduce share."}},
+    {id:"sandalwood",name:"Sandalwood",desc:"Alpha-santalol is the key active. Deeply moisturizing and toning. Long-lasting on skin. Expensive.",benefits:{moisturizing:3,antiaging:2,calming:2},
+     tips:{low:"Subtle creamy-woody base note — good fixative at this level.",mid:"Good sandalwood presence — moisturizing and toning active, adds warmth.",high:"Sandalwood-forward — beautiful but costly at high share. Creamy woody scent dominant."}},
+    {id:"yylang",name:"Ylang ylang",desc:"Balances sebum and adds rich floral depth. Sensitizer above 0.8% of total batch — keep share low.",benefits:{acne:2,antiaging:1},
+     tips:{low:"Safe range for ylang — floral depth without sensitization risk.",mid:"Approaching limit — monitor total batch % to stay under 0.8%.",high:"Danger zone — ylang ylang at high share within EO pool risks sensitization. Lower this."}},
+    {id:"clarysage",name:"Clary sage",desc:"Sclareol mimics estrogen — great for hormonal acne and skin. Avoid during pregnancy.",benefits:{acne:2,antiinflammatory:2,calming:1},
+     tips:{low:"Gentle hormonal skin support.",mid:"Good sclareol activity — hormonal acne addressed.",high:"Strong clary sage — effective for hormonal skin but ensure no pregnant users."}},
+  ]
+};
+
+const COLORS={tallow:"#B4B2A9",beeswax:"#FAC775",jojoba:"#97C459",vite:"#F0997B",a0:"#85B7EB",a1:"#5DCAA5",a2:"#AFA9EC",a3:"#ED93B1",b0:"#D85A30",b1:"#993C1D",b2:"#BA7517",eo0:"#534AB7",eo1:"#3C3489",eo2:"#7F77DD",eo3:"#0F6E56",eo4:"#185FA5",eo5:"#993556"};
+const BENEFIT_LABELS=["antiaging","moisturizing","barrier","scarring","brightening","acne","antiinflammatory","antioxidant","healing","soothing","calming","regenerating","firming","softening"];
+const BENEFIT_COLORS={antiaging:"#534AB7",moisturizing:"#1D9E75",barrier:"#639922",scarring:"#D85A30",brightening:"#FAC775",acne:"#185FA5",antiinflammatory:"#0F6E56",antioxidant:"#BA7517",healing:"#5DCAA5",soothing:"#AFA9EC",calming:"#ED93B1",regenerating:"#7F77DD",firming:"#D4537E",softening:"#9FE1CB"};
+
+let mode="face",batchSize=100,pools={a:[],b:[],eo:[]},idCtr=0;
+
+function setMode(el,m){document.querySelectorAll(".mbtn").forEach(b=>b.classList.remove("active"));el.classList.add("active");mode=m;document.getElementById("eoPoolPct").textContent=(m==="face"?"1":"2")+"% of batch";update();}
+document.getElementById("batchSize").addEventListener("input",function(){batchSize=+this.value;document.getElementById("batchSizeVal").textContent=batchSize+" ml";update();});
+
+function addIng(pool){
+  const limits={a:4,b:3,eo:6};
+  if(pools[pool].length>=limits[pool])return;
+  const used=pools[pool].map(r=>r.ingId);
+  const avail=ING[pool].filter(i=>!used.includes(i.id));
+  if(!avail.length)return;
+  pools[pool].push({id:idCtr++,ingId:avail[0].id,weight:5});
+  renderPool(pool);update();
+}
+
+function removeIng(pool,id){pools[pool]=pools[pool].filter(r=>r.id!==id);renderPool(pool);update();}
+
+function getTipLevel(weight){return weight<=3?"low":weight<=7?"mid":"high";}
+
+function renderPool(pool){
+  const container=document.getElementById(pool+"Pool");
+  container.innerHTML="";
+  const f=calcFormula();
+  const split=pool==="a"?f.aSplit:pool==="b"?f.bSplit:f.eoSplit;
+
+  pools[pool].forEach((row,i)=>{
+    const ing=ING[pool].find(x=>x.id===row.ingId);
+    const splitRow=split.find(s=>s.id===row.id);
+    const pct=splitRow?(splitRow.pct*100).toFixed(1):"—";
+    const ml=splitRow?(splitRow.pct*batchSize).toFixed(1):"—";
+
+    const block=document.createElement("div");block.className="ing-block";
+
+    const top=document.createElement("div");top.className="ing-top";
+    const sel=document.createElement("select");
+    const used=pools[pool].filter(r=>r.id!==row.id).map(r=>r.ingId);
+    ING[pool].forEach(opt=>{const o=document.createElement("option");o.value=opt.id;o.textContent=opt.name;if(used.includes(opt.id))o.disabled=true;if(opt.id===row.ingId)o.selected=true;sel.appendChild(o);});
+    sel.addEventListener("change",function(){row.ingId=this.value;renderPool(pool);update();});
+
+    const pctSpan=document.createElement("span");pctSpan.className="ing-pct";pctSpan.id="pct_"+row.id;pctSpan.textContent=pct+"%";
+    const mlSpan=document.createElement("span");mlSpan.className="ing-ml";mlSpan.id="ml_"+row.id;mlSpan.textContent=ml+"ml";
+    const rm=document.createElement("button");rm.className="remove-btn";rm.textContent="×";rm.addEventListener("click",()=>removeIng(pool,row.id));
+    top.appendChild(sel);top.appendChild(pctSpan);top.appendChild(mlSpan);top.appendChild(rm);
+
+    const sliderRow=document.createElement("div");sliderRow.className="slider-row";
+    const sliderLabel=document.createElement("span");sliderLabel.className="slider-label";sliderLabel.textContent="share";
+    const slider=document.createElement("input");slider.type="range";slider.min=1;slider.max=10;slider.step=1;slider.value=row.weight;
+    slider.addEventListener("input",function(){row.weight=+this.value;updateInlineOnly(pool,row.id,this.value);update();});
+    sliderRow.appendChild(sliderLabel);sliderRow.appendChild(slider);
+
+    const desc=document.createElement("div");desc.className="ing-desc";desc.textContent=ing?ing.desc:"";
+
+    const tipLevel=getTipLevel(row.weight);
+    const tipText=ing&&ing.tips?ing.tips[tipLevel]:"";
+    const tipClass=tipLevel==="low"?"tip-low":tipLevel==="mid"?"tip-mid":ing&&ing.potency==="strong"&&tipLevel==="high"?"tip-warn":"tip-high";
+    const tip=document.createElement("div");tip.className="ing-tip "+tipClass;tip.id="tip_"+row.id;tip.textContent=tipText;
+
+    block.appendChild(top);block.appendChild(sliderRow);block.appendChild(desc);block.appendChild(tip);
+    container.appendChild(block);
+  });
+}
+
+function updateInlineOnly(pool,rowId,weight){
+  const tipLevel=getTipLevel(+weight);
+  const row=pools[pool].find(r=>r.id===rowId);
+  if(!row)return;
+  const ing=ING[pool].find(x=>x.id===row.ingId);
+  const tipEl=document.getElementById("tip_"+rowId);
+  if(tipEl&&ing&&ing.tips){
+    tipEl.textContent=ing.tips[tipLevel]||"";
+    tipEl.className="ing-tip "+(tipLevel==="low"?"tip-low":tipLevel==="mid"?"tip-mid":ing.potency==="strong"&&tipLevel==="high"?"tip-warn":"tip-high");
+  }
+}
+
+function calcFormula(){
+  const eoPct=mode==="face"?0.01:0.02;
+  const fixed=[{name:"Tallow",pct:0.58,color:COLORS.tallow},{name:"Beeswax",pct:0.08,color:COLORS.beeswax},{name:"Jojoba",pct:0.11,color:COLORS.jojoba},{name:"Vitamin E",pct:0.004,color:COLORS.vite}];
+  function split(rows,total){const tw=rows.reduce((s,r)=>s+r.weight,0)||1;return rows.map(r=>({...r,pct:total*r.weight/tw}));}
+  return{fixed,aSplit:split(pools.a,0.13),bSplit:split(pools.b,0.06),eoSplit:split(pools.eo,eoPct),eoPct};
+}
+
+function update(){
+  const f=calcFormula();
+  [...f.aSplit,...f.bSplit,...f.eoSplit].forEach(row=>{
+    const pe=document.getElementById("pct_"+row.id);const me=document.getElementById("ml_"+row.id);
+    if(pe)pe.textContent=(row.pct*100).toFixed(1)+"%";
+    if(me)me.textContent=(row.pct*batchSize).toFixed(1)+"ml";
+  });
+  updateBeaker(f);updateRatios(f);updateBenefits(f);updateSynergies(f);updateWarnings(f);
+}
+
+function updateBeaker(f){
+  const layers=document.getElementById("beakerLayers");layers.innerHTML="";
+  const all=[...f.fixed,...f.aSplit.map((r,i)=>({name:ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:COLORS["b"+i]||"#D85A30"})),...f.eoSplit.map((r,i)=>({name:ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:COLORS["eo"+i]||"#534AB7"}))];
+  const total=all.reduce((s,r)=>s+r.pct,0)||1;
+  let y=20+230;
+  all.forEach(layer=>{const h=Math.max(2,(layer.pct/total)*230);y-=h;const rect=document.createElementNS("http://www.w3.org/2000/svg","rect");rect.setAttribute("x","31");rect.setAttribute("y",y.toFixed(1));rect.setAttribute("width","118");rect.setAttribute("height",h.toFixed(1));rect.setAttribute("fill",layer.color);rect.setAttribute("opacity","0.85");layers.appendChild(rect);});
+}
+
+function updateRatios(f){
+  const list=document.getElementById("ratioList");list.innerHTML="";
+  const all=[...f.fixed.map(r=>({name:r.name,pct:r.pct,color:r.color})),...f.aSplit.map((r,i)=>({name:ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:COLORS["b"+i]||"#D85A30"})),...f.eoSplit.map((r,i)=>({name:ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:COLORS["eo"+i]||"#534AB7"}))];
+  const max=Math.max(...all.map(r=>r.pct));
+  all.forEach(r=>{const row=document.createElement("div");row.className="ratio-row";row.innerHTML=`<div class="ratio-dot" style="background:${r.color}"></div><div class="ratio-name">${r.name}</div><div class="ratio-bar-wrap"><div class="ratio-bar-fill" style="width:${Math.round((r.pct/max)*100)}%;background:${r.color}"></div></div><div class="ratio-ml">${(r.pct*batchSize).toFixed(1)}ml</div><div class="ratio-pct">${(r.pct*100).toFixed(1)}%</div>`;list.appendChild(row);});
+}
+
+function updateBenefits(f){
+  const scores={};BENEFIT_LABELS.forEach(b=>scores[b]=0);
+  const add=(list,pool,w)=>list.forEach(r=>{const ing=ING[pool].find(x=>x.id===r.ingId);if(!ing)return;Object.entries(ing.benefits||{}).forEach(([b,v])=>{scores[b]=(scores[b]||0)+v*r.pct*w;});});
+  add(f.aSplit,"a",1);add(f.bSplit,"b",1.5);add(f.eoSplit,"eo",2);
+  const max=Math.max(...Object.values(scores),0.001);
+  const sorted=BENEFIT_LABELS.filter(b=>scores[b]>0).sort((a,b)=>scores[b]-scores[a]).slice(0,8);
+  const cont=document.getElementById("benefitBars");cont.innerHTML="";
+  if(!sorted.length){cont.innerHTML='<div style="font-size:12px;color:var(--color-text-tertiary)">Add ingredients to see benefits</div>';return;}
+  sorted.forEach(b=>{const pct=Math.round((scores[b]/max)*100);const col=BENEFIT_COLORS[b]||"#888780";const row=document.createElement("div");row.className="benefit-row";row.innerHTML=`<div class="benefit-label">${b}</div><div class="benefit-track"><div class="benefit-fill" style="width:${pct}%;background:${col}"></div></div><div class="benefit-score">${pct}%</div>`;cont.appendChild(row);});
+}
+
+function updateSynergies(f){
+  const cont=document.getElementById("synergyList");cont.innerHTML="";
+  const eoIds=f.eoSplit.map(r=>r.ingId),aIds=f.aSplit.map(r=>r.ingId),bIds=f.bSplit.map(r=>r.ingId);
+  const msgs=[];
+  if(eoIds.includes("neroli")&&eoIds.includes("frankincense"))msgs.push({t:"good",m:"Neroli + frankincense — exceptional anti-aging synergy"});
+  if(eoIds.includes("neroli")&&eoIds.includes("carrotseed"))msgs.push({t:"good",m:"Neroli + carrot seed — brightening powerhouse"});
+  if(eoIds.includes("neroli")&&eoIds.includes("geranium"))msgs.push({t:"good",m:"Neroli + geranium — balanced floral, sebum control"});
+  if(eoIds.includes("neroli")&&eoIds.includes("patchouli"))msgs.push({t:"good",m:"Neroli + patchouli — scent beautifully anchored and long-lasting"});
+  if(eoIds.includes("helichrysum")&&bIds.includes("tamanu"))msgs.push({t:"good",m:"Helichrysum + tamanu — elite scarring formula"});
+  if(eoIds.includes("lavender")&&bIds.includes("calendula"))msgs.push({t:"good",m:"Lavender + calendula — maximally soothing, sensitive skin"});
+  if(eoIds.includes("chamomile")&&bIds.includes("calendula"))msgs.push({t:"good",m:"Chamomile + calendula — strongest anti-inflammatory combo"});
+  if(aIds.includes("rosehip")&&eoIds.includes("carrotseed"))msgs.push({t:"good",m:"Rosehip + carrot seed — double vitamin A anti-aging action"});
+  if(aIds.includes("pomegranate")&&eoIds.includes("frankincense"))msgs.push({t:"good",m:"Pomegranate + frankincense — collagen-focused formula"});
+  if(bIds.includes("bakuchiol")&&eoIds.includes("frankincense"))msgs.push({t:"good",m:"Bakuchiol + frankincense — plant retinol-alternative blend"});
+  if(aIds.includes("hemp")&&bIds.includes("blackseed"))msgs.push({t:"good",m:"Hemp + black seed — serious anti-acne, anti-inflammatory formula"});
+  if(aIds.includes("rosehip")&&bIds.includes("tamanu"))msgs.push({t:"good",m:"Rosehip + tamanu — powerful scarring and skin repair combo"});
+  if(bIds.includes("blackseed")&&bIds.includes("neem"))msgs.push({t:"warn",m:"Black seed + neem — very strong scent stack, lower both sliders"});
+  if(bIds.includes("turmeric")&&bIds.includes("blackseed"))msgs.push({t:"warn",m:"Turmeric + black seed both strong — keep each at minimum weight"});
+  if(eoIds.includes("yylang"))msgs.push({t:"warn",m:"Ylang ylang in blend — verify its share stays under 0.8% of total batch"});
+  if(eoIds.includes("clarysage"))msgs.push({t:"warn",m:"Clary sage — do not use in formulas for pregnant users"});
+  if(f.eoSplit.length>=4)msgs.push({t:"warn",m:"4+ EOs — structure as top/mid/base to avoid scent clash"});
+  if(aIds.includes("seabuck"))msgs.push({t:"warn",m:"Sea buckthorn — will visibly tint the balm orange"});
+  if(aIds.includes("turmeric")||bIds.includes("turmeric"))msgs.push({t:"warn",m:"Turmeric CO2 — will stain yellow, patch-test on skin before use"});
+  if(!msgs.length){cont.innerHTML='<div class="synergy-item" style="color:var(--color-text-tertiary)">Add ingredients to see notes</div>';return;}
+  msgs.forEach(m=>{const d=document.createElement("div");d.className="synergy-item "+(m.t==="good"?"synergy-good":"synergy-warn");d.textContent=(m.t==="good"?"✓ ":"! ")+m.m;cont.appendChild(d);});
+}
+
+function updateWarnings(f){
+  const strongB=f.bSplit.filter(r=>ING.b.find(x=>x.id===r.ingId)?.potency==="strong");
+  document.getElementById("bWarning").innerHTML=strongB.length>=2?'<div class="warn">Two strong B oils combined — potency stacks. Lower both sliders to minimum.</div>':"";
+  document.getElementById("aWarning").innerHTML="";
+  document.getElementById("eoWarning").innerHTML=f.eoSplit.length>=5?'<div class="warn">5+ EOs — structure as top/mid/base notes to keep scent coherent.</div>':"";
+  const hasUnsat=f.aSplit.some(r=>["rosehip","hemp","pomegranate","seabuck","chia"].includes(r.ingId))||f.bSplit.some(r=>["blackseed","tamanu","turmeric"].includes(r.ingId));
+  document.getElementById("statShelf").textContent=hasUnsat?"8–10mo":"12–18mo";
+  document.getElementById("statTotal").textContent=batchSize;
+}
+
+renderPool("a");renderPool("b");renderPool("eo");
+update();
+</script>

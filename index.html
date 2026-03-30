@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <title>Crown Breeds — Tallow balm formulation</title>
+  <title>Crown Breeds — Lab worksheet &amp; formula builder</title>
   <style>
     :root {
       --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -116,6 +116,49 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: #64748b;
+    }
+    .page-hero__tabs-wrap {
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+      background: rgba(15, 23, 42, 0.65);
+    }
+    .app-tool-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 10px max(12px, env(safe-area-inset-right, 0px)) 12px max(12px, env(safe-area-inset-left, 0px));
+      flex-wrap: wrap;
+    }
+    .app-tool-tab {
+      flex: 1 1 auto;
+      min-height: 44px;
+      min-width: min(100%, 9rem);
+      padding: 10px 16px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+    }
+    .app-tool-tab:hover {
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .app-tool-tab:focus-visible {
+      outline: 2px solid #818cf8;
+      outline-offset: 2px;
+    }
+    .app-tool-tab.is-active {
+      color: #f8fafc;
+      background: rgba(99, 102, 241, 0.35);
+      border-color: rgba(129, 140, 248, 0.45);
+    }
+    .tool-panel[hidden] {
+      display: none !important;
     }
     .app-main {
       width: 100%;
@@ -758,6 +801,340 @@
 
     .footnote { font-size: 0.8125rem; color: var(--text-muted); margin-top: 10px; line-height: 1.55; }
 
+    #panel-builder {
+      --color-text-primary: var(--text);
+      --color-text-secondary: var(--text-muted);
+      --color-text-tertiary: var(--text-muted);
+      --color-background-primary: var(--surface);
+      --color-background-secondary: var(--surface-2);
+      --color-border-primary: var(--border-strong);
+      --color-border-secondary: var(--border-strong);
+      --color-border-tertiary: var(--border);
+      --border-radius-md: var(--radius-md);
+      --border-radius-lg: var(--radius-lg);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--color-text-primary);
+      padding: 0.35rem 0 1.25rem;
+    }
+    #panel-builder .fb-left,
+    #panel-builder .fb-right {
+      min-width: 0;
+    }
+    #panel-builder .fb-app {
+      display: grid;
+      grid-template-columns: 1fr minmax(260px, 320px);
+      gap: 20px;
+      padding: 1rem 0;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      #panel-builder .fb-app {
+        grid-template-columns: 1fr;
+      }
+    }
+    #panel-builder .fb-section {
+      background: var(--color-background-primary);
+      border: 1px solid var(--color-border-tertiary);
+      border-radius: var(--border-radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    #panel-builder .fb-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #panel-builder .fb-batch-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    #panel-builder .fb-batch-row label {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+    }
+    #panel-builder .fb-batch-row input[type="range"] {
+      flex: 1;
+      min-width: 120px;
+      accent-color: var(--focus);
+    }
+    #panel-builder .fb-batch-row span {
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 48px;
+      text-align: right;
+    }
+    #panel-builder .fb-mode-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    #panel-builder .fb-mbtn {
+      padding: 8px 14px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-border-secondary);
+      font-size: 13px;
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--color-text-secondary);
+      min-height: 40px;
+      font-family: inherit;
+    }
+    #panel-builder .fb-mbtn.active {
+      background: var(--surface-2);
+      color: var(--color-text-primary);
+      font-weight: 600;
+      border-color: var(--focus);
+      box-shadow: 0 0 0 2px var(--focus-ring);
+    }
+    #panel-builder .fb-pool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    #panel-builder .fb-pool-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    #panel-builder .fb-pool-pct { font-size: 12px; color: var(--color-text-secondary); }
+    #panel-builder .fb-add-btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-border-secondary);
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+      font-family: inherit;
+      min-height: 40px;
+    }
+    #panel-builder .fb-add-btn:hover { background: var(--surface-2); }
+    #panel-builder .fb-ing-block {
+      margin-bottom: 10px;
+      background: var(--color-background-secondary);
+      border-radius: var(--border-radius-md);
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+    }
+    #panel-builder .fb-ing-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    #panel-builder .fb-ing-top select {
+      flex: 1;
+      min-width: 140px;
+      font-size: 13px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-primary);
+      outline: none;
+      font-weight: 500;
+      padding: 8px;
+      font-family: inherit;
+    }
+    #panel-builder .fb-ing-pct {
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 36px;
+      text-align: right;
+      color: var(--color-text-primary);
+    }
+    #panel-builder .fb-ing-ml {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      min-width: 42px;
+      text-align: right;
+    }
+    #panel-builder .fb-remove-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text-muted);
+      padding: 4px 6px;
+      line-height: 1;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+    }
+    #panel-builder .fb-remove-btn:hover { color: #E24B4A; background: var(--surface-2); }
+    #panel-builder .fb-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    #panel-builder .fb-slider-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--focus);
+    }
+    #panel-builder .fb-slider-label { font-size: 11px; color: var(--color-text-tertiary); white-space: nowrap; }
+    #panel-builder .fb-ing-desc {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      margin-bottom: 5px;
+    }
+    #panel-builder .fb-ing-tip {
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 5px 8px;
+      border-radius: var(--border-radius-md);
+      margin-top: 4px;
+    }
+    #panel-builder .fb-tip-low { background: #E6F1FB; color: #0C447C; }
+    #panel-builder .fb-tip-mid { background: #E1F5EE; color: #085041; }
+    #panel-builder .fb-tip-high { background: #FAEEDA; color: #633806; }
+    #panel-builder .fb-tip-warn { background: #FCEBEB; color: #791F1F; }
+    @media (prefers-color-scheme: dark) {
+      #panel-builder .fb-tip-low { background: #1e3a5f; color: #93c5fd; }
+      #panel-builder .fb-tip-mid { background: #064e3b; color: #a7f3d0; }
+      #panel-builder .fb-tip-high { background: #422006; color: #fde68a; }
+      #panel-builder .fb-tip-warn { background: #450a0a; color: #fca5a5; }
+    }
+    #panel-builder .fb-warn {
+      font-size: 12px;
+      color: var(--warn-text);
+      background: var(--warn-bg);
+      border-radius: var(--border-radius-md);
+      padding: 8px 10px;
+      margin-top: 8px;
+      border: 1px solid var(--warn-border);
+    }
+    #panel-builder .fb-beaker-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    #panel-builder .fb-beaker-svg {
+      width: min(180px, 100%);
+      height: auto;
+      max-width: 100%;
+    }
+    #panel-builder .fb-ratio-card,
+    #panel-builder .fb-benefit-card,
+    #panel-builder .fb-synergy-card {
+      background: var(--color-background-primary);
+      border: 1px solid var(--color-border-tertiary);
+      border-radius: var(--border-radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    #panel-builder .fb-ratio-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+    #panel-builder .fb-ratio-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    #panel-builder .fb-ratio-name {
+      font-size: 12px;
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-primary);
+    }
+    #panel-builder .fb-ratio-bar-wrap {
+      width: 72px;
+      height: 6px;
+      background: var(--color-background-secondary);
+      border-radius: 3px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    #panel-builder .fb-ratio-bar-fill { height: 100%; border-radius: 3px; }
+    #panel-builder .fb-ratio-ml {
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 34px;
+      text-align: right;
+      color: var(--color-text-primary);
+    }
+    #panel-builder .fb-ratio-pct {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      min-width: 30px;
+      text-align: right;
+    }
+    #panel-builder .fb-benefit-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+    #panel-builder .fb-benefit-label {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      width: 90px;
+      flex-shrink: 0;
+    }
+    #panel-builder .fb-benefit-track {
+      flex: 1;
+      height: 6px;
+      background: var(--color-background-secondary);
+      border-radius: 3px;
+      overflow: hidden;
+      min-width: 0;
+    }
+    #panel-builder .fb-benefit-fill { height: 100%; border-radius: 3px; }
+    #panel-builder .fb-benefit-score {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      min-width: 28px;
+      text-align: right;
+    }
+    #panel-builder .fb-synergy-item {
+      font-size: 12px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--color-border-tertiary);
+      line-height: 1.5;
+    }
+    #panel-builder .fb-synergy-item:last-child { border-bottom: none; }
+    #panel-builder .fb-synergy-good { color: #0F6E56; }
+    #panel-builder .fb-synergy-warn { color: #854F0B; }
+    @media (prefers-color-scheme: dark) {
+      #panel-builder .fb-synergy-good { color: #34d399; }
+      #panel-builder .fb-synergy-warn { color: #fbbf24; }
+    }
+    #panel-builder .fb-total-card {
+      background: var(--color-background-secondary);
+      border-radius: var(--border-radius-md);
+      padding: 1rem;
+      margin-bottom: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      border: 1px solid var(--border);
+    }
+    #panel-builder .fb-stat { text-align: center; }
+    #panel-builder .fb-stat-val { font-size: 20px; font-weight: 600; color: var(--color-text-primary); }
+    #panel-builder .fb-stat-lbl { font-size: 11px; color: var(--color-text-secondary); }
+    #panel-builder .fb-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--color-text-primary);
+    }
+
     @media (max-width: 720px) {
       .ing-row {
         grid-template-columns: 1fr;
@@ -800,16 +1177,23 @@
   </style>
 </head>
 <body>
-<a class="skip-link" href="#section-setup">Skip to worksheet</a>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <header class="page-hero">
   <div class="page-hero__inner">
-    <h1 class="page-hero__h1">Tallow balm formulation</h1>
-    <p class="page-hero__sub">Crown Breeds lab worksheet — architecture, worksheet, batch review, and production on one page.</p>
-    <p class="page-hero__future">Soap and other formulations will get separate tools later.</p>
+    <h1 class="page-hero__h1">Crown Breeds formulation lab</h1>
+    <p class="page-hero__sub">Tallow balm worksheet (ml math, batch review, production) and a guided carrier / EO builder — switch tools below.</p>
+    <p class="page-hero__future">Soap calculators will be added as separate entries later.</p>
+  </div>
+  <div class="page-hero__tabs-wrap">
+    <nav class="app-tool-tabs" role="tablist" aria-label="Lab tools">
+      <button type="button" class="app-tool-tab is-active" role="tab" id="tab-lab" aria-controls="panel-lab" aria-selected="true" tabindex="0" onclick="setToolTab('lab')">Lab worksheet</button>
+      <button type="button" class="app-tool-tab" role="tab" id="tab-builder" aria-controls="panel-builder" aria-selected="false" tabindex="-1" onclick="setToolTab('builder')">Formula builder</button>
+    </nav>
   </div>
 </header>
 <main class="app-main" id="main-content">
 
+<div id="panel-lab" class="tool-panel" role="tabpanel" aria-labelledby="tab-lab">
 <div class="w">
 
 <section id="section-setup" class="flow-section" aria-labelledby="heading-setup">
@@ -1106,9 +1490,101 @@
 </section>
 
 </div>
+</div>
+
+<div id="panel-builder" class="tool-panel" role="tabpanel" aria-labelledby="tab-builder" hidden>
+<div class="fb-app">
+<div class="fb-left">
+
+<div class="fb-section">
+  <div class="fb-section-title">Batch settings</div>
+  <div class="fb-batch-row">
+    <label for="fb-batchSize">Batch size</label>
+    <input type="range" id="fb-batchSize" min="50" max="500" step="10" value="100">
+    <span id="fb-batchSizeVal">100 ml</span>
+  </div>
+  <div class="fb-batch-row">
+    <label>Use mode</label>
+    <div class="fb-mode-btns">
+      <button type="button" class="fb-mbtn active" onclick="fbSetMode(this,'face')">Face (1% EO)</button>
+      <button type="button" class="fb-mbtn" onclick="fbSetMode(this,'body')">Body (2% EO)</button>
+    </div>
+  </div>
+</div>
+
+<div class="fb-section">
+  <div class="fb-pool-header">
+    <span class="fb-pool-label">Ingredient A — major carriers</span>
+    <span class="fb-pool-pct">13% of batch</span>
+  </div>
+  <div id="fb-aPool"></div>
+  <button type="button" class="fb-add-btn" onclick="fbAddIng('a')">+ add carrier oil</button>
+  <div id="fb-aWarning"></div>
+</div>
+
+<div class="fb-section">
+  <div class="fb-pool-header">
+    <span class="fb-pool-label">Ingredient B — minor carriers</span>
+    <span class="fb-pool-pct">6% of batch</span>
+  </div>
+  <div id="fb-bPool"></div>
+  <button type="button" class="fb-add-btn" onclick="fbAddIng('b')">+ add active oil</button>
+  <div id="fb-bWarning"></div>
+</div>
+
+<div class="fb-section">
+  <div class="fb-pool-header">
+    <span class="fb-pool-label">Essential oils</span>
+    <span class="fb-pool-pct" id="fb-eoPoolPct">1% of batch</span>
+  </div>
+  <div id="fb-eoPool"></div>
+  <button type="button" class="fb-add-btn" onclick="fbAddIng('eo')">+ add essential oil</button>
+  <div id="fb-eoWarning"></div>
+</div>
+
+</div>
+
+<div class="fb-right">
+<div class="fb-beaker-wrap">
+  <svg class="fb-beaker-svg" viewBox="0 0 180 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs><clipPath id="fb-glassClip"><path d="M30,20 L30,220 Q30,250 90,250 Q150,250 150,220 L150,20 Z"/></clipPath></defs>
+    <path d="M30,20 L30,220 Q30,250 90,250 Q150,250 150,220 L150,20 Z" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+    <line x1="20" y1="20" x2="160" y2="20" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+    <g id="fb-beakerLayers" clip-path="url(#fb-glassClip)"></g>
+    <line x1="40" y1="80" x2="50" y2="80" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="120" x2="50" y2="120" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="160" x2="50" y2="160" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="200" x2="50" y2="200" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+  </svg>
+</div>
+
+<div class="fb-total-card">
+  <div class="fb-stat"><div class="fb-stat-val" id="fb-statTotal">100</div><div class="fb-stat-lbl">total ml</div></div>
+  <div class="fb-stat"><div class="fb-stat-val" id="fb-statShelf">12mo</div><div class="fb-stat-lbl">est. shelf life</div></div>
+</div>
+
+<div class="fb-ratio-card">
+  <div class="fb-card-title">Formula breakdown</div>
+  <div id="fb-ratioList"></div>
+</div>
+
+<div class="fb-benefit-card">
+  <div class="fb-card-title">Skin benefit profile</div>
+  <div id="fb-benefitBars"></div>
+</div>
+
+<div class="fb-synergy-card">
+  <div class="fb-card-title">Notes &amp; synergies</div>
+  <div id="fb-synergyList"><div class="fb-synergy-item" style="color:var(--color-text-tertiary)">Add ingredients to see notes</div></div>
+</div>
+</div>
+</div>
+</div>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="formula_builder_tab.js"></script>
 <script>
 var useCase='face';
 var DROPS_PER_ML=20;
@@ -1596,6 +2072,41 @@ window.addEventListener('resize',function(){
   if(chartPie)requestAnimationFrame(function(){ chartPie.resize(); });
 });
 setUse('face');
+
+var TOOL_TAB_IDS=['lab','builder'];
+function setToolTab(name){
+  if(TOOL_TAB_IDS.indexOf(name)<0)return;
+  var lab=document.getElementById('panel-lab');
+  var builder=document.getElementById('panel-builder');
+  var tabLab=document.getElementById('tab-lab');
+  var tabBuilder=document.getElementById('tab-builder');
+  var onLab=(name==='lab');
+  if(lab)lab.hidden=!onLab;
+  if(builder)builder.hidden=onLab;
+  if(tabLab){
+    tabLab.classList.toggle('is-active',onLab);
+    tabLab.setAttribute('aria-selected',onLab?'true':'false');
+    tabLab.setAttribute('tabindex',onLab?'0':'-1');
+  }
+  if(tabBuilder){
+    tabBuilder.classList.toggle('is-active',!onLab);
+    tabBuilder.setAttribute('aria-selected',!onLab?'true':'false');
+    tabBuilder.setAttribute('tabindex',!onLab?'0':'-1');
+  }
+  try{ history.replaceState(null,'','#'+name); }catch(e){}
+  if(onLab&&chartPie){
+    requestAnimationFrame(function(){ chartPie.resize(); });
+  }
+}
+window.addEventListener('hashchange',function(){
+  var h=(location.hash||'').replace(/^#/,'');
+  if(h==='builder')setToolTab('builder');
+  else setToolTab('lab');
+});
+(function(){
+  var h=(location.hash||'').replace(/^#/,'');
+  if(h==='builder')setToolTab('builder');
+})();
 </script>
 </body>
 </html>
