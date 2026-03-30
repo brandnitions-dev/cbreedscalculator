@@ -1,0 +1,22 @@
+# Crown Breeds calculator — notes for future sessions
+
+## Git (read this before “did you push?” checks)
+- The Git repository root is THIS folder: `crownbreedscalculator/`
+- Parent folder `random agent/` is NOT a git repo — do not run `git status` only there and conclude there is no repo.
+- Remote: `origin` → https://github.com/brandnitions-dev/cbreedscalculator.git
+- Default branch: `main`
+- When the user asks to commit/push calculator changes, `cd` into `crownbreedscalculator` then `git add` / `commit` / `push`.
+
+## Which HTML files matter
+- `tallow_blend_pro_v5.html` — main tallow blend tool (includes 50 ml pack-out / jar UI).
+- `index.html` — should stay in sync with `tallow_blend_pro_v5.html` when that is the deployed entry (copy or identical changes).
+- `crownbreeds_formula_builder_v3.html` — separate formula builder page; pack-out / jar redesign lives in `tallow_blend_pro_v5.html`, not here unless explicitly ported.
+
+## 50 ml pack-out UI (2025 redesign)
+- Markup: wrapper `.jar-packout`, `#chips.jar-preview`, `#chips-note.jar-packout__footer`.
+- JS: `renderJarPreview()` builds `.jar-packout__grid`, `.jar-packout__stats` with `.jar-stat` (primary + remainder), `.jar-packout__visual` + `buildSingleJarCard()`.
+- Old pattern removed: `jar-count-badge`, `jar-leftover-strip` — do not reintroduce without restoring matching CSS.
+
+## Housekeeping
+- After editing `tallow_blend_pro_v5.html`, mirror to `index.html` if that is still the deployment workflow.
+- Ask before assuming: user may want the same UI in `crownbreeds_formula_builder_v3.html` as a separate task.
