@@ -120,23 +120,36 @@
     }
     .lab-check input { width: 18px; height: 18px; accent-color: var(--focus); }
 
-    .texture-toggle { display: flex; flex-wrap: wrap; gap: 8px; }
-    .texture-btn {
-      flex: 1 1 auto;
-      min-height: 44px;
-      padding: 10px 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      font-family: inherit;
-      border-radius: var(--radius-sm);
+    .lab-callout {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
       border: 1px solid var(--border);
       background: var(--surface-2);
+      font-size: 0.8125rem;
+      line-height: 1.55;
       color: var(--text);
-      cursor: pointer;
     }
-    .texture-btn.active {
-      border-color: var(--focus);
-      box-shadow: 0 0 0 2px var(--focus-ring);
+    .lab-callout .callout-title {
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .lab-callout ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      display: grid;
+      gap: 6px;
+    }
+    .lab-callout-ref {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
 
     .warn-banner {
@@ -645,11 +658,13 @@
       </select>
     </div>
     <div class="lab-field">
-      <label>Texture mode</label>
-      <div class="texture-toggle" role="group" aria-label="Texture mode">
-        <button type="button" class="texture-btn active" id="texture-firm" onclick="setTexture(true)">Firm balm ×5.43</button>
-        <button type="button" class="texture-btn" id="texture-soft" onclick="setTexture(false)">Softer cream ×5.0</button>
-      </div>
+      <label for="tallow-profile">Tallow load (texture &amp; scent)</label>
+      <select id="tallow-profile" class="lab-select" onchange="syncFromControls()">
+        <option value="1.12">Soft cream — ~53% tallow · more liquid oils, EO-friendly</option>
+        <option value="1.5" selected>Balanced cream — ~60% tallow · typical “good” cream</option>
+        <option value="1.85">Rich cream — ~65% tallow · firmer cream</option>
+        <option value="5.43">Classic hard balm — ~84% tallow · legacy bar texture</option>
+      </select>
     </div>
     <div class="lab-field">
       <label>Vitamin E (tocopherol)</label>
@@ -665,6 +680,15 @@
       </select>
       <p class="ing-meta" style="margin-top:6px">Prevents oxidation of unsaturated oils and improves shelf stability.</p>
     </div>
+  </div>
+  <div class="lab-callout" role="note">
+    <div class="callout-title">Why ~83–85% tallow is taxing</div>
+    <ul>
+      <li><strong>Scent</strong> — Tallow brings a fatty/beefy note. Near-max tallow means EOs fight the base; lowering tallow lets neroli and other top notes read.</li>
+      <li><strong>Grain</strong> — High solids + uneven cool-down → more crystalline feel. Extra jojoba/carriers buffer crystallization.</li>
+      <li><strong>Feel</strong> — Ultra-high tallow reads waxy/hard; scoopable “cream” needs more liquid oil phase. Many solid creams land nearer <strong>50–65% tallow</strong> with meaningful carrier % and ~0.4% Vit&nbsp;E.</li>
+    </ul>
+    <p class="lab-callout-ref">Presets above map the same <strong>(J + A + B) × multiplier</strong> recipe — only the multiplier changes. “Approx %” ignores tiny EO/Vit&nbsp;E; your live <strong>Tallow ratio</strong> metric is exact.</p>
   </div>
 </div>
 
@@ -785,7 +809,7 @@
 
   <div class="group-header" style="background:#e7e5e4">
     <span class="group-title" style="color:#44403c">Tallow — main base</span>
-    <span class="pill p-gray" id="tallow-pill-pct">~84–85% of batch</span>
+    <span class="pill p-gray" id="tallow-pill-pct">—</span>
     <span class="group-pct" style="color:#44403c" id="pct-tal">—%</span>
   </div>
 
@@ -797,10 +821,10 @@
         <span class="source-tag" id="tag-tallow" style="display:none">source</span>
         <span class="ing-sub" id="tallow-fmla">(J + A + B) × multiplier</span>
       </div>
-      <div class="ing-meta">Skin-analog lipids. Multiplier from texture mode (5.43 firm / 5.0 softer).</div>
+      <div class="ing-meta">Skin-analog lipids. Tallow load preset sets the multiplier on (J + A + B) — cream presets keep more liquid carriers for glide, EO clarity, and smoother set.</div>
     </div>
     <div class="ing-val">
-      <input class="val-input" id="tallow" type="number" min="1" step="1" value="189.05" inputmode="decimal" aria-label="Beef tallow milliliters" oninput="fromTallow()">
+      <input class="val-input" id="tallow" type="number" min="1" step="1" value="52.5" inputmode="decimal" aria-label="Beef tallow milliliters" oninput="fromTallow()">
       <span class="val-unit">ml</span>
     </div>
   </div>
@@ -973,18 +997,15 @@ function updateCompositionCharts(v){
 }
 
 function getBDiv(){return parseInt(document.getElementById('potency-b').value,10)||2;}
-function getTallowMult(){return document.getElementById('texture-firm').classList.contains('active')?5.43:5.0;}
+function getTallowMult(){
+  var m=parseFloat(document.getElementById('tallow-profile').value);
+  return(!isNaN(m)&&m>0)?m:1.5;
+}
 function vitOn(){return document.getElementById('vit-toggle').checked;}
 function vitPct(){return parseFloat(document.getElementById('vit-pct').value)||0.004;}
 
 /** j + j/2 + j/(2*bd) */
 function carrierFactor(bd){return 1+0.5+0.5/bd;}
-
-function setTexture(firm){
-  document.getElementById('texture-firm').classList.toggle('active',firm);
-  document.getElementById('texture-soft').classList.toggle('active',!firm);
-  syncFromControls();
-}
 
 function syncFromControls(){
   document.getElementById('strong-oil-warn').style.display=getBDiv()===4?'block':'none';
@@ -1058,8 +1079,9 @@ function setUse(u){
 }
 
 /**
- * Core ratios (unchanged logic, extended):
- * A = j/2, B = A/bd, tallow = (j+A+B)*mult, EO ml from legacy drop model (×0.05 × face/body scent mult)
+ * Core ratios: A = j/2, B = A/bd, tallow = (j+A+B)*mult.
+ * mult from tallow-profile: cream presets (~1.1–1.9) ≈ 50–65% tallow; classic balm 5.43 ≈ ~84%.
+ * EO ml from legacy drop model (×0.05 × face/body scent mult).
  */
 function calc(j){
   var bd=getBDiv();
@@ -1122,13 +1144,14 @@ function onTempInput(){
 function renderProcSteps(mult){
   var ol=document.getElementById('proc-steps');
   ol.innerHTML='';
+  var whipNote=mult>=4?'high tallow / firm set':(mult>=2?'medium load':'higher oil phase — lighter whip');
   var steps=[
     'Melt tallow slowly (double boiler recommended).',
     'Cool to ~50°C (target working range 45–55°C before adding heat-sensitive components).',
     'Add carrier oils (jojoba, A, B'+(vitOn()?', Vitamin E':'')+'). Mix thoroughly 2–5 minutes.',
     'Add essential oils while batch is below ~50°C.',
     (vitOn()?'Optional: hold ~50°C for 5–10 minutes for homogenization.':'Optional: hold ~50°C briefly for homogenization.'),
-    'Cool slowly to set. Optional: whip during cool-down for lighter texture (especially at ×'+fmt(mult,2)+' tallow multiplier).'
+    'Cool slowly to set. Optional: whip during cool-down — '+whipNote+' (×'+fmt(mult,2)+' on carriers).'
   ];
   steps.forEach(function(s){
     var li=document.createElement('li');
@@ -1162,7 +1185,12 @@ function render(v){
   var bd=v.bd;
   document.getElementById('ing-b-pill').textContent='A ÷ '+bd;
   document.getElementById('tallow-fmla').textContent='(J + A + B) × '+fmt(v.mult,2);
-  document.getElementById('tallow-pill-pct').textContent=v.mult>=5.4?'~84–85% tallow':'Softer cream — lower tallow %';
+  var talPct=v.total>0?v.t/v.total*100:0;
+  var talLbl=fmt(talPct,1)+'% tallow';
+  if(talPct>=72)talLbl+=' — firm / waxy';
+  else if(talPct>=52)talLbl+=' — cream band';
+  else talLbl+=' — soft / high-carrier';
+  document.getElementById('tallow-pill-pct').textContent=talLbl;
 
   var dropsApprox=Math.round(v.eoml*DROPS_PER_ML);
   document.getElementById('eo-main').textContent=fmt(v.eoml,3)+' ml (≈ '+dropsApprox+' drops)';
