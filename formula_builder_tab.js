@@ -123,6 +123,42 @@ const FB_ING={
      tips:{low:"Fresh conifer lift.",mid:"Body-care astringent / leg-circulation angle.",high:"Cypress-forward — cologne-forest; gender-neutral."}},
     {id:"cedarwood",name:"Cedarwood Atlas",desc:"Sesquiterpene wood — soft blanket under florals; acne and stress associations in aromatherapy.",benefits:{acne:2,calming:3,antimicrobial:1},
      tips:{low:"Creamy wood cushion.",mid:"Stable base for neroli or rose.",high:"Cedar-heavy — cozy winter lumberyard vibe."}},
+    {id:"vanilla",name:"Vanilla",desc:"CO2 / oleoresin / absolute — comforting, gourmand balsamic note; vanillin has antioxidant folklore; often pre-diluted for ease and cost.",benefits:{calming:3,antioxidant:2,moisturizing:1,soothing:2},
+     tips:{low:"Proper vanilla depth — anchors sweet blends without cloying.",mid:"Gourmand heart — pairs with resins, woods, citrus tops.",high:"Vanilla-forward — rich dessert profile; check supplier dilution so total EO math stays honest."}},
+    {id:"sweetorange",name:"Sweet orange",desc:"Bright monoterpene citrus — mood lift and ‘clean’ sparkle; expressed oils carry furanocoumarin risk in leave-on sun — prefer terpeneless grades or keep total trace if uncertain.",benefits:{brightening:2,calming:2,antimicrobial:1},
+     tips:{low:"Sunshine accent — gentle crowd-pleaser.",mid:"Classic citrus top over woods or vanilla.",high:"Orange-heavy — verify supplier phototoxicity guidance for balms worn in sun."}},
+    {id:"bergamotfcf",name:"Bergamot FCF",desc:"Bergapten-reduced (FCF) bergamot — bergamottin stories for ‘clear’ skin and phototoxicity removed for typical cosmetic use when true FCF.",benefits:{antimicrobial:2,calming:2,antiinflammatory:1,brightening:1},
+     tips:{low:"Earl Grey musk without sun panic — verify authentic FCF COA.",mid:"Elegant cologne bridge between citrus and florals.",high:"Bergamot-dominant — verify FCF; non-FCF bergamot is not interchangeable on skin."}},
+    {id:"petitgrain",name:"Petitgrain",desc:"From the bitter-orange tree — linalool-rich, greener and less heady than neroli; steadies oily or stressed skin narratives.",benefits:{acne:2,calming:3,soothing:2,regenerating:1},
+     tips:{low:"Fresh leaf-and-wood lift beside neroli or lavender.",mid:"Balancing ‘spa water’ note for combination skin stories.",high:"Petitgrain-forward — sharp green cologne; beautiful in unisex balms."}},
+    {id:"tangerine",name:"Tangerine",desc:"Sweeter, softer citrus than orange — less bite, kid-friendly vibe; still use cosmetic guidance for expressed citrus in sun.",benefits:{calming:2,brightening:1,soothing:2},
+     tips:{low:"Candy-orange whisper — blends into vanilla or cacao directions.",mid:"Playful top without harshness.",high:"Tangerine-led — check phototoxicity notes same as other expressed citruses."}},
+    {id:"howood",name:"Ho wood",desc:"Very high natural linalool — gentle ‘rosewood substitute’ for calming, barrier-soothing formulas without endangered species politics.",benefits:{calming:3,soothing:3,regenerating:2,antiinflammatory:1},
+     tips:{low:"Soft floral-wood cushion under everything.",mid:"Neroli/lavender extender without adding harsh notes.",high:"Ho wood–heavy — sweet soft wood dominant; hypoallergenic-leaning story."}},
+    {id:"benzoin",name:"Balsam of benzoin",desc:"Vanillic resin — legendary for chapped-skin salves; fixative ‘hug’ that sweetens sharp edges in a blend.",benefits:{healing:3,soothing:3,calming:2,barrier:1},
+     tips:{low:"Resin glue that smells like vanilla frosting.",mid:"Pairs with frankincense, myrrh, or vanilla for amber bases.",high:"Benzoin-heavy — very thick resin character; pre-diluted resinoid is common."}},
+    {id:"jasmineabs",name:"Jasmine absolute",desc:"Intensely floral — traditionally linked to moisture and elasticity narratives; strong sensitizer potential — treat as micro-dose luxury.",benefits:{moisturizing:3,antiaging:2,calming:2,regenerating:2},
+     tips:{low:"True jasmine signal at responsible share.",mid:"Heady floral heart — cost and potency both spike.",high:"High jasmine share risk — extra patch-test and formula review for sensitized skin."}},
+    {id:"marjoram",name:"Sweet marjoram",desc:"Warm herbal — tension and ‘overworked skin’ metaphor in botanical literature; softer than oregano/thyme thymol types.",benefits:{soothing:3,calming:3,antiinflammatory:2},
+     tips:{low:"Herbal blanket under lavender.",mid:"Spa massage-balm direction.",high:"Marjoram-forward — can read like pizza herb if overdosed; keep elegant."}},
+    {id:"coriander",name:"Coriander seed",desc:"Linalool-forward spice — cooling-leaning, mild antimicrobial; bridges gourmand and citrus.",benefits:{soothing:2,calming:2,antimicrobial:1,brightening:1},
+     tips:{low:"Soft citrus-spice sparkle.",mid:"Pairs with cardamom, ginger, or orange.",high:"Coriander-heavy — culinary coriander dominates — intentional only."}},
+    {id:"thymelinalool",name:"Thyme (linalool)",desc:"Linalool chemotype thyme — antimicrobial reputation with far less burn than thymol CT; still respect dilution.",benefits:{antimicrobial:3,antifungal:2,antiinflammatory:2,acne:2},
+     tips:{low:"Herbal sanitary note without hospital sting.",mid:"Blemish-support body balm angle.",high:"Thyme-forward — even linalool type can irritate broken skin; avoid face at high EO share."}},
+    {id:"balsamfir",name:"Balsam fir",desc:"Fresh forest monoterpenes — clean ‘outdoor’ scent; traditional use for chest and muscle rubs translated into feel-good skin balm stories.",benefits:{antiinflammatory:2,calming:2,antimicrobial:1},
+     tips:{low:"Christmas tree sparkle over vanilla or benzoin.",mid:"Gender-neutral winter sports SKU.",high:"Fir-heavy — very piney; may overwhelm florals."}},
+    {id:"ginger",name:"Ginger",desc:"Sesquiterpene warmth — circulation and ‘glow’ folklore; spicy middle note; can irritate very sensitive skin at high share.",benefits:{antiinflammatory:2,regenerating:1,brightening:1,healing:1},
+     tips:{low:"Warm spice-thread in gourmand bases.",mid:"Pairs with vanilla, orange, or cacao carriers.",high:"Ginger-forward — hot sensation possible — body balm / achy-skin story."}},
+    {id:"cardamom",name:"Cardamom",desc:"Sweet spicy terpenes — antimicrobial whisper; ‘chai’ bridge between gourmand and woods without cassia harshness.",benefits:{calming:2,antimicrobial:2,soothing:2},
+     tips:{low:"Luxury spice lift in vanilla or sandalwood bases.",mid:"Masala gourmand direction.",high:"Cardamom-forward — chai latte dominant — intentional gourmand."}},
+    {id:"litsea",name:"Litsea (may chang)",desc:"Citral-forward ‘lemon lift’ — astringent, oil-control narratives; can be skin sensitizer at indiscriminate % — keep conservative in face balms.",benefits:{acne:2,antimicrobial:2,brightening:2},
+     tips:{low:"Sparkle substitute when true lemon is tricky.",mid:"Fresh top over tea tree or palmarosa.",high:"Litsea-heavy — citral burn risk on sensitive skin; bias to body use."}},
+    {id:"spearmint",name:"Spearmint",desc:"Softer menthol story than peppermint — cooling comfort for body balms; usually gentler on skin at comparable dilution.",benefits:{calming:2,soothing:2,antimicrobial:1},
+     tips:{low:"Gentle mint cool without eye-watering punch.",mid:"Pairs with lavender or eucalyptus for fresh open-air.",high:"Spearmint-forward — still mint — go easy on thin facial skin."}},
+    {id:"lemongrass",name:"Lemongrass",desc:"Citral + geraniol — broad antimicrobial reputation; insect story in field use; higher sensitization reports than softer oils — respect cap in leave-on.",benefits:{antimicrobial:3,antifungal:2,antiinflammatory:2},
+     tips:{low:"Bright lemon-herb body-balm accent.",mid:"Pairs with citronella family storytelling for outdoor jars.",high:"Lemongrass-heavy — sensitization risk climbs; not a face-forward choice at high share."}},
+    {id:"eucalyptusr",name:"Eucalyptus (radiata)",desc:"1,8-cineole rich — clean antimicrobial inhalation association; gentler reputation than some eucalyptus chemotypes; still avoid infant faces and very reactive skin.",benefits:{antimicrobial:2,antiinflammatory:1,calming:1},
+     tips:{low:"Spa steam room kiss without medicinal overload.",mid:"Winter chest-and-skin balm note on body.",high:"Eucalyptus-forward — camphoraceous; contraindications for young children — label thoughtfully."}},
   ]
 };
 
@@ -143,7 +179,7 @@ function fbSetMode(el,m){document.querySelectorAll("#panel-builder .fb-mbtn").fo
 document.getElementById("fb-batchSize").addEventListener("input",function(){fbBatchSize=+this.value;document.getElementById("fb-batchSizeVal").textContent=fbBatchSize+" ml";fbUpdate();});
 
 function fbAddIng(pool){
-  const limits={a:4,b:3,eo:8};
+  const limits={a:4,b:3,eo:10};
   if(fbPools[pool].length>=limits[pool])return;
   const used=fbPools[pool].map(r=>r.ingId);
   const avail=FB_ING[pool].filter(i=>!used.includes(i.id));
@@ -293,6 +329,13 @@ function fbUpdateSynergies(f){
   if(eoIds.includes("bluetansy")&&eoIds.includes("chamomile"))msgs.push({t:"good",m:"Blue tansy + chamomile — maximum visible calm (watch color/cost)"});
   if(eoIds.includes("copaiba")&&eoIds.includes("palmarosa"))msgs.push({t:"good",m:"Copaiba + palmarosa — soft wood + rosy hydration"});
   if(eoIds.includes("rosemary")&&eoIds.includes("cedarwood"))msgs.push({t:"good",m:"Rosemary + cedar — spa forest cologne base"});
+  if(eoIds.includes("vanilla")&&eoIds.includes("sandalwood"))msgs.push({t:"good",m:"Vanilla + sandalwood — creamy luxury gourmand base"});
+  if(eoIds.includes("vanilla")&&eoIds.includes("benzoin"))msgs.push({t:"good",m:"Vanilla + benzoin — double vanillic fixative hug"});
+  if(eoIds.includes("vanilla")&&(eoIds.includes("sweetorange")||eoIds.includes("tangerine")))msgs.push({t:"good",m:"Vanilla + soft citrus — creamsicle / dessert direction"});
+  if(eoIds.includes("bergamotfcf")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Bergamot FCF + lavender — classic cologne-floral calm"});
+  if(eoIds.includes("petitgrain")&&eoIds.includes("neroli"))msgs.push({t:"good",m:"Petitgrain + neroli — same-tree completeness; neroli budget extender"});
+  if(eoIds.includes("jasmineabs")&&eoIds.includes("sandalwood"))msgs.push({t:"good",m:"Jasmine absolute + sandalwood — classic attar elegance; micro-dose jasmine"});
+  if(eoIds.includes("howood")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Ho wood + lavender — soft linalool stack, very chill"});
   if(eoIds.includes("geranium")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Geranium + lavender — fresh rosy herbal blend"});
   if(eoIds.includes("rose")&&eoIds.includes("geranium"))msgs.push({t:"good",m:"Rose + geranium — lush floral; watch cost if shares are high"});
   if(eoIds.includes("patchouli")&&eoIds.includes("lavender"))msgs.push({t:"good",m:"Patchouli + lavender — popular woody-floral anchor"});
@@ -308,6 +351,8 @@ function fbUpdateSynergies(f){
   if(bIds.includes("turmeric")&&bIds.includes("blackseed"))msgs.push({t:"warn",m:"Turmeric + black seed both strong — keep each at minimum weight"});
   if(eoIds.includes("yylang"))msgs.push({t:"warn",m:"Ylang ylang in blend — verify its share stays under 0.8% of total batch"});
   if(eoIds.includes("clarysage"))msgs.push({t:"warn",m:"Clary sage — do not use in formulas for pregnant users"});
+  if(eoIds.includes("jasmineabs"))msgs.push({t:"warn",m:"Jasmine absolute — potential sensitizer; keep micro-dose and patch-test"});
+  if(eoIds.includes("lemongrass")||eoIds.includes("litsea"))msgs.push({t:"warn",m:"Citral-heavy EO (lemongrass / litsea) — limit share on face and sensitive skin"});
   if(f.eoSplit.length>=4)msgs.push({t:"warn",m:"4+ EOs — structure as top/mid/base to avoid scent clash"});
   if(f.eoSplit.length>=2&&f.eoSplit.length<4)msgs.push({t:"info",m:"Several EOs — assign top / heart / base roles so the scent reads clearly in balm."});
   if(aIds.includes("seabuck"))msgs.push({t:"warn",m:"Sea buckthorn — will visibly tint the balm orange"});
@@ -338,7 +383,7 @@ function fbUpdateWarnings(f){
   const strongB=f.bSplit.filter(r=>FB_ING.b.find(x=>x.id===r.ingId)?.potency==="strong");
   document.getElementById("fb-bWarning").innerHTML=strongB.length>=2?'<div class="fb-warn">Two strong B oils combined — potency stacks. Lower both sliders to minimum.</div>':"";
   document.getElementById("fb-aWarning").innerHTML="";
-  document.getElementById("fb-eoWarning").innerHTML=f.eoSplit.length>=7?'<div class="fb-warn">7+ EOs — structure as top/mid/base notes to keep scent coherent.</div>':"";
+  document.getElementById("fb-eoWarning").innerHTML=f.eoSplit.length>=8?'<div class="fb-warn">8+ EOs — structure as top/mid/base notes to keep scent coherent.</div>':"";
   const unsatA=["rosehip","hemp","pomegranate","seabuck","chia","grapeseed","eveprim","borage","pricklypear","watermelon","ricebran","sunflower"];
   const unsatB=["blackseed","tamanu","turmeric","raspberry","buriti","andiroba"];
   const hasUnsat=f.aSplit.some(r=>unsatA.indexOf(r.ingId)>=0)||f.bSplit.some(r=>unsatB.indexOf(r.ingId)>=0);
