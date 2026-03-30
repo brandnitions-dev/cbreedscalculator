@@ -80,6 +80,13 @@ const FB_BENEFIT_COLORS={antiaging:"#534AB7",moisturizing:"#1D9E75",barrier:"#63
 
 var fbMode="face",fbBatchSize=100,fbPools={a:[],b:[],eo:[]},fbIdCtr=0;
 
+/** Bar fill % of track: visual ∝ sqrt(p/100), p in 0–100; normalized so largest row fills track. Ordering preserved. */
+function fbSqrtBarWidthNorm(pPercent, maxSqrtScale){
+  var v=Math.sqrt(Math.max(0,pPercent)/100);
+  var mx=maxSqrtScale>0?maxSqrtScale:1e-9;
+  return Math.min(100,Math.round((v/mx)*1000)/10);
+}
+
 function fbSetMode(el,m){document.querySelectorAll("#panel-builder .fb-mbtn").forEach(b=>b.classList.remove("active"));el.classList.add("active");fbMode=m;document.getElementById("fb-eoPoolPct").textContent=(m==="face"?"1":"2")+"% of batch";fbUpdate();}
 document.getElementById("fb-batchSize").addEventListener("input",function(){fbBatchSize=+this.value;document.getElementById("fb-batchSizeVal").textContent=fbBatchSize+" ml";fbUpdate();});
 
@@ -180,8 +187,15 @@ function fbUpdateBeaker(f){
 function fbUpdateRatios(f){
   const list=document.getElementById("fb-ratioList");list.innerHTML="";
   const all=[...f.fixed.map(r=>({name:r.name,pct:r.pct,color:r.color})),...f.aSplit.map((r,i)=>({name:FB_ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:FB_COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:FB_ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:FB_COLORS["b"+i]||"#D85A30"})),...f.eoSplit.map((r,i)=>({name:FB_ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:FB_COLORS["eo"+i]||"#534AB7"}))];
-  const max=Math.max(...all.map(r=>r.pct));
-  all.forEach(r=>{const row=document.createElement("div");row.className="fb-ratio-row";row.innerHTML=`<div class="fb-ratio-dot" style="background:${r.color}"></div><div class="fb-ratio-name">${r.name}</div><div class="fb-ratio-bar-wrap"><div class="fb-ratio-bar-fill" style="width:${Math.round((r.pct/max)*100)}%;background:${r.color}"></div></div><div class="fb-ratio-ml">${(r.pct*fbBatchSize).toFixed(1)}ml</div><div class="fb-ratio-pct">${(r.pct*100).toFixed(1)}%</div>`;list.appendChild(row);});
+  const maxSqrt=Math.max.apply(null,all.map(r=>Math.sqrt(Math.max(0,r.pct*100)/100)).concat([1e-9]));
+  all.forEach(r=>{
+    const pPct=r.pct*100;
+    const w=fbSqrtBarWidthNorm(pPct,maxSqrt);
+    const tip=`${r.name}: ${pPct.toFixed(2)}% of batch · ${(r.pct*fbBatchSize).toFixed(2)} ml (bar uses √% scale for visibility)`;
+    const row=document.createElement("div");row.className="fb-ratio-row";
+    row.innerHTML=`<div class="fb-ratio-dot" style="background:${r.color}"></div><div class="fb-ratio-name">${r.name}</div><div class="fb-ratio-bar-wrap" title="${tip.replace(/"/g,'&quot;')}"><div class="fb-ratio-bar-fill" style="width:${w}%;background:${r.color}" title="${tip.replace(/"/g,'&quot;')}"></div></div><div class="fb-ratio-ml">${(r.pct*fbBatchSize).toFixed(1)}ml</div><div class="fb-ratio-pct">${pPct.toFixed(1)}%</div>`;
+    list.appendChild(row);
+  });
 }
 
 function fbUpdateBenefits(f){
@@ -192,7 +206,18 @@ function fbUpdateBenefits(f){
   const sorted=BENEFIT_LABELS.filter(b=>scores[b]>0).sort((a,b)=>scores[b]-scores[a]).slice(0,8);
   const cont=document.getElementById("fb-benefitBars");cont.innerHTML="";
   if(!sorted.length){cont.innerHTML='<div style="font-size:12px;color:var(--color-text-tertiary)">Add ingredients to see benefits</div>';return;}
-  sorted.forEach(b=>{const pct=Math.round((scores[b]/max)*100);const col=FB_BENEFIT_COLORS[b]||"#888780";const row=document.createElement("div");row.className="fb-benefit-row";row.innerHTML=`<div class="fb-benefit-label">${b}</div><div class="fb-benefit-track"><div class="fb-benefit-fill" style="width:${pct}%;background:${col}"></div></div><div class="fb-benefit-score">${pct}%</div>`;cont.appendChild(row);});
+  const benefitPcts=sorted.map(b=>Math.round((scores[b]/max)*100));
+  const maxSqrtBen=Math.max.apply(null,benefitPcts.map(p=>Math.sqrt(Math.max(0,p)/100)).concat([1e-9]));
+  sorted.forEach((b,i)=>{
+    const pct=benefitPcts[i];
+    const w=fbSqrtBarWidthNorm(pct,maxSqrtBen);
+    const col=FB_BENEFIT_COLORS[b]||"#888780";
+    const tip=`${b}: ${pct}% vs top benefit (bar √%-scaled for visibility)`;
+    const esc=tip.replace(/"/g,'&quot;');
+    const row=document.createElement("div");row.className="fb-benefit-row";
+    row.innerHTML=`<div class="fb-benefit-label">${b}</div><div class="fb-benefit-track" title="${esc}"><div class="fb-benefit-fill" style="width:${w}%;background:${col}" title="${esc}"></div></div><div class="fb-benefit-score">${pct}%</div>`;
+    cont.appendChild(row);
+  });
 }
 
 function fbUpdateSynergies(f){

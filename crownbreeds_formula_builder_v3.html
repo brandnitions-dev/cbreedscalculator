@@ -229,6 +229,12 @@ const BENEFIT_COLORS={antiaging:"#534AB7",moisturizing:"#1D9E75",barrier:"#63992
 
 let mode="face",batchSize=100,pools={a:[],b:[],eo:[]},idCtr=0;
 
+function sqrtBarWidthNorm(pPercent,maxSqrtScale){
+  var v=Math.sqrt(Math.max(0,pPercent)/100);
+  var mx=maxSqrtScale>0?maxSqrtScale:1e-9;
+  return Math.min(100,Math.round((v/mx)*1000)/10);
+}
+
 function setMode(el,m){document.querySelectorAll(".mbtn").forEach(b=>b.classList.remove("active"));el.classList.add("active");mode=m;document.getElementById("eoPoolPct").textContent=(m==="face"?"1":"2")+"% of batch";update();}
 document.getElementById("batchSize").addEventListener("input",function(){batchSize=+this.value;document.getElementById("batchSizeVal").textContent=batchSize+" ml";update();});
 
@@ -329,8 +335,16 @@ function updateBeaker(f){
 function updateRatios(f){
   const list=document.getElementById("ratioList");list.innerHTML="";
   const all=[...f.fixed.map(r=>({name:r.name,pct:r.pct,color:r.color})),...f.aSplit.map((r,i)=>({name:ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:COLORS["b"+i]||"#D85A30"})),...f.eoSplit.map((r,i)=>({name:ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:COLORS["eo"+i]||"#534AB7"}))];
-  const max=Math.max(...all.map(r=>r.pct));
-  all.forEach(r=>{const row=document.createElement("div");row.className="ratio-row";row.innerHTML=`<div class="ratio-dot" style="background:${r.color}"></div><div class="ratio-name">${r.name}</div><div class="ratio-bar-wrap"><div class="ratio-bar-fill" style="width:${Math.round((r.pct/max)*100)}%;background:${r.color}"></div></div><div class="ratio-ml">${(r.pct*batchSize).toFixed(1)}ml</div><div class="ratio-pct">${(r.pct*100).toFixed(1)}%</div>`;list.appendChild(row);});
+  const maxSqrt=Math.max.apply(null,all.map(r=>Math.sqrt(Math.max(0,r.pct*100)/100)).concat([1e-9]));
+  all.forEach(r=>{
+    const pPct=r.pct*100;
+    const w=sqrtBarWidthNorm(pPct,maxSqrt);
+    const tip=`${r.name}: ${pPct.toFixed(2)}% of batch · ${(r.pct*batchSize).toFixed(2)} ml (bar √%-scaled)`;
+    const t=tip.replace(/"/g,"&quot;");
+    const row=document.createElement("div");row.className="ratio-row";
+    row.innerHTML=`<div class="ratio-dot" style="background:${r.color}"></div><div class="ratio-name">${r.name}</div><div class="ratio-bar-wrap" title="${t}"><div class="ratio-bar-fill" style="width:${w}%;background:${r.color}" title="${t}"></div></div><div class="ratio-ml">${(r.pct*batchSize).toFixed(1)}ml</div><div class="ratio-pct">${pPct.toFixed(1)}%</div>`;
+    list.appendChild(row);
+  });
 }
 
 function updateBenefits(f){
@@ -341,7 +355,18 @@ function updateBenefits(f){
   const sorted=BENEFIT_LABELS.filter(b=>scores[b]>0).sort((a,b)=>scores[b]-scores[a]).slice(0,8);
   const cont=document.getElementById("benefitBars");cont.innerHTML="";
   if(!sorted.length){cont.innerHTML='<div style="font-size:12px;color:var(--color-text-tertiary)">Add ingredients to see benefits</div>';return;}
-  sorted.forEach(b=>{const pct=Math.round((scores[b]/max)*100);const col=BENEFIT_COLORS[b]||"#888780";const row=document.createElement("div");row.className="benefit-row";row.innerHTML=`<div class="benefit-label">${b}</div><div class="benefit-track"><div class="benefit-fill" style="width:${pct}%;background:${col}"></div></div><div class="benefit-score">${pct}%</div>`;cont.appendChild(row);});
+  const benefitPcts=sorted.map(b=>Math.round((scores[b]/max)*100));
+  const maxSqrtBen=Math.max.apply(null,benefitPcts.map(p=>Math.sqrt(Math.max(0,p)/100)).concat([1e-9]));
+  sorted.forEach((b,i)=>{
+    const pct=benefitPcts[i];
+    const w=sqrtBarWidthNorm(pct,maxSqrtBen);
+    const col=BENEFIT_COLORS[b]||"#888780";
+    const tip=`${b}: ${pct}% vs top benefit (bar √%-scaled)`;
+    const t=tip.replace(/"/g,"&quot;");
+    const row=document.createElement("div");row.className="benefit-row";
+    row.innerHTML=`<div class="benefit-label">${b}</div><div class="benefit-track" title="${t}"><div class="benefit-fill" style="width:${w}%;background:${col}" title="${t}"></div></div><div class="benefit-score">${pct}%</div>`;
+    cont.appendChild(row);
+  });
 }
 
 function updateSynergies(f){
