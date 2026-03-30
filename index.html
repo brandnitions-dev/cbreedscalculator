@@ -183,8 +183,8 @@
     }
     @media (min-width: 900px) {
       .lab-grid { grid-template-columns: repeat(3, 1fr); }
-      .lab-field:nth-child(3) { grid-column: 1 / -1; }
     }
+    .lab-field--full { grid-column: 1 / -1; }
     .lab-field label {
       display: block;
       font-size: 0.6875rem;
@@ -754,11 +754,18 @@
 <div class="w">
 
 <div id="panel-setup" class="tab-panel" role="tabpanel" aria-labelledby="tab-setup">
-<p class="tab-hint">Session defaults: carrier B potency, tallow load, vitamin E, and face vs body essential-oil tier.</p>
+<p class="tab-hint">Choose <strong>recipe architecture</strong> first (balanced 55/7/18/12/6 vs legacy jojoba master). Then carriers, tallow load (legacy), vitamin E, and face/body EO tier.</p>
 <div class="lab-bar" id="lab-controls">
   <div class="lab-bar-title">Formulation controls</div>
   <div class="lab-grid">
-    <div class="lab-field">
+    <div class="lab-field lab-field--full">
+      <label for="recipe-mode">Recipe architecture</label>
+      <select id="recipe-mode" class="lab-select" onchange="onRecipeModeChange()">
+        <option value="legacy">Legacy — jojoba master (× tallow load, A/B ratios)</option>
+        <option value="balanced" selected>Balanced structure — 55% tallow · 7% beeswax · 18/12/6% carriers</option>
+      </select>
+    </div>
+    <div class="lab-field" id="field-legacy-potency">
       <label for="potency-b">Potency of Ingredient B</label>
       <select id="potency-b" class="lab-select" aria-describedby="strong-oil-warn">
         <option value="2">Mild oils — B = A ÷ 2</option>
@@ -766,7 +773,7 @@
         <option value="4">Strong oils (black seed, neem, etc.) — B = A ÷ 4</option>
       </select>
     </div>
-    <div class="lab-field">
+    <div class="lab-field" id="field-legacy-tallow">
       <label for="tallow-profile">Tallow load (texture &amp; scent)</label>
       <select id="tallow-profile" class="lab-select" onchange="syncFromControls()">
         <option value="1.12">Soft cream — ~53% tallow · more liquid oils, EO-friendly</option>
@@ -775,7 +782,7 @@
         <option value="5.43">Classic hard balm — ~84% tallow · legacy bar texture</option>
       </select>
     </div>
-    <div class="lab-field">
+    <div class="lab-field lab-field--full">
       <label>Vitamin E (tocopherol)</label>
       <div class="lab-check">
         <input type="checkbox" id="vit-toggle" checked onchange="syncFromControls()">
@@ -790,7 +797,12 @@
       <p class="ing-meta" style="margin-top:6px">Prevents oxidation of unsaturated oils and improves shelf stability.</p>
     </div>
   </div>
-  <div class="lab-callout" role="note">
+  <div class="lab-callout" id="callout-balanced" role="note">
+    <div class="callout-title">Balanced structure (target % of nominal batch)</div>
+    <p class="ing-meta" style="margin:0 0 10px"><strong>Tallow 55% · Beeswax 7% · Jojoba 18% · Carrier A 12% · Carrier B 6% · Vit&nbsp;E 0.4% · EO 1% (face) / 2% (body).</strong> Tallow + beeswax stabilize the matrix in warm rooms; jojoba keeps slip; lower tallow vs legacy bars tames base odor. <strong>Whip while the blend sets</strong> to reduce grain.</p>
+    <p class="lab-callout-ref">Nominal batch scale = jojoba ÷ 0.18. Vit&nbsp;E uses your concentration % of <em>actual</em> total (after EO); live table shows true %.</p>
+  </div>
+  <div class="lab-callout" id="callout-legacy" role="note" hidden>
     <div class="callout-title">Why ~83–85% tallow is taxing</div>
     <ul>
       <li><strong>Scent</strong> — Tallow brings a fatty/beefy note. Near-max tallow means EOs fight the base; lowering tallow lets neroli and other top notes read.</li>
@@ -813,7 +825,7 @@
 </div>
 
 <div id="panel-recipe" class="tab-panel" role="tabpanel" aria-labelledby="tab-recipe" hidden>
-<p class="tab-hint">Source from jojoba or tallow; ingredient A/B and EO follow locked ratios. Edit ml, then use Batch review for totals and export thinking.</p>
+<p class="tab-hint">Source from <strong>jojoba</strong> or <strong>tallow</strong>. Balanced mode fixes carrier splits and EO % of nominal batch; legacy mode uses nJoJo ÷ 2 and A÷B potency. Batch review for sign-off.</p>
 <div class="container">
 
   <div class="group-header" style="background:#d1fae5">
@@ -869,7 +881,7 @@
     <div class="ing-body">
       <div class="ing-top">
         <span class="ing-name">Ingredient A — major carrier</span>
-        <span class="pill p-amber">nJoJo ÷ 2</span>
+        <span class="pill p-amber" id="ing-a-pill">nJoJo ÷ 2</span>
       </div>
       <div class="ing-meta">Mild-scented, high-benefit oil — sesame, rosehip, marula. At half the jojoba volume it delivers real therapeutic value without competing with the EO fragrance.</div>
     </div>
@@ -936,7 +948,23 @@
       <div class="ing-meta">Skin-analog lipids. Tallow load preset sets the multiplier on (J + A + B) — cream presets keep more liquid carriers for glide, EO clarity, and smoother set.</div>
     </div>
     <div class="ing-val">
-      <input class="val-input" id="tallow" type="number" min="1" step="1" value="52.5" inputmode="decimal" aria-label="Beef tallow milliliters" oninput="fromTallow()">
+      <input class="val-input" id="tallow" type="number" min="1" step="1" value="61.11" inputmode="decimal" aria-label="Beef tallow milliliters" oninput="fromTallow()">
+      <span class="val-unit">ml</span>
+    </div>
+  </div>
+
+  <div class="ing-row" id="row-beeswax">
+    <div class="accent" style="background:#C9A86C"></div>
+    <div class="ing-body">
+      <div class="ing-top">
+        <span class="ing-name">Beeswax</span>
+        <span class="pill p-gray" id="wax-pill">structural</span>
+        <span class="ing-sub" id="wax-fmla">7% nominal batch</span>
+      </div>
+      <div class="ing-meta" id="wax-meta">Works with tallow for body and warm-ambient stability. Shown only in <strong>Balanced structure</strong> mode; ml tracks jojoba → nominal batch.</div>
+    </div>
+    <div class="ing-val">
+      <span class="val-num" id="ing-wax">—</span>
       <span class="val-unit">ml</span>
     </div>
   </div>
@@ -960,6 +988,7 @@
   <div class="seg" id="b-b"      style="background:#EF9F27"></div>
   <div class="seg" id="b-vit"    style="background:#f9a8d4"></div>
   <div class="seg" id="b-tal"    style="background:#D3D1C7"></div>
+  <div class="seg" id="b-wax"    style="background:#C9A86C"></div>
 </div>
 <div class="legend">
   <div class="li"><div class="dot" style="background:#5DCAA5"></div>Jojoba</div>
@@ -968,6 +997,7 @@
   <div class="li"><div class="dot" style="background:#EF9F27"></div>Ing. B</div>
   <div class="li"><div class="dot" style="background:#f9a8d4"></div>Vit E</div>
   <div class="li"><div class="dot" style="background:#D3D1C7"></div>Tallow</div>
+  <div class="li" id="leg-wax"><div class="dot" style="background:#C9A86C"></div>Beeswax</div>
 </div>
 
 <div class="sec">Batch breakdown</div>
@@ -1027,8 +1057,6 @@ var JAR_IMG_SRC='assets/6b3190c7-9d63-4dd4-bb6c-77f8847764a9.png';
 var JAR_IMG_FALLBACK='assets/crown-breeds-jar.svg';
 
 var chartPie=null;
-var COMP_LABELS=['Jojoba','Essential oils','Ingredient A','Ingredient B','Vitamin E','Tallow'];
-var COMP_COLORS=['#5DCAA5','#AFA9EC','#FAC775','#EF9F27','#f9a8d4','#D3D1C7'];
 
 function chartIsDark(){
   return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -1038,10 +1066,19 @@ function chartBorderSlice(){return chartIsDark()?'#1e293b':'#ffffff';}
 
 function buildCompositionSeries(v){
   var T=v.total;
-  var vit=vitOn()?v.vitE:0;
-  var ml=[v.j,v.eoml,v.a,v.b,vit,v.t];
-  var pct=T>0?ml.map(function(x){return x/T*100;}):[0,0,0,0,0,0];
-  return{ml:ml,pct:pct,T:T};
+  var vitAmt=vitOn()?v.vitE:0;
+  var ml,labels,colors;
+  if(v.mode==='balanced'){
+    ml=[v.j,v.eoml,v.a,v.b,vitAmt,v.t,v.wax];
+    labels=['Jojoba','Essential oils','Ingredient A','Ingredient B','Vitamin E','Tallow','Beeswax'];
+    colors=['#5DCAA5','#AFA9EC','#FAC775','#EF9F27','#f9a8d4','#D3D1C7','#C9A86C'];
+  }else{
+    ml=[v.j,v.eoml,v.a,v.b,vitAmt,v.t];
+    labels=['Jojoba','Essential oils','Ingredient A','Ingredient B','Vitamin E','Tallow'];
+    colors=['#5DCAA5','#AFA9EC','#FAC775','#EF9F27','#f9a8d4','#D3D1C7'];
+  }
+  var pct=T>0?ml.map(function(x){return x/T*100;}):ml.map(function(){return 0;});
+  return{ml:ml,pct:pct,T:T,labels:labels,colors:colors};
 }
 
 function updateCompositionCharts(v){
@@ -1049,12 +1086,12 @@ function updateCompositionCharts(v){
   var s=buildCompositionSeries(v);
   if(s.T<=0)return;
   var pieLabels=[],pieMl=[],piePct=[],pieColors=[];
-  for(var i=0;i<6;i++){
+  for(var i=0;i<s.ml.length;i++){
     if(s.ml[i]>1e-9){
-      pieLabels.push(COMP_LABELS[i]);
+      pieLabels.push(s.labels[i]);
       pieMl.push(s.ml[i]);
       piePct.push(s.pct[i]);
-      pieColors.push(COMP_COLORS[i]);
+      pieColors.push(s.colors[i]);
     }
   }
   if(!pieLabels.length)return;
@@ -1146,6 +1183,29 @@ window.addEventListener('hashchange',function(){
   if(TAB_IDS.indexOf(h)>=0)setTab(h);
 });
 
+function isBalanced(){return document.getElementById('recipe-mode').value==='balanced';}
+
+function onRecipeModeChange(){
+  syncRecipeModeUI();
+  if(chartPie){
+    try{ chartPie.destroy(); chartPie=null;}catch(e){}
+  }
+  syncFromControls();
+}
+
+function syncRecipeModeUI(){
+  var bal=isBalanced();
+  var fp=document.getElementById('field-legacy-potency');
+  var ft=document.getElementById('field-legacy-tallow');
+  if(fp)fp.style.display=bal?'none':'';
+  if(ft)ft.style.display=bal?'none':'';
+  var cb=document.getElementById('callout-balanced');
+  var cl=document.getElementById('callout-legacy');
+  if(cb)cb.hidden=!bal;
+  if(cl)cl.hidden=bal;
+  document.getElementById('strong-oil-warn').style.display=(!bal&&getBDiv()===4)?'block':'none';
+}
+
 function getBDiv(){return parseInt(document.getElementById('potency-b').value,10)||2;}
 function getTallowMult(){
   var m=parseFloat(document.getElementById('tallow-profile').value);
@@ -1158,12 +1218,13 @@ function vitPct(){return parseFloat(document.getElementById('vit-pct').value)||0
 function carrierFactor(bd){return 1+0.5+0.5/bd;}
 
 function syncFromControls(){
-  document.getElementById('strong-oil-warn').style.display=getBDiv()===4?'block':'none';
+  syncRecipeModeUI();
   if(document.getElementById('tag-tallow').style.display!=='none')fromTallow();
   else fromJojoba();
 }
 
 document.getElementById('potency-b').addEventListener('change',syncFromControls);
+document.getElementById('recipe-mode').addEventListener('change',onRecipeModeChange);
 
 function buildSingleJarCard(){
   var card=document.createElement('div');
@@ -1213,25 +1274,65 @@ function setUse(u){
   useCase=u;
   document.getElementById('btn-face').classList.toggle('active',u==='face');
   document.getElementById('btn-body').classList.toggle('active',u==='body');
-  var b=banners[u]; var el=document.getElementById('banner');
-  el.style.background=b.bg; el.style.color=b.color; el.textContent=b.text;
+  var el=document.getElementById('banner');
   var pill=document.getElementById('eo-pill');
-  if(u==='face'){
-    pill.className='pill p-purple'; pill.textContent='1% — face safe';
-    document.getElementById('eo-fml').textContent='nJoJo ÷ 5';
-    document.getElementById('eo-meta').textContent='1% dilution vs jojoba anchor, then ×'+EO_SCENT_FACE+' for top-note presence. Jojoba sets EO (ml); drops at 1 ml = 20. Patch-test sensitive skin.';
-  } else {
-    pill.className='pill p-amber'; pill.textContent='2% — body use';
-    document.getElementById('eo-fml').textContent='nJoJo ÷ 2.5';
-    document.getElementById('eo-meta').textContent='2% dilution vs jojoba (double face rate), then ×'+EO_SCENT_BODY+' for scent. Body-oriented; not for face at this tier.';
+  if(isBalanced()){
+    if(u==='face'){
+      pill.className='pill p-purple'; pill.textContent='1% nominal';
+      el.style.background='#e0e7ff'; el.style.color='#312e81';
+      el.textContent='Balanced structure — 1% essential oil vs nominal batch. Lower tallow target keeps base odor easier to mask.';
+    }else{
+      pill.className='pill p-amber'; pill.textContent='2% nominal';
+      el.style.background='#fef3c7'; el.style.color='#78350f';
+      el.textContent='Balanced structure — 2% essential oil vs nominal batch. Body-oriented concentration.';
+    }
+  }else{
+    var b=banners[u];
+    el.style.background=b.bg; el.style.color=b.color; el.textContent=b.text;
+    if(u==='face'){
+      pill.className='pill p-purple'; pill.textContent='1% — face safe';
+    }else{
+      pill.className='pill p-amber'; pill.textContent='2% — body use';
+    }
   }
   fromJojoba();
 }
 
+function calcBalanced(j){
+  var Tref=j/0.18;
+  var a=0.12*Tref;
+  var b=0.06*Tref;
+  var t=0.55*Tref;
+  var wax=0.07*Tref;
+  var eoFrac=useCase==='face'?0.01:0.02;
+  var eoml=eoFrac*Tref;
+  var bd=getBDiv();
+  var oilsCore=j+a+b+eoml+wax;
+  var preVit=oilsCore+t;
+  var vitE=0;
+  var total;
+  if(vitOn()){
+    var r=vitPct();
+    total=preVit/(1-r);
+    vitE=total*r;
+  }else{
+    total=preVit;
+  }
+  var oils=j+a+b+eoml+wax+vitE;
+  return{
+    j:j,a:a,b:b,bd:bd,mult:0,t:t,wax:wax,eoml:eoml,eoRecipeDrops:0,
+    carrier:j+a+b,oilsCore:oilsCore,vitE:vitE,total:total,oils:oils,mode:'balanced'
+  };
+}
+
+function calcFromTallowBal(tAllow){
+  var Tref=tAllow/0.55;
+  var j=0.18*Tref;
+  return calcBalanced(j);
+}
+
 /**
- * Core ratios: A = j/2, B = A/bd, tallow = (j+A+B)*mult.
- * mult from tallow-profile: cream presets (~1.1–1.9) ≈ 50–65% tallow; classic balm 5.43 ≈ ~84%.
- * EO ml from legacy drop model (×0.05 × face/body scent mult).
+ * Legacy: A = j/2, B = A/bd, tallow = (j+A+B)*mult; EO from drop × scent mult.
  */
 function calc(j){
   var bd=getBDiv();
@@ -1253,7 +1354,10 @@ function calc(j){
     total=oilsCore+t;
   }
   var oils=oilsCore+vitE;
-  return{j:j,a:a,b:b,bd:bd,mult:mult,t:t,eoml:eoml,eoRecipeDrops:eoRecipeDrops,carrier:carrier,oilsCore:oilsCore,vitE:vitE,total:total,oils:oils};
+  return{
+    j:j,a:a,b:b,bd:bd,mult:mult,t:t,wax:0,eoml:eoml,eoRecipeDrops:eoRecipeDrops,
+    carrier:carrier,oilsCore:oilsCore,vitE:vitE,total:total,oils:oils,mode:'legacy'
+  };
 }
 
 function calcFromTallow(t){
@@ -1291,18 +1395,31 @@ function onTempInput(){
   }
 }
 
-function renderProcSteps(mult){
+function renderProcSteps(v){
   var ol=document.getElementById('proc-steps');
   ol.innerHTML='';
-  var whipNote=mult>=4?'high tallow / firm set':(mult>=2?'medium load':'higher oil phase — lighter whip');
-  var steps=[
-    'Melt tallow slowly (double boiler recommended).',
-    'Cool to ~50°C (target working range 45–55°C before adding heat-sensitive components).',
-    'Add carrier oils (jojoba, A, B'+(vitOn()?', Vitamin E':'')+'). Mix thoroughly 2–5 minutes.',
-    'Add essential oils while batch is below ~50°C.',
-    (vitOn()?'Optional: hold ~50°C for 5–10 minutes for homogenization.':'Optional: hold ~50°C briefly for homogenization.'),
-    'Cool slowly to set. Optional: whip during cool-down — '+whipNote+' (×'+fmt(mult,2)+' on carriers).'
-  ];
+  var steps;
+  if(v.mode==='balanced'){
+    steps=[
+      'Melt beef tallow and beeswax together slowly (double boiler) until uniform and clear.',
+      'Cool to ~50°C (working range 45–55°C before heat-sensitive adds).',
+      'Add liquid carriers (jojoba, A, B'+(vitOn()?', Vitamin E':'')+'). Mix thoroughly 2–5 minutes.',
+      'Add essential oils while batch is below ~50°C.',
+      (vitOn()?'Optional: hold ~50°C for 5–10 minutes for homogenization.':'Optional: hold ~50°C briefly for homogenization.'),
+      'Cool slowly to set. Whip during cool-down to refine texture and reduce grain (recommended for this architecture).'
+    ];
+  }else{
+    var mult=v.mult;
+    var whipNote=mult>=4?'high tallow / firm set':(mult>=2?'medium load':'higher oil phase — lighter whip');
+    steps=[
+      'Melt tallow slowly (double boiler recommended).',
+      'Cool to ~50°C (target working range 45–55°C before adding heat-sensitive components).',
+      'Add carrier oils (jojoba, A, B'+(vitOn()?', Vitamin E':'')+'). Mix thoroughly 2–5 minutes.',
+      'Add essential oils while batch is below ~50°C.',
+      (vitOn()?'Optional: hold ~50°C for 5–10 minutes for homogenization.':'Optional: hold ~50°C briefly for homogenization.'),
+      'Cool slowly to set. Optional: whip during cool-down — '+whipNote+' (×'+fmt(mult,2)+' on carriers).'
+    ];
+  }
   steps.forEach(function(s){
     var li=document.createElement('li');
     li.textContent=s;
@@ -1321,11 +1438,13 @@ function renderSummary(v){
     tb.appendChild(tr);
   }
   row('Jojoba',v.j);
-  row('Essential oils (~'+Math.round(v.eoml*DROPS_PER_ML)+' drops @ 20/ml)',v.eoml);
+  var eoName=v.mode==='balanced'?'Essential oils':'Essential oils (~'+Math.round(v.eoml*DROPS_PER_ML)+' drops @ 20/ml)';
+  row(eoName,v.eoml);
   row('Ingredient A',v.a);
   row('Ingredient B',v.b);
   if(vitOn())row('Vitamin E (tocopherol)',v.vitE);
   row('Beef tallow',v.t);
+  if((v.wax||0)>1e-9)row('Beeswax',v.wax);
   var tr=document.createElement('tr');
   tr.innerHTML='<td><strong>Total</strong></td><td class="num"><strong>'+fmt(T,3)+'</strong></td><td class="num">100%</td>';
   tb.appendChild(tr);
@@ -1333,11 +1452,40 @@ function renderSummary(v){
 
 function render(v){
   var bd=v.bd;
-  document.getElementById('ing-b-pill').textContent='A ÷ '+bd;
-  document.getElementById('tallow-fmla').textContent='(J + A + B) × '+fmt(v.mult,2);
+  var bal=(v.mode==='balanced');
+  document.getElementById('row-beeswax').style.display=bal?'':'none';
+  document.getElementById('leg-wax').style.display=bal?'':'none';
+
+  if(bal){
+    document.getElementById('eo-anchor-pill').textContent='EO % of nominal batch · face 1% / body 2%';
+    document.getElementById('eo-fml').textContent=useCase==='face'?'1% nominal':'2% nominal';
+    document.getElementById('eo-meta').textContent='Fixed % of nominal batch (jojoba ÷ 0.18). Target table: 1–2% EO. Drops shown at 20/ml for translation only.';
+    document.getElementById('ing-a-pill').textContent='12% nominal';
+    document.getElementById('ing-b-pill').textContent='6% nominal';
+    document.getElementById('tallow-fmla').textContent='55% nominal · jojoba ÷ 0.18';
+    document.getElementById('wax-pill').textContent='7% nominal';
+    document.getElementById('wax-fmla').textContent='structure + heat stability';
+    document.getElementById('wax-meta').textContent='Melt with tallow. Nominal batch matches jojoba scale.';
+    document.getElementById('ing-wax').textContent=fmt(v.wax,2);
+  }else{
+    document.getElementById('eo-anchor-pill').textContent='jojoba anchors EO % · face ×2.5 · body ×3.8';
+    document.getElementById('ing-a-pill').textContent='nJoJo ÷ 2';
+    document.getElementById('ing-b-pill').textContent='A ÷ '+bd;
+    document.getElementById('tallow-fmla').textContent='(J + A + B) × '+fmt(v.mult,2);
+    document.getElementById('ing-wax').textContent='—';
+    if(useCase==='face'){
+      document.getElementById('eo-fml').textContent='nJoJo ÷ 5';
+      document.getElementById('eo-meta').textContent='1% dilution vs jojoba anchor, then ×'+EO_SCENT_FACE+' for top-note presence. Jojoba sets EO (ml); drops at 1 ml = 20. Patch-test sensitive skin.';
+    }else{
+      document.getElementById('eo-fml').textContent='nJoJo ÷ 2.5';
+      document.getElementById('eo-meta').textContent='2% dilution vs jojoba (double face rate), then ×'+EO_SCENT_BODY+' for scent. Body-oriented; not for face at this tier.';
+    }
+  }
+
   var talPct=v.total>0?v.t/v.total*100:0;
   var talLbl=fmt(talPct,1)+'% tallow';
-  if(talPct>=72)talLbl+=' — firm / waxy';
+  if(bal)talLbl+=' — target ~55% nominal';
+  else if(talPct>=72)talLbl+=' — firm / waxy';
   else if(talPct>=52)talLbl+=' — cream band';
   else talLbl+=' — soft / high-carrier';
   document.getElementById('tallow-pill-pct').textContent=talLbl;
@@ -1374,6 +1522,7 @@ function render(v){
   document.getElementById('b-b').style.width=p(v.b);
   document.getElementById('b-vit').style.width=vitOn()?p(v.vitE):'0%';
   document.getElementById('b-tal').style.width=p(v.t);
+  document.getElementById('b-wax').style.width=bal?p(v.wax):'0%';
 
   var full=Math.floor(T/50);
   var leftover=fmt(T%50,2);
@@ -1385,14 +1534,14 @@ function render(v){
     ' · '+fmt(T,2)+' ml total batch';
 
   renderSummary(v);
-  renderProcSteps(v.mult);
+  renderProcSteps(v);
   updateCompositionCharts(v);
 }
 
 function fromJojoba(){
   var j=parseFloat(document.getElementById('jojoba').value);
   if(isNaN(j)||j<=0)return;
-  var v=calc(j);
+  var v=isBalanced()?calcBalanced(j):calc(j);
   document.getElementById('tallow').value=v.t.toFixed(2);
   document.getElementById('tag-jojoba').style.display='';
   document.getElementById('tag-tallow').style.display='none';
@@ -1402,14 +1551,14 @@ function fromJojoba(){
 function fromTallow(){
   var t=parseFloat(document.getElementById('tallow').value);
   if(isNaN(t)||t<=0)return;
-  var v=calcFromTallow(t);
+  var v=isBalanced()?calcFromTallowBal(t):calcFromTallow(t);
   document.getElementById('jojoba').value=v.j.toFixed(2);
   document.getElementById('tag-tallow').style.display='';
   document.getElementById('tag-jojoba').style.display='none';
   render(v);
 }
 
-document.getElementById('strong-oil-warn').style.display=getBDiv()===4?'block':'none';
+syncRecipeModeUI();
 (function(){
   var h=(location.hash||'').replace(/^#/,'');
   if(TAB_IDS.indexOf(h)>=0)setTab(h);
