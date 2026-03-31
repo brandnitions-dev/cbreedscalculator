@@ -78,14 +78,16 @@ const FB_ING={
     {id:"pumpkin",name:"Pumpkin seed",potency:"mild",desc:"Zinc and phytosterols — mineral-rich soothing nutrition; warm nutty scent.",benefits:{barrier:2,soothing:2,moisturizing:2,healing:1},
      tips:{low:"Mineral-rich nuance.",mid:"Good soothing nutrition dose.",high:"Pumpkin-led — cozy nutty carrier; beautiful in autumn gourmand scents."}},
   ],
+  c: getFormulaBuilderCList(),
   eo: getFormulaBuilderEoList()
 };
 
-const FB_COLORS={tallow:"#B4B2A9",beeswax:"#FAC775",jojoba:"#97C459",vite:"#F0997B",a0:"#85B7EB",a1:"#5DCAA5",a2:"#AFA9EC",a3:"#ED93B1",b0:"#D85A30",b1:"#993C1D",b2:"#BA7517",eo0:"#534AB7",eo1:"#3C3489",eo2:"#7F77DD",eo3:"#0F6E56",eo4:"#185FA5",eo5:"#993556"};
+const FB_COLORS={tallow:"#B4B2A9",beeswax:"#FAC775",jojoba:"#97C459",vite:"#F0997B",a0:"#85B7EB",a1:"#5DCAA5",a2:"#AFA9EC",a3:"#ED93B1",b0:"#D85A30",b1:"#993C1D",b2:"#BA7517",c0:"#C4A574",c1:"#6F4E37",c2:"#D4C4A8",eo0:"#534AB7",eo1:"#3C3489",eo2:"#7F77DD",eo3:"#0F6E56",eo4:"#185FA5",eo5:"#993556"};
 const BENEFIT_LABELS=["antiaging","moisturizing","barrier","scarring","brightening","acne","antiinflammatory","antioxidant","healing","soothing","calming","regenerating","firming","softening","antimicrobial","antifungal"];
 const FB_BENEFIT_COLORS={antiaging:"#534AB7",moisturizing:"#1D9E75",barrier:"#639922",scarring:"#D85A30",brightening:"#FAC775",acne:"#185FA5",antiinflammatory:"#0F6E56",antioxidant:"#BA7517",healing:"#5DCAA5",soothing:"#AFA9EC",calming:"#ED93B1",regenerating:"#7F77DD",firming:"#D4537E",softening:"#9FE1CB",antimicrobial:"#6B4E9E",antifungal:"#2E6B5C"};
 
-var fbMode="face",fbBatchSize=100,fbPools={a:[],b:[],eo:[]},fbIdCtr=0;
+var fbMode="face",fbBatchSize=100,fbPools={a:[],b:[],c:[],eo:[]},fbIdCtr=0;
+var fbProduct="balm",fbCPct=0.08;
 
 /** Bar fill % of track: visual ∝ sqrt(p/100), p in 0–100; normalized so largest row fills track. Ordering preserved. */
 function fbSqrtBarWidthNorm(pPercent, maxSqrtScale){
@@ -95,10 +97,35 @@ function fbSqrtBarWidthNorm(pPercent, maxSqrtScale){
 }
 
 function fbSetMode(el,m){document.querySelectorAll("#panel-builder .fb-mbtn").forEach(b=>b.classList.remove("active"));el.classList.add("active");fbMode=m;document.getElementById("fb-eoPoolPct").textContent=(m==="face"?"1":"2")+"% of batch";fbUpdate();}
+function fbSetProduct(el,p){
+  document.querySelectorAll("#panel-builder .fb-product-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  fbProduct=p;
+  var ex=document.getElementById("fb-exfoliator-block");
+  if(ex)ex.hidden=(p!=="scrub");
+  if(p==="balm"){fbPools.c=[];fbRenderPool("c");}
+  else{fbEnsureCSeed();fbRenderPool("c");}
+  fbUpdate();
+}
+function fbEnsureCSeed(){
+  if(fbPools.c.length)return;
+  var first=FB_ING.c[0];
+  if(first)fbPools.c.push({id:fbIdCtr++,ingId:first.id,weight:5});
+}
 document.getElementById("fb-batchSize").addEventListener("input",function(){fbBatchSize=+this.value;document.getElementById("fb-batchSizeVal").textContent=fbBatchSize+" ml";fbUpdate();});
+(function(){
+  var cs=document.getElementById("fb-c-strength");
+  if(!cs)return;
+  cs.addEventListener("input",function(){
+    fbCPct=+this.value/100;
+    var el=document.getElementById("fb-c-strength-val");
+    if(el)el.textContent=this.value+"%";
+    fbUpdate();
+  });
+})();
 
 function fbAddIng(pool){
-  const limits={a:4,b:3,eo:12};
+  const limits={a:4,b:3,c:3,eo:12};
   if(fbPools[pool].length>=limits[pool])return;
   const used=fbPools[pool].map(r=>r.ingId);
   const avail=FB_ING[pool].filter(i=>!used.includes(i.id));
@@ -113,9 +140,10 @@ function fbGetTipLevel(weight){return weight<=3?"low":weight<=7?"mid":"high";}
 
 function fbRenderPool(pool){
   const container=document.getElementById("fb-"+pool+"Pool");
+  if(!container)return;
   container.innerHTML="";
   const f=fbCalcFormula();
-  const split=pool==="a"?f.aSplit:pool==="b"?f.bSplit:f.eoSplit;
+  const split=pool==="a"?f.aSplit:pool==="b"?f.bSplit:pool==="c"?f.cSplit:f.eoSplit;
 
   fbPools[pool].forEach((row,i)=>{
     const ing=FB_ING[pool].find(x=>x.id===row.ingId);
@@ -158,7 +186,7 @@ function fbUpdateInlineOnly(pool,rowId,weight){
   const tipLevel=fbGetTipLevel(+weight);
   const row=fbPools[pool].find(r=>r.id===rowId);
   if(!row)return;
-  const ing=FB_ING[pool].find(x=>x.id===row.ingId);
+  const ing=FB_ING[pool]?FB_ING[pool].find(x=>x.id===row.ingId):null;
   const tipEl=document.getElementById("fb-tip_"+rowId);
   if(tipEl&&ing&&ing.tips){
     tipEl.textContent=ing.tips[tipLevel]||"";
@@ -168,14 +196,31 @@ function fbUpdateInlineOnly(pool,rowId,weight){
 
 function fbCalcFormula(){
   const eoPct=fbMode==="face"?0.01:0.02;
-  const fixed=[{name:"Tallow",pct:0.58,color:FB_COLORS.tallow},{name:"Beeswax",pct:0.08,color:FB_COLORS.beeswax},{name:"Jojoba",pct:0.11,color:FB_COLORS.jojoba},{name:"Vitamin E",pct:0.004,color:FB_COLORS.vite}];
+  const vitE=0.004;
   function split(rows,total){const tw=rows.reduce((s,r)=>s+r.weight,0)||1;return rows.map(r=>({...r,pct:total*r.weight/tw}));}
-  return{fixed,aSplit:split(fbPools.a,0.13),bSplit:split(fbPools.b,0.06),eoSplit:split(fbPools.eo,eoPct),eoPct};
+  if(fbProduct==="balm"){
+    const fixed=[{name:"Tallow",pct:0.58,color:FB_COLORS.tallow},{name:"Beeswax",pct:0.08,color:FB_COLORS.beeswax},{name:"Jojoba",pct:0.11,color:FB_COLORS.jojoba},{name:"Vitamin E",pct:vitE,color:FB_COLORS.vite}];
+    return{fixed,aSplit:split(fbPools.a,0.13),bSplit:split(fbPools.b,0.06),cSplit:[],eoSplit:split(fbPools.eo,eoPct),eoPct,cPct:0,scale:1,product:"balm"};
+  }
+  var cPct=Math.min(0.15,Math.max(0.05,fbCPct));
+  var baseNom=0.96;
+  var rem=1-vitE-eoPct-cPct;
+  if(rem<0.02)rem=0.02;
+  var scale=rem/baseNom;
+  var fixed=[{name:"Tallow",pct:0.58*scale,color:FB_COLORS.tallow},{name:"Beeswax",pct:0.08*scale,color:FB_COLORS.beeswax},{name:"Jojoba",pct:0.11*scale,color:FB_COLORS.jojoba},{name:"Vitamin E",pct:vitE,color:FB_COLORS.vite}];
+  var cSplit=fbPools.c.length?split(fbPools.c,cPct):[];
+  return{fixed,aSplit:split(fbPools.a,0.13*scale),bSplit:split(fbPools.b,0.06*scale),cSplit,eoSplit:split(fbPools.eo,eoPct),eoPct,cPct,scale,product:"scrub"};
 }
 
 function fbUpdate(){
   const f=fbCalcFormula();
-  [...f.aSplit,...f.bSplit,...f.eoSplit].forEach(row=>{
+  var la=document.getElementById("fb-label-a-pct");
+  var lb=document.getElementById("fb-label-b-pct");
+  if(la)la.textContent=f.product==="scrub"?(100*0.13*f.scale).toFixed(1)+"% of batch (scaled)":"13% of batch";
+  if(lb)lb.textContent=f.product==="scrub"?(100*0.06*f.scale).toFixed(1)+"% of batch (scaled)":"6% of batch";
+  var cp=document.getElementById("fb-c-pool-pct");
+  if(cp&&f.product==="scrub")cp.textContent=(100*f.cPct).toFixed(0)+"% of batch (Ingredient C)";
+  [...f.aSplit,...f.bSplit,...f.cSplit,...f.eoSplit].forEach(row=>{
     const pe=document.getElementById("fb-pct_"+row.id);const me=document.getElementById("fb-ml_"+row.id);
     if(pe)pe.textContent=(row.pct*100).toFixed(1)+"%";
     if(me)me.textContent=(row.pct*fbBatchSize).toFixed(1)+"ml";
@@ -185,7 +230,7 @@ function fbUpdate(){
 
 function fbUpdateBeaker(f){
   const layers=document.getElementById("fb-beakerLayers");layers.innerHTML="";
-  const all=[...f.fixed,...f.aSplit.map((r,i)=>({name:FB_ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:FB_COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:FB_ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:FB_COLORS["b"+i]||"#D85A30"})),...f.eoSplit.map((r,i)=>({name:FB_ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:FB_COLORS["eo"+i]||"#534AB7"}))];
+  const all=[...f.fixed,...f.aSplit.map((r,i)=>({name:FB_ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:FB_COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:FB_ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:FB_COLORS["b"+i]||"#D85A30"})),...f.cSplit.map((r,i)=>({name:FB_ING.c.find(x=>x.id===r.ingId)?.name||"C",pct:r.pct,color:FB_COLORS["c"+i]||"#C4A574"})),...f.eoSplit.map((r,i)=>({name:FB_ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:FB_COLORS["eo"+i]||"#534AB7"}))];
   const total=all.reduce((s,r)=>s+r.pct,0)||1;
   let y=20+230;
   all.forEach(layer=>{const h=Math.max(2,(layer.pct/total)*230);y-=h;const rect=document.createElementNS("http://www.w3.org/2000/svg","rect");rect.setAttribute("x","31");rect.setAttribute("y",y.toFixed(1));rect.setAttribute("width","118");rect.setAttribute("height",h.toFixed(1));rect.setAttribute("fill",layer.color);rect.setAttribute("opacity","0.85");layers.appendChild(rect);});
@@ -193,7 +238,7 @@ function fbUpdateBeaker(f){
 
 function fbUpdateRatios(f){
   const list=document.getElementById("fb-ratioList");list.innerHTML="";
-  const all=[...f.fixed.map(r=>({name:r.name,pct:r.pct,color:r.color})),...f.aSplit.map((r,i)=>({name:FB_ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:FB_COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:FB_ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:FB_COLORS["b"+i]||"#D85A30"})),...f.eoSplit.map((r,i)=>({name:FB_ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:FB_COLORS["eo"+i]||"#534AB7"}))];
+  const all=[...f.fixed.map(r=>({name:r.name,pct:r.pct,color:r.color})),...f.aSplit.map((r,i)=>({name:FB_ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:FB_COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:FB_ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:FB_COLORS["b"+i]||"#D85A30"})),...f.cSplit.map((r,i)=>({name:FB_ING.c.find(x=>x.id===r.ingId)?.name||"C",pct:r.pct,color:FB_COLORS["c"+i]||"#C4A574"})),...f.eoSplit.map((r,i)=>({name:FB_ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:FB_COLORS["eo"+i]||"#534AB7"}))];
   const maxSqrt=Math.max.apply(null,all.map(r=>Math.sqrt(Math.max(0,r.pct*100)/100)).concat([1e-9]));
   all.forEach(r=>{
     const pPct=r.pct*100;
@@ -208,7 +253,7 @@ function fbUpdateRatios(f){
 function fbUpdateBenefits(f){
   const scores={};BENEFIT_LABELS.forEach(b=>scores[b]=0);
   const add=(list,pool,w)=>list.forEach(r=>{const ing=FB_ING[pool].find(x=>x.id===r.ingId);if(!ing)return;Object.entries(ing.benefits||{}).forEach(([b,v])=>{scores[b]=(scores[b]||0)+v*r.pct*w;});});
-  add(f.aSplit,"a",1);add(f.bSplit,"b",1.5);add(f.eoSplit,"eo",2);
+  add(f.aSplit,"a",1);add(f.bSplit,"b",1.5);add(f.cSplit,"c",1.2);add(f.eoSplit,"eo",2);
   const max=Math.max(...Object.values(scores),0.001);
   const sorted=BENEFIT_LABELS.filter(b=>scores[b]>0).sort((a,b)=>scores[b]-scores[a]).slice(0,8);
   const cont=document.getElementById("fb-benefitBars");cont.innerHTML="";
@@ -229,8 +274,8 @@ function fbUpdateBenefits(f){
 
 function fbUpdateSynergies(f){
   const cont=document.getElementById("fb-synergyList");cont.innerHTML="";
-  const eoIds=f.eoSplit.map(r=>r.ingId),aIds=f.aSplit.map(r=>r.ingId),bIds=f.bSplit.map(r=>r.ingId);
-  const hasAny=aIds.length+bIds.length+eoIds.length>0;
+  const eoIds=f.eoSplit.map(r=>r.ingId),aIds=f.aSplit.map(r=>r.ingId),bIds=f.bSplit.map(r=>r.ingId),cIds=f.cSplit.map(r=>r.ingId);
+  const hasAny=aIds.length+bIds.length+eoIds.length>0||cIds.length>0;
   const F=function(e,ks){return ks.some(function(k){return e.indexOf(k)>=0;});};
   const frank=F(eoIds,["frankincense","frankincense_co2"]);
   const rose=F(eoIds,["rose_otto","rose_abs","rose_co2"]);
@@ -294,6 +339,13 @@ function fbUpdateSynergies(f){
   if(aIds.includes("seabuck"))msgs.push({t:"warn",m:"Sea buckthorn — will visibly tint the balm orange"});
   if(bIds.includes("buriti"))msgs.push({t:"warn",m:"Buriti — intense orange-red tint; treat like a color cosmetic"});
   if(aIds.includes("turmeric")||bIds.includes("turmeric"))msgs.push({t:"warn",m:"Turmeric CO2 — will stain yellow, patch-test on skin before use"});
+  if(f.product==="scrub"){
+    msgs.push({t:"info",m:"Exfoliator mode — tallow / wax / jojoba / A / B are scaled down so Ingredient C (5–15%) + EO + vitamin E fit ~100%."});
+    if(cIds.includes("oat_flour")&&cIds.includes("clay_polish"))msgs.push({t:"good",m:"Oat + clay — gentle buff with oil control story"});
+    if(cIds.includes("sugar")&&cIds.includes("coffee_grounds"))msgs.push({t:"good",m:"Sugar + coffee — body scrub bestseller vibe; watch pressure"});
+    if(cIds.includes("walnut_apricot")&&(cIds.includes("coffee_grounds")||cIds.includes("baking_soda")))msgs.push({t:"warn",m:"Walnut/shell + another abrasive — keep total mechanical exfoliation conservative"});
+    if(f.cPct>=0.12)msgs.push({t:"warn",m:"High C-phase (≥12%) — strong scrub; advise body-first or experienced users"});
+  }
   var strongBids=["blackseed","neem","turmeric"];
   if(bIds.some(function(id){return strongBids.indexOf(id)>=0;}))msgs.push({t:"info",m:"Strong B-phase oil(s) — citrus, resin, or spice EOs usually mask medicinal bases best."});
   if(!hasAny){
@@ -301,7 +353,7 @@ function fbUpdateSynergies(f){
     return;
   }
   if(!msgs.length)msgs.push({t:"info",m:"No named library pair matched this exact mix — that is normal. Use sliders and the colored tips under each oil (left) for guidance."});
-  msgs.push({t:"info",m:"Blend snapshot: "+f.aSplit.length+" major carrier(s) · "+f.bSplit.length+" minor active(s) · "+f.eoSplit.length+" essential oil(s)."});
+  msgs.push({t:"info",m:"Blend snapshot: "+f.product+" · "+f.aSplit.length+" A · "+f.bSplit.length+" B"+(f.cSplit.length?" · "+f.cSplit.length+" C":"")+"   · "+f.eoSplit.length+" EO"});
   msgs.forEach(function(m){
     var d=document.createElement("div");
     var cls="fb-synergy-item ";
@@ -319,6 +371,8 @@ function fbUpdateWarnings(f){
   const strongB=f.bSplit.filter(r=>FB_ING.b.find(x=>x.id===r.ingId)?.potency==="strong");
   document.getElementById("fb-bWarning").innerHTML=strongB.length>=2?'<div class="fb-warn">Two strong B oils combined — potency stacks. Lower both sliders to minimum.</div>':"";
   document.getElementById("fb-aWarning").innerHTML="";
+  var cw=document.getElementById("fb-cWarning");
+  if(cw)cw.innerHTML=f.product==="scrub"&&!f.cSplit.length?'<div class="fb-warn">Choose exfoliants for Ingredient C — pool is empty.</div>':"";
   document.getElementById("fb-eoWarning").innerHTML=f.eoSplit.length>=10?'<div class="fb-warn">10+ EOs — structure as top/mid/base notes to keep scent coherent.</div>':"";
   const unsatA=["rosehip","hemp","pomegranate","seabuck","chia","grapeseed","eveprim","borage","pricklypear","watermelon","ricebran","sunflower"];
   const unsatB=["blackseed","tamanu","turmeric","raspberry","buriti","andiroba"];
@@ -327,5 +381,5 @@ function fbUpdateWarnings(f){
   document.getElementById("fb-statTotal").textContent=fbBatchSize;
 }
 
-fbRenderPool("a");fbRenderPool("b");fbRenderPool("eo");
+fbRenderPool("a");fbRenderPool("b");fbRenderPool("c");fbRenderPool("eo");
 fbUpdate();

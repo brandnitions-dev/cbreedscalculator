@@ -12,6 +12,16 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary)
 .mode-btns{display:flex;gap:8px}
 .mbtn{padding:5px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary)}
 .mbtn.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500;border-color:var(--color-border-primary)}
+.product-btns{display:flex;gap:8px;flex-wrap:wrap}
+.product-btn{padding:5px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary)}
+.product-btn.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500;border-color:var(--color-border-primary)}
+.group-banner{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-text-secondary);margin:8px 0 4px;padding-bottom:4px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.exfol-strength{margin-bottom:10px}
+.exfol-strength>label{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:6px}
+.exfol-strength-row{display:flex;align-items:center;gap:10px}
+.exfol-strength-row input[type=range]{flex:1}
+.c-strength-val{font-size:14px;font-weight:600;min-width:2.5rem;color:var(--color-text-primary)}
+.exfol-hint{font-size:11px;color:var(--color-text-secondary);line-height:1.45;margin-top:8px}
 .pool-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .pool-label{font-size:13px;font-weight:500;color:var(--color-text-primary)}
 .pool-pct{font-size:12px;color:var(--color-text-secondary)}
@@ -81,9 +91,22 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary)
 </div>
 
 <div class="section">
+  <div class="section-title">Product</div>
+  <div class="batch-row">
+    <label>Formula type</label>
+    <div class="product-btns">
+      <button type="button" id="prod-balm" class="product-btn active" onclick="setProduct(this,'balm')">Skin Balm</button>
+      <button type="button" id="prod-scrub" class="product-btn" onclick="setProduct(this,'scrub')">Exfoliator</button>
+    </div>
+  </div>
+</div>
+
+<div class="group-banner" id="group-balm-banner">Skin balm — carriers &amp; scent</div>
+
+<div class="section">
   <div class="pool-header">
     <span class="pool-label">Ingredient A — major carriers</span>
-    <span class="pool-pct">13% of batch</span>
+    <span class="pool-pct" id="label-a-pct">13% of batch</span>
   </div>
   <div id="aPool"></div>
   <button class="add-btn" onclick="addIng('a')">+ add carrier oil</button>
@@ -93,11 +116,30 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary)
 <div class="section">
   <div class="pool-header">
     <span class="pool-label">Ingredient B — minor carriers</span>
-    <span class="pool-pct">6% of batch</span>
+    <span class="pool-pct" id="label-b-pct">6% of batch</span>
   </div>
   <div id="bPool"></div>
   <button class="add-btn" onclick="addIng('b')">+ add active oil</button>
   <div id="bWarning"></div>
+</div>
+
+<div class="section" id="exfoliator-block" hidden>
+  <div class="group-banner">Exfoliator — Ingredient C</div>
+  <div class="pool-header">
+    <span class="pool-label">Physical / polish phase (total of C)</span>
+    <span class="pool-pct" id="c-pool-pct">8% of batch (Ingredient C)</span>
+  </div>
+  <div class="exfol-strength">
+    <label for="c-strength">C phase strength — gentle 5% → strong 15%</label>
+    <div class="exfol-strength-row">
+      <input type="range" id="c-strength" min="5" max="15" step="1" value="8">
+      <span id="c-strength-val" class="c-strength-val">8%</span>
+    </div>
+    <p class="exfol-hint">In Exfoliator mode, tallow / beeswax / jojoba / A / B scale down so C + EO + vitamin E normalize to ~100%.</p>
+  </div>
+  <div id="cPool"></div>
+  <button class="add-btn" onclick="addIng('c')">+ add exfoliant</button>
+  <div id="cWarning"></div>
 </div>
 
 <div class="section">
@@ -149,6 +191,7 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary)
 </div>
 
 <script src="formula_builder_eo_array.js"></script>
+<script src="formula_builder_c_list.js"></script>
 <script>
 const ING={
   a:[
@@ -229,14 +272,16 @@ const ING={
     {id:"pumpkin",name:"Pumpkin seed",potency:"mild",desc:"Zinc and phytosterols — mineral-rich soothing nutrition; warm nutty scent.",benefits:{barrier:2,soothing:2,moisturizing:2,healing:1},
      tips:{low:"Mineral-rich nuance.",mid:"Good soothing nutrition dose.",high:"Pumpkin-led — cozy nutty carrier; beautiful in autumn gourmand scents."}},
   ],
+  c: getFormulaBuilderCList(),
   eo: getFormulaBuilderEoList()
 };
 
-const COLORS={tallow:"#B4B2A9",beeswax:"#FAC775",jojoba:"#97C459",vite:"#F0997B",a0:"#85B7EB",a1:"#5DCAA5",a2:"#AFA9EC",a3:"#ED93B1",b0:"#D85A30",b1:"#993C1D",b2:"#BA7517",eo0:"#534AB7",eo1:"#3C3489",eo2:"#7F77DD",eo3:"#0F6E56",eo4:"#185FA5",eo5:"#993556"};
+const COLORS={tallow:"#B4B2A9",beeswax:"#FAC775",jojoba:"#97C459",vite:"#F0997B",a0:"#85B7EB",a1:"#5DCAA5",a2:"#AFA9EC",a3:"#ED93B1",b0:"#D85A30",b1:"#993C1D",b2:"#BA7517",c0:"#C4A574",c1:"#6F4E37",c2:"#D4C4A8",eo0:"#534AB7",eo1:"#3C3489",eo2:"#7F77DD",eo3:"#0F6E56",eo4:"#185FA5",eo5:"#993556"};
 const BENEFIT_LABELS=["antiaging","moisturizing","barrier","scarring","brightening","acne","antiinflammatory","antioxidant","healing","soothing","calming","regenerating","firming","softening","antimicrobial","antifungal"];
 const BENEFIT_COLORS={antiaging:"#534AB7",moisturizing:"#1D9E75",barrier:"#639922",scarring:"#D85A30",brightening:"#FAC775",acne:"#185FA5",antiinflammatory:"#0F6E56",antioxidant:"#BA7517",healing:"#5DCAA5",soothing:"#AFA9EC",calming:"#ED93B1",regenerating:"#7F77DD",firming:"#D4537E",softening:"#9FE1CB",antimicrobial:"#6B4E9E",antifungal:"#2E6B5C"};
 
-let mode="face",batchSize=100,pools={a:[],b:[],eo:[]},idCtr=0;
+let mode="face",batchSize=100,pools={a:[],b:[],c:[],eo:[]},idCtr=0;
+let product="balm",cPctGlobal=0.08;
 
 function sqrtBarWidthNorm(pPercent,maxSqrtScale){
   var v=Math.sqrt(Math.max(0,pPercent)/100);
@@ -245,10 +290,35 @@ function sqrtBarWidthNorm(pPercent,maxSqrtScale){
 }
 
 function setMode(el,m){document.querySelectorAll(".mbtn").forEach(b=>b.classList.remove("active"));el.classList.add("active");mode=m;document.getElementById("eoPoolPct").textContent=(m==="face"?"1":"2")+"% of batch";update();}
+function setProduct(el,p){
+  document.querySelectorAll(".product-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  product=p;
+  const ex=document.getElementById("exfoliator-block");
+  if(ex)ex.hidden=(p!=="scrub");
+  if(p==="balm"){pools.c=[];renderPool("c");}
+  else{ensureCSeed();renderPool("c");}
+  update();
+}
+function ensureCSeed(){
+  if(pools.c.length)return;
+  const first=ING.c[0];
+  if(first)pools.c.push({id:idCtr++,ingId:first.id,weight:5});
+}
 document.getElementById("batchSize").addEventListener("input",function(){batchSize=+this.value;document.getElementById("batchSizeVal").textContent=batchSize+" ml";update();});
+(function(){
+  const cs=document.getElementById("c-strength");
+  if(!cs)return;
+  cs.addEventListener("input",function(){
+    cPctGlobal=+this.value/100;
+    const el=document.getElementById("c-strength-val");
+    if(el)el.textContent=this.value+"%";
+    update();
+  });
+})();
 
 function addIng(pool){
-  const limits={a:4,b:3,eo:12};
+  const limits={a:4,b:3,c:3,eo:12};
   if(pools[pool].length>=limits[pool])return;
   const used=pools[pool].map(r=>r.ingId);
   const avail=ING[pool].filter(i=>!used.includes(i.id));
@@ -265,10 +335,10 @@ function renderPool(pool){
   const container=document.getElementById(pool+"Pool");
   container.innerHTML="";
   const f=calcFormula();
-  const split=pool==="a"?f.aSplit:pool==="b"?f.bSplit:f.eoSplit;
+  const split=pool==="a"?f.aSplit:pool==="b"?f.bSplit:pool==="c"?f.cSplit:f.eoSplit;
 
   pools[pool].forEach((row,i)=>{
-    const ing=ING[pool].find(x=>x.id===row.ingId);
+    const ing=ING[pool]?ING[pool].find(x=>x.id===row.ingId):null;
     const splitRow=split.find(s=>s.id===row.id);
     const pct=splitRow?(splitRow.pct*100).toFixed(1):"—";
     const ml=splitRow?(splitRow.pct*batchSize).toFixed(1):"—";
@@ -308,7 +378,7 @@ function updateInlineOnly(pool,rowId,weight){
   const tipLevel=getTipLevel(+weight);
   const row=pools[pool].find(r=>r.id===rowId);
   if(!row)return;
-  const ing=ING[pool].find(x=>x.id===row.ingId);
+  const ing=ING[pool]?ING[pool].find(x=>x.id===row.ingId):null;
   const tipEl=document.getElementById("tip_"+rowId);
   if(tipEl&&ing&&ing.tips){
     tipEl.textContent=ing.tips[tipLevel]||"";
@@ -318,14 +388,29 @@ function updateInlineOnly(pool,rowId,weight){
 
 function calcFormula(){
   const eoPct=mode==="face"?0.01:0.02;
-  const fixed=[{name:"Tallow",pct:0.58,color:COLORS.tallow},{name:"Beeswax",pct:0.08,color:COLORS.beeswax},{name:"Jojoba",pct:0.11,color:COLORS.jojoba},{name:"Vitamin E",pct:0.004,color:COLORS.vite}];
+  const vitE=0.004;
   function split(rows,total){const tw=rows.reduce((s,r)=>s+r.weight,0)||1;return rows.map(r=>({...r,pct:total*r.weight/tw}));}
-  return{fixed,aSplit:split(pools.a,0.13),bSplit:split(pools.b,0.06),eoSplit:split(pools.eo,eoPct),eoPct};
+  if(product==="balm"){
+    const fixed=[{name:"Tallow",pct:0.58,color:COLORS.tallow},{name:"Beeswax",pct:0.08,color:COLORS.beeswax},{name:"Jojoba",pct:0.11,color:COLORS.jojoba},{name:"Vitamin E",pct:vitE,color:COLORS.vite}];
+    return{fixed,aSplit:split(pools.a,0.13),bSplit:split(pools.b,0.06),cSplit:[],eoSplit:split(pools.eo,eoPct),eoPct,cPct:0,scale:1,product:"balm"};
+  }
+  let cPct=Math.min(0.15,Math.max(0.05,cPctGlobal));
+  const baseNom=0.96;
+  let rem=1-vitE-eoPct-cPct;
+  if(rem<0.02)rem=0.02;
+  const scale=rem/baseNom;
+  const fixed=[{name:"Tallow",pct:0.58*scale,color:COLORS.tallow},{name:"Beeswax",pct:0.08*scale,color:COLORS.beeswax},{name:"Jojoba",pct:0.11*scale,color:COLORS.jojoba},{name:"Vitamin E",pct:vitE,color:COLORS.vite}];
+  const cSplit=pools.c.length?split(pools.c,cPct):[];
+  return{fixed,aSplit:split(pools.a,0.13*scale),bSplit:split(pools.b,0.06*scale),cSplit,eoSplit:split(pools.eo,eoPct),eoPct,cPct,scale,product:"scrub"};
 }
 
 function update(){
   const f=calcFormula();
-  [...f.aSplit,...f.bSplit,...f.eoSplit].forEach(row=>{
+  const la=document.getElementById("label-a-pct"),lb=document.getElementById("label-b-pct"),cp=document.getElementById("c-pool-pct");
+  if(la)la.textContent=f.product==="scrub"?(100*0.13*f.scale).toFixed(1)+"% of batch (scaled)":"13% of batch";
+  if(lb)lb.textContent=f.product==="scrub"?(100*0.06*f.scale).toFixed(1)+"% of batch (scaled)":"6% of batch";
+  if(cp&&f.product==="scrub")cp.textContent=(100*f.cPct).toFixed(0)+"% of batch (Ingredient C)";
+  [...f.aSplit,...f.bSplit,...f.cSplit,...f.eoSplit].forEach(row=>{
     const pe=document.getElementById("pct_"+row.id);const me=document.getElementById("ml_"+row.id);
     if(pe)pe.textContent=(row.pct*100).toFixed(1)+"%";
     if(me)me.textContent=(row.pct*batchSize).toFixed(1)+"ml";
@@ -335,7 +420,7 @@ function update(){
 
 function updateBeaker(f){
   const layers=document.getElementById("beakerLayers");layers.innerHTML="";
-  const all=[...f.fixed,...f.aSplit.map((r,i)=>({name:ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:COLORS["b"+i]||"#D85A30"})),...f.eoSplit.map((r,i)=>({name:ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:COLORS["eo"+i]||"#534AB7"}))];
+  const all=[...f.fixed,...f.aSplit.map((r,i)=>({name:ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:COLORS["b"+i]||"#D85A30"})),...f.cSplit.map((r,i)=>({name:ING.c.find(x=>x.id===r.ingId)?.name||"C",pct:r.pct,color:COLORS["c"+i]||"#C4A574"})),...f.eoSplit.map((r,i)=>({name:ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:COLORS["eo"+i]||"#534AB7"}))];
   const total=all.reduce((s,r)=>s+r.pct,0)||1;
   let y=20+230;
   all.forEach(layer=>{const h=Math.max(2,(layer.pct/total)*230);y-=h;const rect=document.createElementNS("http://www.w3.org/2000/svg","rect");rect.setAttribute("x","31");rect.setAttribute("y",y.toFixed(1));rect.setAttribute("width","118");rect.setAttribute("height",h.toFixed(1));rect.setAttribute("fill",layer.color);rect.setAttribute("opacity","0.85");layers.appendChild(rect);});
@@ -343,7 +428,7 @@ function updateBeaker(f){
 
 function updateRatios(f){
   const list=document.getElementById("ratioList");list.innerHTML="";
-  const all=[...f.fixed.map(r=>({name:r.name,pct:r.pct,color:r.color})),...f.aSplit.map((r,i)=>({name:ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:COLORS["b"+i]||"#D85A30"})),...f.eoSplit.map((r,i)=>({name:ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:COLORS["eo"+i]||"#534AB7"}))];
+  const all=[...f.fixed.map(r=>({name:r.name,pct:r.pct,color:r.color})),...f.aSplit.map((r,i)=>({name:ING.a.find(x=>x.id===r.ingId)?.name||"A",pct:r.pct,color:COLORS["a"+i]||"#85B7EB"})),...f.bSplit.map((r,i)=>({name:ING.b.find(x=>x.id===r.ingId)?.name||"B",pct:r.pct,color:COLORS["b"+i]||"#D85A30"})),...f.cSplit.map((r,i)=>({name:ING.c.find(x=>x.id===r.ingId)?.name||"C",pct:r.pct,color:COLORS["c"+i]||"#C4A574"})),...f.eoSplit.map((r,i)=>({name:ING.eo.find(x=>x.id===r.ingId)?.name||"EO",pct:r.pct,color:COLORS["eo"+i]||"#534AB7"}))];
   const maxSqrt=Math.max.apply(null,all.map(r=>Math.sqrt(Math.max(0,r.pct*100)/100)).concat([1e-9]));
   all.forEach(r=>{
     const pPct=r.pct*100;
@@ -359,7 +444,7 @@ function updateRatios(f){
 function updateBenefits(f){
   const scores={};BENEFIT_LABELS.forEach(b=>scores[b]=0);
   const add=(list,pool,w)=>list.forEach(r=>{const ing=ING[pool].find(x=>x.id===r.ingId);if(!ing)return;Object.entries(ing.benefits||{}).forEach(([b,v])=>{scores[b]=(scores[b]||0)+v*r.pct*w;});});
-  add(f.aSplit,"a",1);add(f.bSplit,"b",1.5);add(f.eoSplit,"eo",2);
+  add(f.aSplit,"a",1);add(f.bSplit,"b",1.5);add(f.cSplit,"c",1.2);add(f.eoSplit,"eo",2);
   const max=Math.max(...Object.values(scores),0.001);
   const sorted=BENEFIT_LABELS.filter(b=>scores[b]>0).sort((a,b)=>scores[b]-scores[a]).slice(0,8);
   const cont=document.getElementById("benefitBars");cont.innerHTML="";
@@ -380,8 +465,8 @@ function updateBenefits(f){
 
 function updateSynergies(f){
   const cont=document.getElementById("synergyList");cont.innerHTML="";
-  const eoIds=f.eoSplit.map(r=>r.ingId),aIds=f.aSplit.map(r=>r.ingId),bIds=f.bSplit.map(r=>r.ingId);
-  const hasAny=aIds.length+bIds.length+eoIds.length>0;
+  const eoIds=f.eoSplit.map(r=>r.ingId),aIds=f.aSplit.map(r=>r.ingId),bIds=f.bSplit.map(r=>r.ingId),cIds=f.cSplit.map(r=>r.ingId);
+  const hasAny=aIds.length+bIds.length+eoIds.length>0||cIds.length>0;
   const F=(e,ks)=>ks.some(k=>e.includes(k));
   const frank=F(eoIds,["frankincense","frankincense_co2"]);
   const rose=F(eoIds,["rose_otto","rose_abs","rose_co2"]);
@@ -445,6 +530,13 @@ function updateSynergies(f){
   if(aIds.includes("seabuck"))msgs.push({t:"warn",m:"Sea buckthorn — will visibly tint the balm orange"});
   if(bIds.includes("buriti"))msgs.push({t:"warn",m:"Buriti — intense orange-red tint; treat like a color cosmetic"});
   if(aIds.includes("turmeric")||bIds.includes("turmeric"))msgs.push({t:"warn",m:"Turmeric CO2 — will stain yellow, patch-test on skin before use"});
+  if(f.product==="scrub"){
+    msgs.push({t:"info",m:"Exfoliator mode — tallow / wax / jojoba / A / B are scaled down so Ingredient C (5–15%) + EO + vitamin E fit ~100%."});
+    if(cIds.includes("oat_flour")&&cIds.includes("clay_polish"))msgs.push({t:"good",m:"Oat + clay — gentle buff with oil control story"});
+    if(cIds.includes("sugar")&&cIds.includes("coffee_grounds"))msgs.push({t:"good",m:"Sugar + coffee — body scrub bestseller vibe; watch pressure"});
+    if(cIds.includes("walnut_apricot")&&(cIds.includes("coffee_grounds")||cIds.includes("baking_soda")))msgs.push({t:"warn",m:"Walnut/shell + another abrasive — keep total mechanical exfoliation conservative"});
+    if(f.cPct>=0.12)msgs.push({t:"warn",m:"High C-phase (≥12%) — strong scrub; advise body-first or experienced users"});
+  }
   const strongBids=["blackseed","neem","turmeric"];
   if(bIds.some(id=>strongBids.includes(id)))msgs.push({t:"info",m:"Strong B-phase oil(s) — citrus, resin, or spice EOs usually mask medicinal bases best."});
   if(!hasAny){
@@ -452,7 +544,7 @@ function updateSynergies(f){
     return;
   }
   if(!msgs.length)msgs.push({t:"info",m:"No named library pair matched this exact mix — that is normal. Use sliders and the colored tips under each oil (left) for guidance."});
-  msgs.push({t:"info",m:"Blend snapshot: "+f.aSplit.length+" major carrier(s) · "+f.bSplit.length+" minor active(s) · "+f.eoSplit.length+" essential oil(s)."});
+  msgs.push({t:"info",m:"Blend snapshot: "+f.product+" · "+f.aSplit.length+" A · "+f.bSplit.length+" B"+(f.cSplit.length?" · "+f.cSplit.length+" C":"")+" · "+f.eoSplit.length+" EO"});
   msgs.forEach(m=>{
     const d=document.createElement("div");
     let cls="synergy-item ";
@@ -470,6 +562,8 @@ function updateWarnings(f){
   const strongB=f.bSplit.filter(r=>ING.b.find(x=>x.id===r.ingId)?.potency==="strong");
   document.getElementById("bWarning").innerHTML=strongB.length>=2?'<div class="warn">Two strong B oils combined — potency stacks. Lower both sliders to minimum.</div>':"";
   document.getElementById("aWarning").innerHTML="";
+  const cw=document.getElementById("cWarning");
+  if(cw)cw.innerHTML=f.product==="scrub"&&!f.cSplit.length?'<div class="warn">Choose exfoliants for Ingredient C — pool is empty.</div>':"";
   document.getElementById("eoWarning").innerHTML=f.eoSplit.length>=10?'<div class="warn">10+ EOs — structure as top/mid/base notes to keep scent coherent.</div>':"";
   const unsatA=["rosehip","hemp","pomegranate","seabuck","chia","grapeseed","eveprim","borage","pricklypear","watermelon","ricebran","sunflower"];
   const unsatB=["blackseed","tamanu","turmeric","raspberry","buriti","andiroba"];
@@ -478,6 +572,6 @@ function updateWarnings(f){
   document.getElementById("statTotal").textContent=batchSize;
 }
 
-renderPool("a");renderPool("b");renderPool("eo");
+renderPool("a");renderPool("b");renderPool("c");renderPool("eo");
 update();
 </script>

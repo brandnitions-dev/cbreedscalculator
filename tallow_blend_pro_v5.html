@@ -963,6 +963,39 @@
       text-align: right;
     }
     #panel-builder .fb-mode-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    #panel-builder .fb-product-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    #panel-builder .fb-product-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    #panel-builder .fb-product-btn.active {
+      background: var(--surface-2);
+      border-color: var(--focus);
+      color: var(--text);
+      box-shadow: 0 0 0 1px var(--focus);
+    }
+    #panel-builder .fb-group-banner {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 12px 0 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    #panel-builder .fb-exfol-strength { margin-bottom: 10px; }
+    #panel-builder .fb-exfol-strength label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    #panel-builder .fb-exfol-strength-row { display: flex; align-items: center; gap: 10px; }
+    #panel-builder .fb-exfol-strength-row input[type="range"] { flex: 1; }
+    #panel-builder .fb-c-strength-val { font-size: 13px; font-weight: 700; min-width: 2.5rem; color: var(--text); }
+    #panel-builder .fb-exfol-hint { font-size: 11px; color: var(--text-muted); line-height: 1.45; margin-top: 8px; }
     #panel-builder .fb-mbtn {
       padding: 8px 14px;
       border-radius: var(--border-radius-md);
@@ -1606,9 +1639,22 @@
 </div>
 
 <div class="fb-section">
+  <div class="fb-section-title">Product</div>
+  <div class="fb-batch-row">
+    <label>Formula type</label>
+    <div class="fb-product-btns">
+      <button type="button" id="fb-prod-balm" class="fb-product-btn active" onclick="fbSetProduct(this,'balm')">Skin Balm</button>
+      <button type="button" id="fb-prod-scrub" class="fb-product-btn" onclick="fbSetProduct(this,'scrub')">Exfoliator</button>
+    </div>
+  </div>
+</div>
+
+<div class="fb-group-banner" id="fb-group-balm">Skin balm — carriers &amp; scent</div>
+
+<div class="fb-section">
   <div class="fb-pool-header">
     <span class="fb-pool-label">Ingredient A — major carriers</span>
-    <span class="fb-pool-pct">13% of batch</span>
+    <span class="fb-pool-pct" id="fb-label-a-pct">13% of batch</span>
   </div>
   <div id="fb-aPool"></div>
   <button type="button" class="fb-add-btn" onclick="fbAddIng('a')">+ add carrier oil</button>
@@ -1618,11 +1664,30 @@
 <div class="fb-section">
   <div class="fb-pool-header">
     <span class="fb-pool-label">Ingredient B — minor carriers</span>
-    <span class="fb-pool-pct">6% of batch</span>
+    <span class="fb-pool-pct" id="fb-label-b-pct">6% of batch</span>
   </div>
   <div id="fb-bPool"></div>
   <button type="button" class="fb-add-btn" onclick="fbAddIng('b')">+ add active oil</button>
   <div id="fb-bWarning"></div>
+</div>
+
+<div class="fb-section" id="fb-exfoliator-block" hidden>
+  <div class="fb-group-banner">Exfoliator — Ingredient C</div>
+  <div class="fb-pool-header">
+    <span class="fb-pool-label">Physical / polish phase (total of C)</span>
+    <span class="fb-pool-pct" id="fb-c-pool-pct">8% of batch (Ingredient C)</span>
+  </div>
+  <div class="fb-exfol-strength">
+    <label for="fb-c-strength">C phase strength — gentle 5% → strong 15%</label>
+    <div class="fb-exfol-strength-row">
+      <input type="range" id="fb-c-strength" min="5" max="15" step="1" value="8" aria-valuemin="5" aria-valuemax="15">
+      <span id="fb-c-strength-val" class="fb-c-strength-val">8%</span>
+    </div>
+    <p class="fb-exfol-hint">In Exfoliator mode, tallow / beeswax / jojoba / A / B scale down so C + EO + vitamin E normalize to ~100%.</p>
+  </div>
+  <div id="fb-cPool"></div>
+  <button type="button" class="fb-add-btn" onclick="fbAddIng('c')">+ add exfoliant</button>
+  <div id="fb-cWarning"></div>
 </div>
 
 <div class="fb-section">
@@ -1678,6 +1743,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
 <script src="formula_builder_eo_array.js"></script>
+<script src="formula_builder_c_list.js"></script>
 <script src="formula_builder_tab.js"></script>
 <script>
 var useCase='face';
