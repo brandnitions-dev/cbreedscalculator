@@ -17,6 +17,62 @@
 - JS: `renderJarPreview()` builds `.jar-packout__grid`, `.jar-packout__stats` with `.jar-stat` (primary + remainder), `.jar-packout__visual` + `buildSingleJarCard()`.
 - Old pattern removed: `jar-count-badge`, `jar-leftover-strip` — do not reintroduce without restoring matching CSS.
 
+## Exfoliator Upgrade (2025-03-31)
+### Formula Builder changes
+- **Beeswax optional** in both balm and exfoliator modes (checkbox `#fb-beeswax-chk`). When off, 8% goes to tallow.
+- **Ingredient A & B optional** in exfoliator/scrub mode. When pools are empty, their % redistributes to tallow. Labels show "(optional — ratio goes to tallow if empty)".
+- **Ginger** added to Ingredient C list in `formula_builder_c_list.js` with powder/oil form selector.
+- **Powder/oil form selector** on C ingredients: coffee grounds, clay, ginger. Form buttons rendered in `fbRenderPool("c")`. Oil-form items show "(oil phase)" note. Form-specific benefits used in `fbUpdateBenefits()`.
+- CSS for `.fb-form-row`, `.fb-form-btn`, `.fb-form-note`, `.fb-beeswax-toggle`, `.fb-opt-label` added to `tallow_blend_pro_v5.html`.
+- `fbCalcFormula()` rewritten: balm mode respects `fbBeeswax` toggle; scrub mode handles optional A/B/beeswax with tallow absorption.
+
+### Lab Worksheet changes
+- **Product type selector** added: Skin Balm (default) / Exfoliator (`#lab-product-type`).
+- **Beeswax toggle** (`#lab-beeswax-toggle`) — optional in both modes, ratio goes to tallow.
+- **Ingredient A/B toggles** (`#lab-ing-a-toggle`, `#lab-ing-b-toggle`) — shown only in exfoliator mode, ratio goes to tallow when unchecked.
+- **Ingredient C row** added to worksheet (hidden by default, shown in exfoliator mode) with group header, accent bar, and ml display.
+- **C strength slider** (`#lab-c-strength`) — 5–15% range, shown in exfoliator mode.
+- **Composition bar** — added `#b-c` segment and `#leg-c` legend entry.
+- `calcBalanced()` rewritten: handles scrub mode (C phase, optional A/B/beeswax with tallow absorption + scale-down).
+- `calcFromTallowBal()` updated for dynamic tallow fraction.
+- `buildCompositionSeries()` dynamically includes/excludes A, B, C, beeswax based on values.
+- `renderSummary()` conditionally shows A, B, C rows.
+- `render()` handles optional beeswax display, C display, updated pills and tallow label.
+- `renderProcSteps()` handles exfoliator steps (fold in C last) and optional beeswax in melt step.
+- Helper functions added: `labIsScrub()`, `labBeeswaxOn()`, `labIngAOn()`, `labIngBOn()`, `labCPct()`, `onLabProductChange()`, `onLabCStrengthChange()`.
+
+### Chemistry: Powder vs Oil-form C (oil absorption tax)
+- **Dry powders absorb oil from tallow.** Each C ingredient has `oilAbsorb` (g oil per g powder):
+  - Sugar: 0.08, Baking soda: 0.12, Walnut/shell: 0.15, Coffee grounds: 0.30, Ginger powder: 0.35, Oat flour: 0.40, Clay: 0.50
+- **Oil-form C** (infused oil, paste) displaces carrier oil 1:1 — `oilAbsorb: 0`.
+- `fbCalcFormula()` computes `oilTax = sum(cRow.pct × oilAbsorb)` and adds it to tallow.
+- Lab Worksheet uses fixed `LAB_AVG_OIL_ABSORB = 0.25` (midrange powder) since it doesn't track individual C items.
+- `calcFromTallowBal()` includes `cPctVal * 0.25` in `talFrac` so tallow→jojoba back-solve is stable.
+- Form selector UI shows: powder → "(dry — absorbs X% its weight in oil from tallow)", oil → "(oil phase — displaces carrier 1:1)".
+- Each C ingredient has `phase: "dry"` or `phase: "oil"` (multi-form items carry phase in `formMeta`).
+
+### Chemistry: Potency-aware maxPct caps
+- Each C ingredient has `maxPct` (max safe % of total batch for that single ingredient).
+- Multi-form items carry `maxPct` in `formMeta` — powder forms get stricter caps than oil forms.
+- Caps: Sugar 15%, Oat flour 12%, Coffee powder 12% / oil 15%, Clay powder 8% / oil 12%, Baking soda 8%, Walnut/shell 6%, **Ginger powder 5%** / oil 12%.
+- `fbCalcEffectiveMaxC()` computes weighted-average max C% across the pool — e.g., ginger powder (5%) + sugar (15%) at equal weights → ~10% effective max.
+- `fbCalcFormula()` clamps `cPct` to the effective max. `fbUpdate()` dynamically sets the slider's `max` attribute and shows "capped by potent ingredient" note.
+- `fbUpdateSynergies()` warns which ingredient is limiting and suggests switching to oil-form for higher safe range.
+- Lab Worksheet `labCPct()` also clamps via `fbCalcEffectiveMaxC()`. `onLabCStrengthChange()` clamps the lab slider.
+- Helper: `fbGetCMaxPct(row)` resolves maxPct for a row (formMeta first, then top-level, fallback 0.15).
+
+### Chemistry: Structural & therapeutic warnings
+- **No beeswax** — scrub has no structural hold at room temp; loose oil-paste. Warned in synergies + production steps.
+- **No A + B** — 100% tallow base with no therapeutic carriers. Warned in synergies.
+- **High total oil absorption (>3%)** — scrub may feel dry/stiff. Warned with suggestion to use oil-form or add carrier A.
+- **Mixed dry + oil C** — oil-form dissolves into base, dry sits suspended. Fold dry in last.
+
+### Files touched
+- `formula_builder_c_list.js` — added ginger, forms/formMeta on coffee/clay/ginger, oilAbsorb + phase on all items
+- `formula_builder_tab.js` — fbBeeswax state, fbToggleBeeswax(), fbUpdateOptionalLabels(), fbCalcFormula() with oilTax, fbGetCOilAbsorb(), fbGetCPhase(), fbRenderPool() form selector with absorption note, fbUpdateBenefits() form-aware, fbUpdateSynergies() chemistry warnings
+- `tallow_blend_pro_v5.html` — CSS for form selector/beeswax toggle, HTML for beeswax toggle + optional A/B labels + product type + C controls + C worksheet row + C bar/legend, JS for all calc/render functions with oil absorption tax
+- `index.html` — synced from `tallow_blend_pro_v5.html`
+
 ## Housekeeping
 - After editing `tallow_blend_pro_v5.html`, mirror to `index.html` if that is still the deployment workflow.
 - Ask before assuming: user may want the same UI in `crownbreeds_formula_builder_v3.html` as a separate task.
