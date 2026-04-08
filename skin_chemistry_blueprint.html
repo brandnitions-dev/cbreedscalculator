@@ -1,0 +1,368 @@
+<!-- Scoped for Crown Breeds index.html (#panel-skin-chemistry). Open standalone: load from app or add :root tokens. -->
+<style>
+  #panel-skin-chemistry * { box-sizing: border-box; }
+  #panel-skin-chemistry { font-family: var(--font-sans); }
+  #panel-skin-chemistry .bp { padding: 1rem 0; }
+  #panel-skin-chemistry h2 { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  #panel-skin-chemistry .sub { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 16px; }
+
+  #panel-skin-chemistry .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  #panel-skin-chemistry .tab { padding: 6px 14px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); font-size: 13px; cursor: pointer; background: transparent; color: var(--color-text-secondary); transition: all .15s; }
+  #panel-skin-chemistry .tab.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; font-weight: 500; }
+
+  #panel-skin-chemistry .section { display: none; }
+  #panel-skin-chemistry .section.visible { display: block; }
+
+  #panel-skin-chemistry .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  #panel-skin-chemistry .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 540px) {
+    #panel-skin-chemistry .grid2,
+    #panel-skin-chemistry .grid3 { grid-template-columns: 1fr; }
+  }
+
+  #panel-skin-chemistry .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
+  #panel-skin-chemistry .card-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  #panel-skin-chemistry .card-chem { font-size: 11px; color: var(--color-text-info); font-family: var(--font-mono); margin-bottom: 8px; }
+  #panel-skin-chemistry .card-body { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+
+  #panel-skin-chemistry .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin: 2px 2px 0 0; font-weight: 500; }
+  #panel-skin-chemistry .pill-g { background: var(--color-background-success); color: var(--color-text-success); }
+  #panel-skin-chemistry .pill-b { background: var(--color-background-info); color: var(--color-text-info); }
+  #panel-skin-chemistry .pill-a { background: var(--color-background-warning); color: var(--color-text-warning); }
+  #panel-skin-chemistry .pill-r { background: var(--color-background-danger); color: var(--color-text-danger); }
+
+  #panel-skin-chemistry .layer { border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+  #panel-skin-chemistry .layer-name { font-size: 13px; font-weight: 500; }
+  #panel-skin-chemistry .layer-detail { font-size: 11px; margin-top: 2px; }
+
+  #panel-skin-chemistry .arrow-row { display: flex; align-items: center; gap: 8px; margin: 10px 0; font-size: 12px; color: var(--color-text-secondary); }
+  #panel-skin-chemistry .arrow-line { flex: 1; height: 1px; background: var(--color-border-secondary); position: relative; }
+  #panel-skin-chemistry .arrow-line::after { content: '▶'; position: absolute; right: -6px; top: -7px; font-size: 11px; color: var(--color-border-secondary); }
+
+  #panel-skin-chemistry .itbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+  #panel-skin-chemistry .itbl th { text-align: left; padding: 6px 10px; font-size: 11px; font-weight: 500; color: var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+  #panel-skin-chemistry .itbl td { padding: 7px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: top; }
+  #panel-skin-chemistry .itbl tr:last-child td { border-bottom: none; }
+  #panel-skin-chemistry .itbl td:first-child { font-weight: 500; }
+
+  #panel-skin-chemistry .toggle-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  #panel-skin-chemistry .stog { padding: 5px 14px; border-radius: 16px; border: 0.5px solid var(--color-border-secondary); font-size: 12px; cursor: pointer; background: transparent; color: var(--color-text-secondary); }
+  #panel-skin-chemistry .stog.on { background: var(--color-background-warning); color: var(--color-text-warning); border-color: transparent; font-weight: 500; }
+
+  #panel-skin-chemistry .warn-box { background: var(--color-background-warning); border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 12px; color: var(--color-text-warning); margin-top: 12px; }
+  #panel-skin-chemistry .info-box { background: var(--color-background-info); border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 12px; color: var(--color-text-info); margin-top: 12px; }
+  #panel-skin-chemistry .section-head { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; }
+</style>
+
+<div class="bp">
+  <h2>Skin chemistry blueprint</h2>
+  <p class="sub">Oily skin focus — ingredients mapped to chemistry and function</p>
+
+  <div class="tabs">
+    <button type="button" class="tab active" onclick="scbpShow('scbp-bio', this)">Skin biology</button>
+    <button type="button" class="tab" onclick="scbpShow('scbp-acids', this)">Acids</button>
+    <button type="button" class="tab" onclick="scbpShow('scbp-oils', this)">Carrier oils</button>
+    <button type="button" class="tab" onclick="scbpShow('scbp-extras', this)">Tallow · Beeswax · Vit E</button>
+    <button type="button" class="tab" onclick="scbpShow('scbp-routine', this)">Day / Night routine</button>
+  </div>
+
+  <!-- BIOLOGY -->
+  <div id="scbp-bio" class="section visible">
+    <p class="section-head">What oily skin actually is — chemically</p>
+
+    <div style="margin-bottom:12px">
+      <div class="layer" style="background:var(--color-background-secondary)">
+        <div>
+          <div class="layer-name">Stratum corneum (surface)</div>
+          <div class="layer-detail" style="color:var(--color-text-secondary)">Sebum + dead cells + NMF (natural moisturising factor)</div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--color-text-secondary)">~20 µm thick</div>
+      </div>
+      <div class="layer" style="background:var(--color-background-secondary)">
+        <div>
+          <div class="layer-name">Epidermis</div>
+          <div class="layer-detail" style="color:var(--color-text-secondary)">Keratinocytes · tight junctions · lamellar bodies (lipid bilayers)</div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--color-text-secondary)">~100 µm</div>
+      </div>
+      <div class="layer" style="background:var(--color-background-secondary)">
+        <div>
+          <div class="layer-name">Dermis</div>
+          <div class="layer-detail" style="color:var(--color-text-secondary)">Collagen · elastin · fibroblasts · sebaceous glands here</div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--color-text-secondary)">1–4 mm</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Sebum imbalance (oily skin)</div>
+        <div class="card-chem">C18:2 linoleic ↓ → oleic ↑ → comedones</div>
+        <div class="card-body">
+          Oily skin is <strong>linoleic acid deficient</strong>. Sebocytes substitute oleic acid (C18:1), producing a thick, sticky sebum that oxidises easily, clogs follicles and triggers P. acnes colonisation. Topical linoleic-rich oils restore the ratio without increasing overall oil.
+        </div>
+        <div style="margin-top:8px">
+          <span class="pill pill-r">Clogged pores</span>
+          <span class="pill pill-r">Oxidised sebum</span>
+          <span class="pill pill-g">Fix: linoleic oils</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Hyaluronic acid (HA)</div>
+        <div class="card-chem">(C₁₄H₂₁NO₁₁)ₙ — GAG polymer</div>
+        <div class="card-body">
+          HA lives in the extracellular matrix. <strong>High MW HA</strong> (1M+ Da) sits on the surface, humectant only. <strong>Low MW HA</strong> (50k Da) penetrates, signals collagen. Both are essential for oily skin — oily does not mean well-hydrated. Use water-based HA serum, not oil-based.
+        </div>
+        <div style="margin-top:8px">
+          <span class="pill pill-b">Hydration</span>
+          <span class="pill pill-b">Plumping</span>
+          <span class="pill pill-b">Barrier signal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Key principle:</strong> Oily skin is often <em>dehydrated</em> (lacks water) but lipid-excess (overproduces oil). HA addresses dehydration. Linoleic-rich oils address sebum quality — not quantity. These are different axes.
+    </div>
+  </div>
+
+  <!-- ACIDS -->
+  <div id="scbp-acids" class="section">
+    <p class="section-head">Functional acids — what they do at the molecular level</p>
+    <div class="grid2">
+
+      <div class="card">
+        <div class="card-title">Linoleic acid (LA)</div>
+        <div class="card-chem">C18:2 ω-6 — polyunsaturated FA</div>
+        <div class="card-body">Essential fatty acid. Integral to ceramide-1 in the skin barrier. Signals sebocytes to reduce sebum viscosity. Anti-inflammatory via PGE2 pathway. <strong>Oily skin priority #1.</strong></div>
+        <div style="margin-top:8px"><span class="pill pill-g">Sebum regulation</span><span class="pill pill-g">Barrier repair</span><span class="pill pill-g">Anti-inflammatory</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Hyaluronic acid</div>
+        <div class="card-chem">(C₁₄H₂₁NO₁₁)ₙ — not a lipid</div>
+        <div class="card-body">Glycosaminoglycan. Holds up to 1000× its weight in water. Apply to damp skin — it pulls moisture from environment. Critical for oily + dehydrated skin. <strong>Dry vs oily axis is sebum, not water.</strong></div>
+        <div style="margin-top:8px"><span class="pill pill-b">Hydration</span><span class="pill pill-b">Volumising</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Salicylic acid (BHA)</div>
+        <div class="card-chem">C₇H₆O₃ — beta-hydroxy, lipophilic</div>
+        <div class="card-body">Oil-soluble. Penetrates sebaceous follicles, dissolves the desmosomes holding dead cells together inside pores. Keratolytic + anti-bacterial. <strong>Best exfoliator for oily/acne-prone skin.</strong> Use 2%, max 3x/week.</div>
+        <div style="margin-top:8px"><span class="pill pill-a">Exfoliator</span><span class="pill pill-a">Pore cleaner</span><span class="pill pill-r">UV-sensitising</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Glycolic acid (AHA)</div>
+        <div class="card-chem">C₂H₄O₃ — alpha-hydroxy, smallest</div>
+        <div class="card-body">Water-soluble. Breaks ionic bonds in desmosomes at the skin surface. Smallest AHA, deepest penetration. Brightens, anti-aging. More irritating than lactic. <strong>UV-sensitising — night use only.</strong></div>
+        <div style="margin-top:8px"><span class="pill pill-a">Surface exfoliator</span><span class="pill pill-r">UV-sensitising</span><span class="pill pill-r">Night only</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Lactic acid (AHA)</div>
+        <div class="card-chem">C₃H₆O₃ — alpha-hydroxy, humectant</div>
+        <div class="card-body">Gentler than glycolic. Also a humectant — exfoliates and hydrates simultaneously. Larger molecule, surface-level. Good for sensitive oily skin. <strong>UV-sensitising — night use only.</strong></div>
+        <div style="margin-top:8px"><span class="pill pill-a">Gentle exfoliator</span><span class="pill pill-b">Humectant</span><span class="pill pill-r">Night only</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Azelaic acid</div>
+        <div class="card-chem">C₉H₁₆O₄ — dicarboxylic acid</div>
+        <div class="card-body">Inhibits tyrosinase (melanin production) + P. acnes growth + keratin hyperproliferation. Anti-inflammatory. One of the few actives safe morning and night. <strong>No UV sensitisation.</strong></div>
+        <div style="margin-top:8px"><span class="pill pill-g">AM + PM safe</span><span class="pill pill-g">Anti-acne</span><span class="pill pill-g">Brightening</span></div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <strong>UV sensitisation rule:</strong> AHAs (glycolic, lactic, mandelic) and BHA (salicylic) all increase UV sensitivity for 24–72h post-application. Use at night only OR apply broad-spectrum SPF 30+ the next morning without fail.
+    </div>
+  </div>
+
+  <!-- OILS -->
+  <div id="scbp-oils" class="section">
+    <div class="toggle-row">
+      <span style="font-size:12px;color:var(--color-text-secondary);align-self:center">Filter:</span>
+      <button type="button" class="stog on" id="scbp-t-oily" onclick="scbpFilterOil('oily',this)">Oily skin</button>
+      <button type="button" class="stog" id="scbp-t-combo" onclick="scbpFilterOil('combo',this)">Combo</button>
+      <button type="button" class="stog" id="scbp-t-uv" onclick="scbpFilterOil('uv',this)">AM-safe (no UV sens.)</button>
+    </div>
+
+    <table class="itbl">
+      <thead><tr>
+        <th>Oil</th><th>Linoleic %</th><th>Comedogenic</th><th>Notes</th><th>AM/PM</th>
+      </tr></thead>
+      <tbody id="scbp-oil-body">
+        <tr data-tags="oily combo uv"><td>Grapeseed</td><td>69–73%</td><td>1 (very low)</td><td>Lightest texture. Best for sebum control. Antioxidant (OPC). Fast absorbing.</td><td><span class="pill pill-g">Both</span></td></tr>
+        <tr data-tags="oily combo uv"><td>Hemp seed</td><td>55–60%</td><td>0</td><td>Perfect 3:1 ω-6:ω-3 ratio. Calms inflammation. Non-comedogenic.</td><td><span class="pill pill-g">Both</span></td></tr>
+        <tr data-tags="oily combo uv"><td>Watermelon seed</td><td>60–65%</td><td>0–1</td><td>Ultra-light, mattifying. High in lycopene. Absorbs in seconds.</td><td><span class="pill pill-g">Both</span></td></tr>
+        <tr data-tags="oily combo uv"><td>Pumpkin seed</td><td>45–55%</td><td>1</td><td>Contains zinc — regulates sebum production at enzymatic level. Good for acne.</td><td><span class="pill pill-g">Both</span></td></tr>
+        <tr data-tags="oily uv"><td>Black seed (Nigella)</td><td>50–60%</td><td>1–2</td><td>Thymoquinone — antimicrobial, anti-inflammatory. Active against P. acnes.</td><td><span class="pill pill-g">Both</span></td></tr>
+        <tr data-tags="oily combo uv"><td>Rosehip seed</td><td>44–50%</td><td>1</td><td>Trans-retinoic acid precursor. Post-acne scars. Not for active breakouts — use at night.</td><td><span class="pill pill-r">Night</span></td></tr>
+        <tr data-tags="combo uv"><td>Jojoba (wax ester)</td><td>~0% (not a triglyceride)</td><td>2</td><td>Mimics sebum wax esters. Regulates sebum signal. Technically a liquid wax, not oil.</td><td><span class="pill pill-g">Both</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box" style="margin-top:12px">
+      <strong>Why linoleic % matters for oily skin:</strong> When skin is linoleic-deficient, applying linoleic-rich oils supplements the missing fatty acid in sebum, gradually normalising its composition. High oleic oils (avocado, olive, argan) are better for dry skin — they're heavier and more occlusive.
+    </div>
+  </div>
+
+  <!-- EXTRAS -->
+  <div id="scbp-extras" class="section">
+    <p class="section-head">Functional extras — chemistry and role</p>
+    <div class="grid2">
+
+      <div class="card">
+        <div class="card-title">Beef tallow</div>
+        <div class="card-chem">~50% oleic · 25% palmitic · 3% linoleic</div>
+        <div class="card-body">
+          Closest lipid profile to human sebum. Contains fat-soluble vitamins A, D, E, K in natural form. Deeply occlusive — seals moisture. <strong>Better for dry/normal skin than oily.</strong> For oily skin: use as spot treatment or final occlusive step at night only. Very low comedogenic when grass-fed and rendered clean.
+        </div>
+        <div style="margin-top:8px">
+          <span class="pill pill-a">Night only for oily</span>
+          <span class="pill pill-g">Barrier seal</span>
+          <span class="pill pill-g">Vitamins A,D,E,K</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Beeswax</div>
+        <div class="card-chem">Esters of C24–C36 fatty acids + alcohols</div>
+        <div class="card-body">
+          Not an oil — a wax. Forms a breathable, non-occlusive barrier. Emulsifying agent. Antimicrobial (propolis content). Holds water-in-oil or oil-in-water emulsions stable. In balms: creates structure without comedogenic oils. <strong>Generally non-comedogenic.</strong>
+        </div>
+        <div style="margin-top:8px">
+          <span class="pill pill-g">Emulsifier</span>
+          <span class="pill pill-g">Breathable barrier</span>
+          <span class="pill pill-g">Antimicrobial</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Vitamin E (tocopherol)</div>
+        <div class="card-chem">C₂₉H₅₀O₂ — fat-soluble antioxidant</div>
+        <div class="card-body">
+          Terminates lipid peroxidation chain reactions — prevents oxidative rancidity of oils on skin. Synergistic with vitamin C (vitamin C regenerates vitamin E after it neutralises a radical). In your 100% bio form: d-alpha-tocopherol (natural isomer, more bioavailable than synthetic dl-alpha). <strong>Add to any oil blend as preservative + skin antioxidant.</strong>
+        </div>
+        <div style="margin-top:8px">
+          <span class="pill pill-g">Antioxidant</span>
+          <span class="pill pill-g">Preservative</span>
+          <span class="pill pill-b">Synergistic with Vit C</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Jojoba (liquid wax)</div>
+        <div class="card-chem">C20–C22 wax esters — not a triglyceride</div>
+        <div class="card-body">
+          Chemically identical to human sebum wax esters. Signals sebaceous glands to reduce output (negative feedback). Oxidation-resistant — nearly indefinite shelf life. Acts as carrier and sebum mimic simultaneously. <strong>The bridge between oil and tallow in formulation.</strong>
+        </div>
+        <div style="margin-top:8px">
+          <span class="pill pill-g">Sebum signal</span>
+          <span class="pill pill-g">Oxidation-resistant</span>
+          <span class="pill pill-b">Long shelf life</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-head">Formulation principle</p>
+    <div class="card">
+      <div class="card-body" style="font-size:13px;line-height:1.8">
+        <strong>Simple oily-skin balm formula (for night use):</strong><br>
+        60% grapeseed or hemp seed oil (linoleic base) <br>
+        20% jojoba wax (sebum mimic + stabiliser)<br>
+        10% rosehip seed oil (retinoid precursor + LA)<br>
+        8% beeswax (structure + breathable barrier)<br>
+        2% vitamin E (antioxidant preservation)<br>
+        + optional: 1–2 drops tallow (vitamins, deep barrier) for dry patches only<br><br>
+        <span style="color:var(--color-text-secondary)">This avoids high-oleic oils (avocado, olive, argan) which are comedogenic for oily skin and accelerate pore congestion.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUTINE -->
+  <div id="scbp-routine" class="section">
+    <p class="section-head">Blueprint: oily skin daily routine</p>
+
+    <div class="grid2" style="margin-bottom:12px">
+      <div>
+        <div class="section-head" style="color:var(--color-text-warning)">☀ Morning (AM)</div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-title">1. Cleanser</div>
+          <div class="card-chem">Target: remove overnight sebum + residue</div>
+          <div class="card-body">Low-pH gel cleanser (pH 4.5–5.5). Amino acid or glucoside surfactants. Avoid SLS — strips barrier, triggers rebound oil. <strong>No oil cleansers AM for oily skin.</strong></div>
+        </div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-title">2. Hydration</div>
+          <div class="card-chem">HA serum on damp skin</div>
+          <div class="card-body">Low-MW + high-MW HA layered. Apply immediately after cleansing while skin is still slightly damp. Locks in water, not oil.</div>
+        </div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-title">3. Active (AM-safe only)</div>
+          <div class="card-chem">No AHA/BHA in AM</div>
+          <div class="card-body">Azelaic acid (no UV sens.) or niacinamide (regulates sebum, shrinks pores). <strong>Skip retinoids, glycolic, lactic, salicylic in AM.</strong></div>
+        </div>
+        <div class="card">
+          <div class="card-title">4. SPF (non-negotiable)</div>
+          <div class="card-chem">Mineral: ZnO/TiO₂ — Chemical: avobenzone</div>
+          <div class="card-body">SPF 30+ every day. Mineral for oily skin — matte finish, non-comedogenic. UV = #1 cause of collagen breakdown and hyperpigmentation.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-head" style="color:var(--color-text-secondary)">☾ Evening (PM)</div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-title">1. Double cleanse</div>
+          <div class="card-chem">Oil cleanse → water cleanse</div>
+          <div class="card-body">First pass: jojoba or grapeseed oil to dissolve SPF and sebum (like-dissolves-like). Second pass: low-pH gel to remove emulsified oils. Clean without stripping.</div>
+        </div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-title">2. Exfoliator (2–3×/week)</div>
+          <div class="card-chem">BHA preferred for oily skin</div>
+          <div class="card-body">Salicylic acid 2% — penetrates follicles, dissolves sebum plugs. Alternate with lactic acid for gentler weeks. <strong>UV sensitising — always PM.</strong></div>
+        </div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-title">3. HA + active serum</div>
+          <div class="card-chem">Retinol or azelaic or niacinamide</div>
+          <div class="card-body">Retinol (0.025–0.1%) upregulates collagen, normalises cell turnover. Apply after HA serum. Start 1×/week, increase slowly.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">4. Sealing oil / balm</div>
+          <div class="card-chem">Linoleic-rich oil or tallow</div>
+          <div class="card-body">1–2 drops grapeseed, hemp or pumpkin seed. Or small amount of tallow+jojoba+vitamin E blend. Seals actives in. Repairs barrier overnight while no UV exposure.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <strong>Never layer:</strong> Retinol + AHA/BHA in same session (over-exfoliation). Vitamin C + niacinamide (may form niacin complex — use separately). AHA/BHA in the morning without SPF.
+    </div>
+    <div class="info-box" style="margin-top:8px">
+      <strong>UV side effects of actives:</strong> Glycolic, lactic, mandelic, salicylic acids all thin the stratum corneum temporarily — UV penetrates deeper, risk of PIH (post-inflammatory hyperpigmentation) and sunburn increases. This is why SPF is not optional when using any chemical exfoliator.
+    </div>
+  </div>
+</div>
+
+<script>
+function scbpShow(id, btn) {
+  var root = document.getElementById('panel-skin-chemistry');
+  if (!root) return;
+  root.querySelectorAll('.section').forEach(function (s) { s.classList.remove('visible'); });
+  root.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+  var sec = document.getElementById(id);
+  if (sec) sec.classList.add('visible');
+  if (btn) btn.classList.add('active');
+}
+
+function scbpFilterOil(tag, btn) {
+  var root = document.getElementById('panel-skin-chemistry');
+  if (!root || !btn) return;
+  root.querySelectorAll('.stog').forEach(function (b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  root.querySelectorAll('#scbp-oil-body tr').forEach(function (row) {
+    var tags = row.dataset.tags || '';
+    row.style.display = tags.indexOf(tag) >= 0 ? '' : 'none';
+  });
+}
+</script>
