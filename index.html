@@ -1301,7 +1301,8 @@
 
     /* Skin chemistry blueprint (see skin_chemistry_blueprint.html) */
     #panel-skin-chemistry * { box-sizing: border-box; }
-    #panel-skin-chemistry { font-family: var(--font-sans); }
+    /* Do not use .w on this panel — .w is a 2-col grid at 1024px+ for the lab worksheet */
+    #panel-skin-chemistry { font-family: var(--font-sans); display: block; width: 100%; max-width: 100%; }
     #panel-skin-chemistry .bp { padding: 1rem 0; }
     #panel-skin-chemistry h2 { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
     #panel-skin-chemistry .sub { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 16px; }
@@ -1785,7 +1786,7 @@
 </div>
 </div>
 
-<div id="panel-skin-chemistry" class="tool-panel w" role="tabpanel" aria-labelledby="tab-skin" hidden>
+<div id="panel-skin-chemistry" class="tool-panel" role="tabpanel" aria-labelledby="tab-skin" hidden>
 <div class="bp">
   <h2>Skin chemistry blueprint</h2>
   <p class="sub">Oily skin focus — ingredients mapped to chemistry and function</p>
