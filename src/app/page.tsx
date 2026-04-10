@@ -1,13 +1,26 @@
 import Link from 'next/link';
+import { FlaskConical, Sparkles, Droplets, Beaker, Leaf, TestTubes, Microscope, Atom } from 'lucide-react';
+import { GlassCard, Badge } from '@/components/ui';
+import type { ReactNode } from 'react';
 
-const PRODUCTS = [
+interface Product {
+  id: string;
+  title: string;
+  icon: ReactNode;
+  href: string;
+  desc: string;
+  stats: { label: string; value: string }[];
+  badge?: string;
+  accent: string;
+}
+
+const PRODUCTS: Product[] = [
   {
     id: 'balm',
     title: 'Tallow Balm',
-    icon: '🧴',
+    icon: <FlaskConical size={28} />,
     href: '/balm',
-    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(167,139,250,0.08) 100%)',
-    border: 'rgba(99,102,241,0.2)',
+    accent: '#6366f1',
     desc: 'Classic tallow skin balm with jojoba, beeswax, carrier oils (A), active botanicals (B), and essential oils. Face & body modes.',
     stats: [
       { label: 'Base', value: '58% Tallow' },
@@ -18,10 +31,9 @@ const PRODUCTS = [
   {
     id: 'exfoliator',
     title: 'Exfoliator / Scrub',
-    icon: '✨',
+    icon: <Sparkles size={28} />,
     href: '/exfoliator',
-    gradient: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(217,119,6,0.06) 100%)',
-    border: 'rgba(245,158,11,0.2)',
+    accent: '#f59e0b',
     desc: 'Tallow-based exfoliating scrub with physical polish phase (C). Sugar, coffee, oat, clay, walnut — with oil absorption chemistry.',
     stats: [
       { label: 'C Phase', value: '5–15%' },
@@ -30,201 +42,175 @@ const PRODUCTS = [
     ],
   },
   {
+    id: 'oils',
+    title: 'Treatment Oils',
+    icon: <Droplets size={28} />,
+    href: '/oils',
+    accent: '#5DCAA5',
+    desc: 'BHA penetrating oils and clinical pore purge blends. Jojoba sebum mimicry, wintergreen BHA delivery, and extraction chemistry.',
+    stats: [
+      { label: 'Carriers', value: '8 oils' },
+      { label: 'Actives', value: '4 compounds' },
+      { label: 'EOs', value: '7 oils' },
+    ],
+    badge: 'NEW',
+  },
+  {
     id: 'soap',
     title: 'Tallow Soap',
-    icon: '🧼',
+    icon: <Beaker size={28} />,
     href: '/soap',
-    gradient: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.06) 100%)',
-    border: 'rgba(16,185,129,0.2)',
+    accent: '#10b981',
     desc: 'Cold-process tallow soap with olive oil carrier, real NaOH lye calculations, superfat control, bar quality indices, and cure estimation.',
     stats: [
       { label: 'Base', value: '55% Tallow' },
       { label: 'Carrier', value: '25% Olive' },
       { label: 'SAP Values', value: '12 oils' },
     ],
-    badge: 'NEW',
   },
 ];
 
 const QUICK_STATS = [
-  { label: 'Essential Oils', value: '35+', icon: '🌿', color: 'var(--accent-emerald)' },
-  { label: 'Carrier Oils', value: '22', icon: '💧', color: 'var(--accent-sky)' },
-  { label: 'Active Botanicals', value: '15', icon: '🔬', color: 'var(--accent-violet)' },
-  { label: 'Soap Oils + Additives', value: '27', icon: '🧪', color: 'var(--accent-gold)' },
+  { label: 'Essential Oils', value: '35+', icon: <Leaf size={20} />, color: 'text-accent-emerald-light' },
+  { label: 'Carrier Oils', value: '30+', icon: <Droplets size={20} />, color: 'text-accent-sky' },
+  { label: 'Active Botanicals', value: '19', icon: <Microscope size={20} />, color: 'text-accent-violet' },
+  { label: 'Product Types', value: '4', icon: <TestTubes size={20} />, color: 'text-accent-gold-light' },
 ];
 
 export default function Dashboard() {
   return (
-    <div className="page-content">
+    <div className="p-6 lg:p-8 space-y-8 animate-fade-in">
       {/* Hero */}
-      <section className="dash-hero animate-in">
-        <div className="dash-hero__text">
-          <p className="label-sm" style={{ color: 'var(--accent-gold)', marginBottom: 8 }}>CROWN BREEDS PROFESSIONAL</p>
-          <h1 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', marginBottom: 12 }}>
-            Formulation <span className="text-gradient">Command Center</span>
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', maxWidth: 560, lineHeight: 1.7 }}>
-            Professional-grade calculators for tallow-based skincare and cold-process soap.
-            Real chemistry. Precise measurements. Beautiful products.
-          </p>
-        </div>
+      <section>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-accent-gold mb-2">Crown Breeds Professional</p>
+        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight mb-3">
+          Formulation <span className="bg-gradient-to-r from-accent-indigo via-accent-violet to-accent-gold bg-clip-text text-transparent">Command Center</span>
+        </h1>
+        <p className="text-text-secondary max-w-xl leading-relaxed">
+          Professional-grade calculators for tallow-based skincare, treatment oils, and cold-process soap. Real chemistry. Precise measurements. Beautiful products.
+        </p>
       </section>
 
       {/* Quick Stats */}
-      <section className="dash-stats" style={{ animationDelay: '100ms' }}>
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {QUICK_STATS.map(stat => (
-          <div key={stat.label} className="glass-card stat-card">
-            <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{stat.icon}</div>
-            <div className="stat-value" style={{ color: stat.color }}>{stat.value}</div>
-            <div className="stat-label">{stat.label}</div>
-          </div>
+          <GlassCard key={stat.label} className="flex flex-col items-center text-center gap-2 py-5">
+            <div className={stat.color}>{stat.icon}</div>
+            <div className={`text-2xl font-black ${stat.color}`}>{stat.value}</div>
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-text-muted">{stat.label}</div>
+          </GlassCard>
         ))}
       </section>
 
       {/* Product Cards */}
-      <section style={{ marginTop: 32, animationDelay: '200ms' }} className="animate-in">
-        <h2 style={{ marginBottom: 20 }}>Calculators</h2>
-        <div className="dash-products">
+      <section>
+        <h2 className="text-lg font-bold mb-5">Calculators</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {PRODUCTS.map(product => (
-            <Link key={product.id} href={product.href} style={{ textDecoration: 'none' }}>
-              <div
-                className="glass-card glass-card--interactive dash-product-card"
-                style={{
-                  background: product.gradient,
-                  borderColor: product.border,
-                }}
-              >
-                <div className="dash-product-header">
-                  <span style={{ fontSize: '2rem' }}>{product.icon}</span>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <h3 style={{ fontSize: '1.125rem' }}>{product.title}</h3>
-                      {product.badge && <span className="pill pill-gold">{product.badge}</span>}
+            <Link key={product.id} href={product.href} className="no-underline group">
+              <GlassCard interactive className="h-full flex flex-col">
+                <div className="flex gap-4 items-start mb-5">
+                  <div
+                    className="w-12 h-12 rounded-md flex items-center justify-center shrink-0"
+                    style={{ background: `${product.accent}20`, color: product.accent }}
+                  >
+                    {product.icon}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-text-primary">{product.title}</h3>
+                      {product.badge && <Badge variant="gold">{product.badge}</Badge>}
                     </div>
-                    <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginTop: 4, lineHeight: 1.6 }}>
-                      {product.desc}
-                    </p>
+                    <p className="text-[13px] text-text-secondary mt-1 leading-relaxed">{product.desc}</p>
                   </div>
                 </div>
-                <div className="dash-product-stats">
+
+                <div className="flex gap-6 py-4 border-t border-b border-border-subtle mt-auto">
                   {product.stats.map(stat => (
-                    <div key={stat.label} className="dash-product-stat">
-                      <div style={{ fontSize: '0.6875rem', color: 'var(--text-tertiary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                        {stat.label}
-                      </div>
-                      <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
-                        {stat.value}
-                      </div>
+                    <div key={stat.label}>
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-text-muted">{stat.label}</div>
+                      <div className="text-sm font-bold text-text-primary mt-0.5">{stat.value}</div>
                     </div>
                   ))}
                 </div>
-                <div className="dash-product-cta">
+
+                <div className="pt-4 text-[13px] font-semibold text-accent-indigo-light group-hover:text-accent-violet transition-colors">
                   Open Calculator →
                 </div>
-              </div>
+              </GlassCard>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Chemistry Reference */}
-      <section style={{ marginTop: 32 }} className="animate-in">
-        <h2 style={{ marginBottom: 20 }}>Quick Reference</h2>
-        <div className="grid-2">
-          <div className="glass-card" style={{ padding: 24 }}>
-            <h3 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>🧴</span> Balm Base Formula
+      {/* Quick Reference */}
+      <section>
+        <h2 className="text-lg font-bold mb-5">Quick Reference</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <GlassCard>
+            <h3 className="flex items-center gap-2 text-sm font-bold mb-3">
+              <FlaskConical size={16} className="text-accent-indigo-light" /> Balm Base Formula
             </h3>
-            <table className="data-table">
+            <table className="w-full text-xs">
               <thead>
-                <tr><th>Ingredient</th><th className="num">%</th><th>Role</th></tr>
+                <tr className="border-b border-border-subtle">
+                  <th className="text-left py-1.5 text-text-muted font-semibold">Ingredient</th>
+                  <th className="text-right py-1.5 text-text-muted font-semibold">%</th>
+                  <th className="text-left py-1.5 pl-4 text-text-muted font-semibold">Role</th>
+                </tr>
               </thead>
-              <tbody>
-                <tr><td>Beef Tallow</td><td className="num">58%</td><td>Base emollient</td></tr>
-                <tr><td>Carrier Oil (A)</td><td className="num">13%</td><td>Therapeutic carrier</td></tr>
-                <tr><td>Jojoba</td><td className="num">11%</td><td>Wax ester / sebum mimic</td></tr>
-                <tr><td>Beeswax</td><td className="num">8%</td><td>Structure / barrier</td></tr>
-                <tr><td>Active Oil (B)</td><td className="num">6%</td><td>Potent botanical</td></tr>
-                <tr><td>Essential Oils</td><td className="num">1–2%</td><td>Scent / therapy</td></tr>
-                <tr><td>Vitamin E</td><td className="num">0.4%</td><td>Antioxidant preservative</td></tr>
+              <tbody className="text-text-secondary">
+                {[
+                  ['Beef Tallow', '58%', 'Base emollient'],
+                  ['Carrier Oil (A)', '13%', 'Therapeutic carrier'],
+                  ['Jojoba', '11%', 'Wax ester / sebum mimic'],
+                  ['Beeswax', '8%', 'Structure / barrier'],
+                  ['Active Oil (B)', '6%', 'Potent botanical'],
+                  ['Essential Oils', '1-2%', 'Scent / therapy'],
+                  ['Vitamin E', '0.4%', 'Antioxidant preservative'],
+                ].map(([name, pct, role]) => (
+                  <tr key={name} className="border-b border-border-subtle/50">
+                    <td className="py-1.5">{name}</td>
+                    <td className="py-1.5 text-right font-medium text-text-primary">{pct}</td>
+                    <td className="py-1.5 pl-4 text-text-muted">{role}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-          </div>
-          <div className="glass-card" style={{ padding: 24 }}>
-            <h3 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>🧼</span> Soap Base Formula
+          </GlassCard>
+
+          <GlassCard>
+            <h3 className="flex items-center gap-2 text-sm font-bold mb-3">
+              <Beaker size={16} className="text-accent-emerald" /> Soap Base Formula
             </h3>
-            <table className="data-table">
+            <table className="w-full text-xs">
               <thead>
-                <tr><th>Oil</th><th className="num">%</th><th>SAP (NaOH)</th></tr>
+                <tr className="border-b border-border-subtle">
+                  <th className="text-left py-1.5 text-text-muted font-semibold">Oil</th>
+                  <th className="text-right py-1.5 text-text-muted font-semibold">%</th>
+                  <th className="text-right py-1.5 text-text-muted font-semibold">SAP (NaOH)</th>
+                </tr>
               </thead>
-              <tbody>
-                <tr><td>Beef Tallow</td><td className="num">55%</td><td className="num">0.1405</td></tr>
-                <tr><td>Olive Oil</td><td className="num">25%</td><td className="num">0.1340</td></tr>
-                <tr><td>Coconut Oil</td><td className="num">10%</td><td className="num">0.1787</td></tr>
-                <tr><td>Castor Oil</td><td className="num">5%</td><td className="num">0.1286</td></tr>
-                <tr><td>Beeswax</td><td className="num">3%</td><td className="num">0.0694</td></tr>
-                <tr><td>Shea Butter</td><td className="num">2%</td><td className="num">0.1280</td></tr>
+              <tbody className="text-text-secondary">
+                {[
+                  ['Beef Tallow', '55%', '0.1405'],
+                  ['Olive Oil', '25%', '0.1340'],
+                  ['Coconut Oil', '10%', '0.1787'],
+                  ['Castor Oil', '5%', '0.1286'],
+                  ['Beeswax', '3%', '0.0694'],
+                  ['Shea Butter', '2%', '0.1280'],
+                ].map(([name, pct, sap]) => (
+                  <tr key={name} className="border-b border-border-subtle/50">
+                    <td className="py-1.5">{name}</td>
+                    <td className="py-1.5 text-right font-medium text-text-primary">{pct}</td>
+                    <td className="py-1.5 text-right font-mono text-text-muted">{sap}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-          </div>
+          </GlassCard>
         </div>
       </section>
-
-      <style>{`
-        .dash-hero {
-          padding: 8px 0 24px;
-        }
-        .dash-stats {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-          animation: fadeIn var(--duration-slow) var(--ease-out) forwards;
-        }
-        .dash-products {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-          gap: 20px;
-        }
-        .dash-product-card {
-          padding: 24px;
-          cursor: pointer;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-        }
-        .dash-product-header {
-          display: flex;
-          gap: 16px;
-          align-items: flex-start;
-          margin-bottom: 20px;
-        }
-        .dash-product-stats {
-          display: flex;
-          gap: 24px;
-          padding: 16px 0;
-          border-top: 1px solid var(--border-subtle);
-          border-bottom: 1px solid var(--border-subtle);
-          margin-top: auto;
-        }
-        .dash-product-cta {
-          padding-top: 16px;
-          font-size: 0.8125rem;
-          font-weight: 600;
-          color: var(--accent-indigo-light);
-          transition: color var(--duration-fast);
-        }
-        .dash-product-card:hover .dash-product-cta {
-          color: var(--accent-violet);
-        }
-        @media (max-width: 768px) {
-          .dash-stats { grid-template-columns: repeat(2, 1fr); }
-          .dash-products { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 480px) {
-          .dash-stats { grid-template-columns: 1fr 1fr; }
-        }
-      `}</style>
     </div>
   );
 }

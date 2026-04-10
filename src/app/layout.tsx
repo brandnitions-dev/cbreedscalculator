@@ -5,47 +5,23 @@ import TopBar from '@/components/TopBar';
 
 export const metadata: Metadata = {
   title: 'Crown Breeds — Professional Formulation Platform',
-  description: 'Professional tallow-based skincare and soap formulation calculators. Tallow balm, exfoliator, and cold-process soap with real saponification chemistry.',
-  keywords: 'tallow balm, tallow soap, cold process soap calculator, saponification, essential oils, skincare formulation',
+  description: 'Professional tallow-based skincare, treatment oils, and soap formulation calculators with real chemistry.',
+  keywords: 'tallow balm, treatment oils, tallow soap, cold process soap calculator, saponification, essential oils, skincare formulation',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
-        <div className="app-shell">
+    <html lang="en" className="dark">
+      <body className="bg-surface-root text-text-primary font-sans antialiased">
+        <div className="flex min-h-screen">
           <Sidebar />
-          <div className="app-main">
+          <div className="flex-1 ml-[260px] min-w-0 flex flex-col transition-all duration-300 max-md:ml-0">
             <TopBar />
-            <main className="app-content">
+            <main className="flex-1 relative z-[1]">
               {children}
             </main>
           </div>
         </div>
-        <style>{`
-          .app-shell {
-            display: flex;
-            min-height: 100vh;
-          }
-          .app-main {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            transition: margin-left var(--duration-normal) var(--ease-out);
-          }
-          .app-content {
-            flex: 1;
-            position: relative;
-            z-index: 1;
-          }
-          @media (max-width: 768px) {
-            .app-main {
-              margin-left: 0;
-            }
-          }
-        `}</style>
       </body>
     </html>
   );

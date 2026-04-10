@@ -1,12 +1,23 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
+import { Sparkles, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { GlassCard } from '@/components/ui';
+import { IngredientPool, CompositionBar, RatioBars } from '@/components/formula';
 import { CARRIERS_A } from '@/lib/ingredients/carriers-a';
 import { ACTIVES_B } from '@/lib/ingredients/actives-b';
 import { EXFOLIANTS_C } from '@/lib/ingredients/exfoliants-c';
 import { ESSENTIAL_OILS } from '@/lib/ingredients/essential-oils';
-import { calcFormula, FB_COLORS, BENEFIT_LABELS, FB_BENEFIT_COLORS, getTipLevel, sqrtBarWidth } from '@/lib/formula-engine';
-import type { PoolRow, Ingredient } from '@/types';
+import { calcFormula, FB_COLORS } from '@/lib/formula-engine';
+import type { PoolRow } from '@/types';
+
+const POOL_DEFS = [
+  { key: 'c' as const, label: 'Exfoliants (C)', data: EXFOLIANTS_C, max: 3, color: '#C4A574' },
+  { key: 'a' as const, label: 'Carrier Oils (A)', data: CARRIERS_A, max: 4, color: '#85B7EB' },
+  { key: 'b' as const, label: 'Active Botanicals (B)', data: ACTIVES_B, max: 3, color: '#D85A30' },
+  { key: 'eo' as const, label: 'Essential Oils', data: ESSENTIAL_OILS, max: 12, color: '#534AB7' },
+];
 
 let idCounter = 100;
 
@@ -16,8 +27,7 @@ export default function ExfoliatorCalculator() {
   const [beeswaxOn, setBeeswaxOn] = useState(true);
   const [cPct, setCPct] = useState(8);
   const [pools, setPools] = useState<{ a: PoolRow[]; b: PoolRow[]; c: PoolRow[]; eo: PoolRow[] }>({
-    a: [],
-    b: [],
+    a: [], b: [],
     c: [{ id: idCounter++, ingId: 'sugar', weight: 5 }],
     eo: [],
   });
@@ -28,12 +38,11 @@ export default function ExfoliatorCalculator() {
   );
 
   const addIng = useCallback((pool: 'a' | 'b' | 'c' | 'eo') => {
-    const limits = { a: 4, b: 3, c: 3, eo: 12 };
-    const data = pool === 'a' ? CARRIERS_A : pool === 'b' ? ACTIVES_B : pool === 'c' ? EXFOLIANTS_C : ESSENTIAL_OILS;
+    const def = POOL_DEFS.find(d => d.key === pool)!;
     setPools(prev => {
-      if (prev[pool].length >= limits[pool]) return prev;
+      if (prev[pool].length >= def.max) return prev;
       const used = prev[pool].map(r => r.ingId);
-      const avail = data.filter(i => !used.includes(i.id));
+      const avail = def.data.filter(i => !used.includes(i.id));
       if (!avail.length) return prev;
       return { ...prev, [pool]: [...prev[pool], { id: idCounter++, ingId: avail[0].id, weight: 5 }] };
     });
@@ -50,115 +59,121 @@ export default function ExfoliatorCalculator() {
     }));
   }, []);
 
-  // All layers for composition bar
-  const allLayers = [
+  const allLayers = useMemo(() => [
     ...formula.fixed.map(f => ({ name: f.name, pct: f.pct, color: f.color })),
     ...formula.aSplit.map((r, i) => ({ name: CARRIERS_A.find(x => x.id === r.ingId)?.name || 'A', pct: r.pct, color: FB_COLORS[`a${i}`] || '#85B7EB' })),
     ...formula.bSplit.map((r, i) => ({ name: ACTIVES_B.find(x => x.id === r.ingId)?.name || 'B', pct: r.pct, color: FB_COLORS[`b${i}`] || '#D85A30' })),
     ...formula.cSplit.map((r, i) => ({ name: EXFOLIANTS_C.find(x => x.id === r.ingId)?.name || 'C', pct: r.pct, color: FB_COLORS[`c${i}`] || '#C4A574' })),
     ...formula.eoSplit.map((r, i) => ({ name: ESSENTIAL_OILS.find(x => x.id === r.ingId)?.name || 'EO', pct: r.pct, color: FB_COLORS[`eo${i}`] || '#534AB7' })),
-  ];
+  ], [formula]);
 
-  const maxSqrt = Math.max(...allLayers.map(l => Math.sqrt(Math.max(0, l.pct * 100) / 100)), 1e-9);
+  const ratioItems = useMemo(() => allLayers.map(l => ({
+    name: l.name, pct: l.pct, ml: l.pct * batchSize, color: l.color,
+  })), [allLayers, batchSize]);
+
+  const getSplit = (key: string) => {
+    if (key === 'a') return formula.aSplit;
+    if (key === 'b') return formula.bSplit;
+    if (key === 'c') return formula.cSplit;
+    return formula.eoSplit;
+  };
 
   return (
-    <div className="page-content">
-      <section className="animate-in" style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <span style={{ fontSize: '2rem' }}>✨</span>
-          <div>
-            <h1>Exfoliator Calculator</h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-              Tallow-based scrub with physical exfoliant phase (C) and oil absorption chemistry
-            </p>
-          </div>
+    <div className="p-6 lg:p-8 space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-md flex items-center justify-center bg-accent-gold/15 text-accent-gold-light">
+          <Sparkles size={24} />
         </div>
-      </section>
+        <div>
+          <h1 className="text-xl font-bold text-text-primary">Exfoliator Calculator</h1>
+          <p className="text-sm text-text-secondary">Tallow-based scrub with physical exfoliant phase (C) and oil absorption chemistry</p>
+        </div>
+      </div>
 
-      <div className="exf-layout">
-        <div className="exf-left">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
+        {/* Left */}
+        <div className="space-y-5">
           {/* Settings */}
-          <div className="glass-card" style={{ padding: 20, marginBottom: 16 }}>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 14 }}>
-              {(['face', 'body'] as const).map(m => (
-                <button key={m} className={`btn btn-sm ${mode === m ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode(m)}>
-                  {m === 'face' ? '🧑 Face (1% EO)' : '💪 Body (2% EO)'}
-                </button>
-              ))}
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8125rem', cursor: 'pointer' }}>
-                <input type="checkbox" checked={beeswaxOn} onChange={e => setBeeswaxOn(e.target.checked)}
-                  style={{ width: 18, height: 18, accentColor: 'var(--accent-indigo)' }} />
+          <GlassCard>
+            <div className="flex gap-3 flex-wrap items-center mb-3.5">
+              <div className="flex gap-1.5">
+                {(['face', 'body'] as const).map(m => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className={cn(
+                      'px-3 py-2 rounded-xs text-xs font-medium border transition-all',
+                      mode === m
+                        ? 'bg-accent-indigo/15 border-accent-indigo/30 text-accent-indigo-light'
+                        : 'bg-surface-input border-border text-text-tertiary hover:text-text-secondary hover:border-border-strong'
+                    )}
+                  >
+                    {m === 'face' ? 'Face (1% EO)' : 'Body (2% EO)'}
+                  </button>
+                ))}
+              </div>
+              <label className="flex items-center gap-2 text-[13px] cursor-pointer text-text-secondary">
+                <input type="checkbox" checked={beeswaxOn} onChange={e => setBeeswaxOn(e.target.checked)} className="w-4 h-4 accent-accent-indigo" />
                 Beeswax
               </label>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-              <label className="form-label" style={{ margin: 0 }}>Batch</label>
-              <input type="range" min={25} max={500} step={5} value={batchSize} onChange={e => setBatchSize(+e.target.value)} style={{ flex: 1 }} />
-              <span className="mono" style={{ minWidth: 52, textAlign: 'right', fontWeight: 600 }}>{batchSize} ml</span>
+            <div className="flex items-center gap-3 mb-3.5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-muted whitespace-nowrap">Batch</span>
+              <input type="range" min={25} max={500} step={5} value={batchSize} onChange={e => setBatchSize(+e.target.value)} className="flex-1 accent-accent-indigo h-1.5" />
+              <span className="text-sm font-bold text-accent-indigo-light min-w-[60px] text-right">{batchSize} ml</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <label className="form-label" style={{ margin: 0 }}>C Phase</label>
-              <input type="range" min={5} max={15} step={1} value={cPct} onChange={e => setCPct(+e.target.value)} style={{ flex: 1 }} />
-              <span className="mono" style={{ minWidth: 40, textAlign: 'right', fontWeight: 700, color: 'var(--accent-gold)' }}>{cPct}%</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-muted whitespace-nowrap">C Phase</span>
+              <input type="range" min={5} max={15} step={1} value={cPct} onChange={e => setCPct(+e.target.value)} className="flex-1 accent-accent-gold h-1.5" />
+              <span className="text-sm font-bold text-accent-gold min-w-[40px] text-right">{cPct}%</span>
             </div>
-            <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: 6 }}>
-              Exfoliant phase — base oils scale down to accommodate. {cPct >= 12 ? '⚠️ High — body use recommended' : ''}
-            </div>
-          </div>
+            <p className="text-[11px] text-text-muted mt-1.5">
+              Exfoliant phase — base oils scale down to accommodate.
+              {cPct >= 12 && <span className="text-accent-gold-light ml-1 font-medium">High — body use recommended</span>}
+            </p>
+          </GlassCard>
 
-          {/* Exfoliant C pool */}
-          <IngPool pool="c" label="Ingredient C — Exfoliants" data={EXFOLIANTS_C} rows={pools.c} split={formula.cSplit}
-            max={3} batchSize={batchSize} onAdd={() => addIng('c')} onRemove={(id) => removeIng('c', id)} onUpdate={(id, k, v) => updateIng('c', id, k, v)} />
-
-          {/* Carrier A */}
-          <IngPool pool="a" label="Ingredient A — Carriers" data={CARRIERS_A} rows={pools.a} split={formula.aSplit}
-            max={4} batchSize={batchSize} onAdd={() => addIng('a')} onRemove={(id) => removeIng('a', id)} onUpdate={(id, k, v) => updateIng('a', id, k, v)} />
-
-          {/* Active B */}
-          <IngPool pool="b" label="Ingredient B — Actives" data={ACTIVES_B} rows={pools.b} split={formula.bSplit}
-            max={3} batchSize={batchSize} onAdd={() => addIng('b')} onRemove={(id) => removeIng('b', id)} onUpdate={(id, k, v) => updateIng('b', id, k, v)} />
-
-          {/* EOs */}
-          <IngPool pool="eo" label="Essential Oils" data={ESSENTIAL_OILS} rows={pools.eo} split={formula.eoSplit}
-            max={12} batchSize={batchSize} onAdd={() => addIng('eo')} onRemove={(id) => removeIng('eo', id)} onUpdate={(id, k, v) => updateIng('eo', id, k, v)} />
+          {/* Ingredient Pools */}
+          {POOL_DEFS.map(def => {
+            const split = getSplit(def.key);
+            const totalPct = split.reduce((s, r) => s + r.pct, 0);
+            return (
+              <GlassCard key={def.key}>
+                <IngredientPool
+                  label={def.label}
+                  poolKey={def.key}
+                  rows={pools[def.key]}
+                  ingredients={def.data}
+                  maxItems={def.max}
+                  accentColor={def.color}
+                  pctLabel={`${(totalPct * 100).toFixed(1)}% of batch`}
+                  splits={split}
+                  batchSize={batchSize}
+                  onAdd={() => addIng(def.key)}
+                  onRemove={(id) => removeIng(def.key, id)}
+                  onChange={(id, key, val) => updateIng(def.key, id, key, val)}
+                />
+              </GlassCard>
+            );
+          })}
         </div>
 
         {/* Right: Results */}
-        <div className="exf-right">
-          <div className="glass-card" style={{ padding: 20, marginBottom: 16 }}>
-            <h3 style={{ fontSize: '0.875rem', marginBottom: 12 }}>Composition</h3>
-            <div className="comp-bar">
-              {allLayers.map((l, i) => (
-                <div key={i} className="comp-seg" style={{ width: `${l.pct * 100}%`, background: l.color }} title={`${l.name}: ${(l.pct * 100).toFixed(1)}%`} />
-              ))}
-            </div>
-            <div className="comp-legend" style={{ marginTop: 10 }}>
-              {allLayers.filter(l => l.pct > 0.005).map((l, i) => (
-                <div key={i} className="comp-legend-item">
-                  <span className="comp-dot" style={{ background: l.color }} />{l.name}
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="space-y-5">
+          <GlassCard>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Composition</h3>
+            <CompositionBar segments={allLayers.map(l => ({ name: l.name, pct: l.pct, color: l.color }))} />
+          </GlassCard>
 
-          <div className="glass-card" style={{ padding: 20, marginBottom: 16 }}>
-            <h3 style={{ fontSize: '0.875rem', marginBottom: 12 }}>Ratio Breakdown</h3>
-            {allLayers.map((l, i) => (
-              <div key={i} style={{ marginBottom: 8 }}>
-                <div className="flex-between" style={{ marginBottom: 2 }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{l.name}</span>
-                  <span className="mono" style={{ fontSize: '0.6875rem' }}>{(l.pct * batchSize).toFixed(1)}ml</span>
-                </div>
-                <div className="comp-bar" style={{ height: 5 }}>
-                  <div className="comp-seg" style={{ width: `${sqrtBarWidth(l.pct * 100, maxSqrt)}%`, background: l.color }} />
-                </div>
-              </div>
-            ))}
-          </div>
+          <GlassCard>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Ratio Breakdown</h3>
+            <RatioBars items={ratioItems} />
+          </GlassCard>
 
-          <div className="glass-card" style={{ padding: 20, marginBottom: 16 }}>
-            <h3 style={{ fontSize: '0.875rem', marginBottom: 12 }}>Production Steps</h3>
-            <ol style={{ paddingLeft: '1.25rem', fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+          <GlassCard>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Production Steps</h3>
+            <ol className="pl-5 text-[13px] text-text-secondary leading-[1.8] list-decimal">
               <li>Melt tallow{beeswaxOn ? ' + beeswax' : ''} in double boiler at 140°F</li>
               <li>Add jojoba and carrier oils (A); stir until uniform</li>
               <li>Remove from heat; cool to ~110°F</li>
@@ -168,68 +183,28 @@ export default function ExfoliatorCalculator() {
               <li>Pour into jars immediately; tap to settle</li>
             </ol>
             {!beeswaxOn && (
-              <div className="banner-warn" style={{ marginTop: 12 }}>
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-accent-gold/30 bg-accent-gold/[0.06] px-3 py-2.5 text-xs text-accent-gold-light">
+                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
                 No beeswax — scrub has no structural hold at room temp; will be a loose oil-paste.
               </div>
             )}
-          </div>
+          </GlassCard>
+
+          <GlassCard>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Batch Stats</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center py-3 rounded-sm bg-surface-input/50 border border-border-subtle">
+                <div className="text-2xl font-black text-accent-indigo-light">{batchSize}</div>
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mt-1">Total (ml)</div>
+              </div>
+              <div className="text-center py-3 rounded-sm bg-surface-input/50 border border-border-subtle">
+                <div className="text-2xl font-black text-accent-gold">{Math.floor(batchSize / 50)}</div>
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mt-1">50ml Jars</div>
+              </div>
+            </div>
+          </GlassCard>
         </div>
       </div>
-
-      <style>{`
-        .exf-layout {
-          display: grid;
-          grid-template-columns: 1fr minmax(320px, 400px);
-          gap: 24px;
-          align-items: start;
-        }
-        @media (max-width: 900px) { .exf-layout { grid-template-columns: 1fr; } }
-      `}</style>
-    </div>
-  );
-}
-
-function IngPool({ pool, label, data, rows, split, max, batchSize, onAdd, onRemove, onUpdate }: {
-  pool: string; label: string; data: Ingredient[]; rows: PoolRow[];
-  split: Array<PoolRow & { pct: number }>; max: number; batchSize: number;
-  onAdd: () => void; onRemove: (id: number) => void;
-  onUpdate: (id: number, key: string, val: string | number) => void;
-}) {
-  return (
-    <div className="glass-card" style={{ padding: 20, marginBottom: 16 }}>
-      <div className="flex-between" style={{ marginBottom: 12 }}>
-        <h3 style={{ fontSize: '0.875rem' }}>{label}</h3>
-        <button className="btn btn-sm btn-secondary" onClick={onAdd} disabled={rows.length >= max}>+ Add ({rows.length}/{max})</button>
-      </div>
-      {rows.map(row => {
-        const ing = data.find(x => x.id === row.ingId);
-        const sp = split.find(s => s.id === row.id);
-        const pct = sp ? (sp.pct * 100).toFixed(1) : '—';
-        const ml = sp ? (sp.pct * batchSize).toFixed(1) : '—';
-        return (
-          <div key={row.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <select className="select" style={{ flex: 1, minHeight: 36 }} value={row.ingId}
-                onChange={e => onUpdate(row.id, 'ingId', e.target.value)}>
-                {data.map(opt => (
-                  <option key={opt.id} value={opt.id} disabled={rows.some(r => r.id !== row.id && r.ingId === opt.id)}>
-                    {opt.name}
-                  </option>
-                ))}
-              </select>
-              <span className="mono pill pill-gold">{pct}%</span>
-              <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{ml}ml</span>
-              <button className="btn btn-ghost btn-sm" onClick={() => onRemove(row.id)}>✕</button>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '6px 0' }}>
-              <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>share</span>
-              <input type="range" min={1} max={10} value={row.weight} onChange={e => onUpdate(row.id, 'weight', +e.target.value)} style={{ flex: 1 }} />
-            </div>
-            {ing && <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', lineHeight: 1.4 }}>{ing.desc}</div>}
-          </div>
-        );
-      })}
-      {rows.length === 0 && <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', padding: 8 }}>Click "+ Add" to select ingredients</div>}
     </div>
   );
 }

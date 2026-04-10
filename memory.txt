@@ -136,6 +136,60 @@
 - `product_config.js` — New file with product definitions
 - `index.html` — Needs sync from `tallow_blend_pro_v5.html`
 
+## Next.js Revamp (2025-04-11)
+### Architecture
+- **Tailwind v3** (3.4.17) with PostCSS — v4 caused OOM, reverted
+- **tailwind.config.ts** — custom color tokens: surface-*, border-*, text-*, accent-*
+- **postcss.config.mjs** — tailwindcss + autoprefixer
+- **next.config.js** — `experimental.workerThreads: false, cpus: 1` to prevent OOM on build
+- **NODE_OPTIONS=--max-old-space-size=4096** required for production build
+
+### Shared UI Components (src/components/ui/)
+- `GlassCard` — glass morphism card with optional `interactive` hover lift
+- `Badge` — pill with variants: indigo, gold, emerald, rose, sky
+- `Tabs` + `TabPanel` — tabbed interface
+
+### Shared Formula Components (src/components/formula/)
+- `IngredientPool` — dropdown/slider/tip per ingredient, accepts any `PoolIngredient`
+- `BeakerViz` — SVG layered beaker visualization
+- `BenefitBars` — horizontal benefit score bars
+- `RatioBars` — ingredient ratio bars with ml/pct
+- `SynergyPanel` — synergy notes & warnings with icons
+- `PackoutGrid` — batch packout with unit count + remainder
+- `CompositionBar` — segmented formula composition bar
+
+### Shared Layout (src/components/layout/)
+- `ProductCalculator` — wraps Lab/Builder/Chemistry tabs with header
+
+### Treatment Oils Page (src/app/oils/)
+- `page.tsx` — main page using ProductCalculator
+- `lab-worksheet.tsx` — full lab with setup, formulation worksheet, batch summary, packout
+- `formula-builder.tsx` — 3 pools (carrier/active/eo), beaker, ratios, benefits, synergies
+- `chemistry.tsx` — 5 tabs: pore anatomy, BHA, carrier penetration, clinical protocol, safety
+
+### Ingredient Data
+- `src/lib/ingredients/treatment-oils.ts` — OIL_CARRIERS (8), OIL_ACTIVES (4), OIL_EOS (7), OIL_PRESETS (2)
+
+### Sidebar/TopBar/Layout
+- Sidebar: Lucide icons, Tailwind classes, collapsible, mobile responsive
+- TopBar: Tailwind classes, Lucide Crown icon
+- Layout: Tailwind flex layout, dark mode
+
+### Dashboard
+- GlassCard + Badge components, Lucide icons, Treatment Oils card added
+
+### Build Status
+- All 12 pages compile (/, /balm, /exfoliator, /oils, /soap, /builder, /formulas, /admin, /login, /_not-found, /api/auth)
+- Dev server: `npx next dev -p 3001`
+- Production build: `$env:NODE_OPTIONS="--max-old-space-size=4096"; npx next build`
+
+### Remaining
+- Balm page still uses inline styles — migrate to Tailwind + shared components
+- Exfoliator page still uses inline styles — migrate
+- Soap page already mostly Tailwind
+- Builder page needs shared IngredientPool
+- Git commit + push after full migration
+
 ## Housekeeping
 - After editing `tallow_blend_pro_v5.html`, mirror to `index.html` if that is still the deployment workflow.
 - Ask before assuming: user may want the same UI in `crownbreeds_formula_builder_v3.html` as a separate task.
