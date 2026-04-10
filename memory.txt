@@ -73,6 +73,25 @@
 - `tallow_blend_pro_v5.html` — CSS for form selector/beeswax toggle, HTML for beeswax toggle + optional A/B labels + product type + C controls + C worksheet row + C bar/legend, JS for all calc/render functions with oil absorption tax
 - `index.html` — synced from `tallow_blend_pro_v5.html`
 
+## Skin Chemistry Panel Fix (2025-04-10)
+### Issue
+- `#panel-skin-chemistry` was using CSS variables (`--color-text-primary`, `--color-background-info`, etc.) that were only defined inside `#panel-builder`, causing broken styling (missing colors, backgrounds, borders).
+
+### Fix
+- Added CSS variable definitions to `#panel-skin-chemistry` matching the design system:
+  - `--color-text-primary/secondary/tertiary` mapped to `--text`/`--text-muted`
+  - `--color-text-info/success/warning/danger` with light/dark mode variants
+  - `--color-background-primary/secondary/info/success/warning/danger` with proper alpha values
+  - `--color-border-primary/secondary/tertiary` mapped to `--border-strong`/`--border`
+  - `--border-radius-md/lg` mapped to `--radius-md`/`--radius-lg`
+- Added dark mode media query overrides for semantic colors
+- Added explicit `color` to `.layer-name` and `.layer-detail` classes
+
+### Files touched
+- `tallow_blend_pro_v5.html` — CSS variables + dark mode overrides for `#panel-skin-chemistry`, color fixes for `.layer-name`/`.layer-detail`
+- `index.html` — synced from `tallow_blend_pro_v5.html`
+- `skin_chemistry_blueprint.html` — synced `.layer-name`/`.layer-detail` color fixes
+
 ## Housekeeping
 - After editing `tallow_blend_pro_v5.html`, mirror to `index.html` if that is still the deployment workflow.
 - Ask before assuming: user may want the same UI in `crownbreeds_formula_builder_v3.html` as a separate task.

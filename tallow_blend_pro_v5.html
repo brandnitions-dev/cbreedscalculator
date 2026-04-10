@@ -1299,8 +1299,44 @@
     }
 
     /* Skin chemistry blueprint (see skin_chemistry_blueprint.html) */
+    #panel-skin-chemistry {
+      /* Define CSS variables for this panel (same as #panel-builder) */
+      --color-text-primary: var(--text);
+      --color-text-secondary: var(--text-muted);
+      --color-text-tertiary: var(--text-muted);
+      --color-text-info: #3b82f6;
+      --color-text-success: #22c55e;
+      --color-text-warning: #f59e0b;
+      --color-text-danger: #ef4444;
+      --color-background-primary: var(--surface);
+      --color-background-secondary: var(--surface-2);
+      --color-background-info: rgba(59, 130, 246, 0.12);
+      --color-background-success: rgba(34, 197, 94, 0.12);
+      --color-background-warning: rgba(245, 158, 11, 0.12);
+      --color-background-danger: rgba(239, 68, 68, 0.12);
+      --color-border-primary: var(--border-strong);
+      --color-border-secondary: var(--border-strong);
+      --color-border-tertiary: var(--border);
+      --border-radius-md: var(--radius-md);
+      --border-radius-lg: var(--radius-lg);
+      font-family: var(--font-sans);
+      display: block;
+      width: 100%;
+      max-width: 100%;
+    }
+    @media (prefers-color-scheme: dark) {
+      #panel-skin-chemistry {
+        --color-text-info: #60a5fa;
+        --color-text-success: #4ade80;
+        --color-text-warning: #fbbf24;
+        --color-text-danger: #f87171;
+        --color-background-info: rgba(96, 165, 250, 0.15);
+        --color-background-success: rgba(74, 222, 128, 0.15);
+        --color-background-warning: rgba(251, 191, 36, 0.15);
+        --color-background-danger: rgba(248, 113, 113, 0.15);
+      }
+    }
     #panel-skin-chemistry * { box-sizing: border-box; }
-    #panel-skin-chemistry { font-family: var(--font-sans); display: block; width: 100%; max-width: 100%; }
     #panel-skin-chemistry .bp { padding: 1rem 0; }
     #panel-skin-chemistry h2 { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
     #panel-skin-chemistry .sub { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 16px; }
@@ -1325,8 +1361,8 @@
     #panel-skin-chemistry .pill-a { background: var(--color-background-warning); color: var(--color-text-warning); }
     #panel-skin-chemistry .pill-r { background: var(--color-background-danger); color: var(--color-text-danger); }
     #panel-skin-chemistry .layer { border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
-    #panel-skin-chemistry .layer-name { font-size: 13px; font-weight: 500; }
-    #panel-skin-chemistry .layer-detail { font-size: 11px; margin-top: 2px; }
+    #panel-skin-chemistry .layer-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+    #panel-skin-chemistry .layer-detail { font-size: 11px; margin-top: 2px; color: var(--color-text-secondary); }
     #panel-skin-chemistry .arrow-row { display: flex; align-items: center; gap: 8px; margin: 10px 0; font-size: 12px; color: var(--color-text-secondary); }
     #panel-skin-chemistry .arrow-line { flex: 1; height: 1px; background: var(--color-border-secondary); position: relative; }
     #panel-skin-chemistry .arrow-line::after { content: '▶'; position: absolute; right: -6px; top: -7px; font-size: 11px; color: var(--color-border-secondary); }
