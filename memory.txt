@@ -92,6 +92,42 @@
 - `index.html` — synced from `tallow_blend_pro_v5.html`
 - `skin_chemistry_blueprint.html` — synced `.layer-name`/`.layer-detail` color fixes
 
+## Full Restructuring (2025-04-11)
+### Architecture Change
+- **Two-tier navigation** implemented:
+  - **Top row**: Product categories (Tallow Balms, Treatment Oils, Soaps)
+  - **Bottom row**: Tool tabs (Lab worksheet, Formula builder, Skin chemistry)
+- Each product category has its own set of panels (lab, builder, chemistry)
+- URL hash format: `#category-tool` (e.g., `#oils-lab`, `#balms-builder`)
+
+### Product Categories
+1. **Tallow Balms** (`balms`)
+   - Skin Balm (58% tallow, 8% beeswax, 11% jojoba, 13% A, 6% B, 0.4% VitE, 1-2% EO)
+   - Exfoliator/Scrub (scaled ratios + 5-15% Ingredient C)
+2. **Treatment Oils** (`oils`)
+   - BHA Penetrating Oil (home/spa): Jojoba 60%, Rosehip 20%, Willow Bark 10%, Frankincense 4%, Wintergreen 3%, Tea Tree 3%
+   - Pore Purge Blend (clinical): Jojoba 50%, Squalane 20%, Castor 15%, Grapeseed 10%, Rosehip 3.5%, Alpha-Bisabolol 0.5%, Wintergreen 0.5%, Tea Tree 0.5%, Frankincense 0.5%
+3. **Soaps** (`soaps`) — Coming soon placeholder
+
+### New Files
+- `product_config.js` — Centralized product definitions, formulas, ingredients
+
+### New Panels Added
+- `#panel-oils-lab` — Treatment oils lab worksheet with formula selector, batch calculator, usage protocol
+- `#panel-oils-builder` — Treatment oils formula builder (placeholder for customization)
+- `#panel-oils-chemistry` — Treatment oils chemistry with tabs: Pore anatomy, BHA/Salicylates, Carrier penetration, Clinical protocol, Safety warnings
+
+### Key Chemistry Notes (Treatment Oils)
+- **Wintergreen EO**: Max 3% home, 0.5% clinical — methyl salicylate is toxic at higher doses (1 tsp = ~7g aspirin)
+- **Castor + Squalane + Wintergreen**: Creates chemical reaction mimicking 15min steam + desincrustation fluid
+- **Pore Purge Blend**: Clinicians feel blackheads "rolling like grains of sand" during massage
+- **BHA increases sun sensitivity**: SPF 30+ required after treatment
+
+### Files touched
+- `tallow_blend_pro_v5.html` — Two-tier nav, Treatment Oils panels (lab/builder/chemistry), CSS variables, JS functions
+- `product_config.js` — New file with product definitions
+- `index.html` — Needs sync from `tallow_blend_pro_v5.html`
+
 ## Housekeeping
 - After editing `tallow_blend_pro_v5.html`, mirror to `index.html` if that is still the deployment workflow.
 - Ask before assuming: user may want the same UI in `crownbreeds_formula_builder_v3.html` as a separate task.

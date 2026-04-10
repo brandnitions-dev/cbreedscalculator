@@ -117,8 +117,65 @@
       letter-spacing: 0.06em;
       color: #64748b;
     }
-    .page-hero__tabs-wrap {
+    /* Two-tier navigation: Product categories (top) + Tool tabs (bottom) */
+    .page-hero__nav-wrap {
       border-top: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .app-product-tabs {
+      display: flex;
+      gap: 0;
+      background: rgba(15, 23, 42, 0.85);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+      padding: 0 max(12px, env(safe-area-inset-right, 0px)) 0 max(12px, env(safe-area-inset-left, 0px));
+    }
+    .app-product-tab {
+      flex: 1 1 auto;
+      min-height: 48px;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #64748b;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .app-product-tab:hover {
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .app-product-tab:focus-visible {
+      outline: 2px solid #818cf8;
+      outline-offset: -2px;
+    }
+    .app-product-tab.is-active {
+      color: #f8fafc;
+      border-bottom-color: #6366f1;
+      background: rgba(99, 102, 241, 0.1);
+    }
+    .app-product-tab.is-coming-soon {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .app-product-tab .product-icon {
+      font-size: 1.1rem;
+    }
+    .app-product-tab .coming-badge {
+      font-size: 0.5625rem;
+      padding: 2px 6px;
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .page-hero__tabs-wrap {
       background: rgba(15, 23, 42, 0.65);
     }
     .app-tool-tabs {
@@ -973,7 +1030,6 @@
       background: var(--surface);
       color: var(--text-muted);
       font-weight: 600;
-      font-family: inherit;
     }
     #panel-builder .fb-product-btn.active {
       background: var(--surface-2);
@@ -994,7 +1050,7 @@
     #panel-builder .fb-exfol-strength { margin-bottom: 10px; }
     #panel-builder .fb-exfol-strength label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
     #panel-builder .fb-exfol-strength-row { display: flex; align-items: center; gap: 10px; }
-    #panel-builder .fb-exfol-strength-row input[type="range"] { flex: 1; accent-color: var(--focus); }
+    #panel-builder .fb-exfol-strength-row input[type="range"] { flex: 1; }
     #panel-builder .fb-c-strength-val { font-size: 13px; font-weight: 700; min-width: 2.5rem; color: var(--text); }
     #panel-builder .fb-exfol-hint { font-size: 11px; color: var(--text-muted); line-height: 1.45; margin-top: 8px; }
     #panel-builder .fb-mbtn {
@@ -1378,6 +1434,52 @@
     #panel-skin-chemistry .warn-box { background: var(--color-background-warning); border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 12px; color: var(--color-text-warning); margin-top: 12px; }
     #panel-skin-chemistry .info-box { background: var(--color-background-info); border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 12px; color: var(--color-text-info); margin-top: 12px; }
     #panel-skin-chemistry .section-head { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; }
+
+    /* Treatment Oils Chemistry Panel */
+    #panel-oils-chemistry {
+      --color-text-primary: var(--text);
+      --color-text-secondary: var(--text-muted);
+      --color-text-tertiary: var(--text-muted);
+      --color-text-info: #3b82f6;
+      --color-text-success: #22c55e;
+      --color-text-warning: #f59e0b;
+      --color-text-danger: #ef4444;
+      --color-background-primary: var(--surface);
+      --color-background-secondary: var(--surface-2);
+      --color-background-info: rgba(59, 130, 246, 0.12);
+      --color-background-success: rgba(34, 197, 94, 0.12);
+      --color-background-warning: rgba(245, 158, 11, 0.12);
+      --color-background-danger: rgba(239, 68, 68, 0.12);
+      --color-border-primary: var(--border-strong);
+      --color-border-secondary: var(--border-strong);
+      --color-border-tertiary: var(--border);
+      --border-radius-md: var(--radius-md);
+      --border-radius-lg: var(--radius-lg);
+      font-family: var(--font-sans);
+    }
+    @media (prefers-color-scheme: dark) {
+      #panel-oils-chemistry {
+        --color-text-info: #60a5fa;
+        --color-text-success: #4ade80;
+        --color-text-warning: #fbbf24;
+        --color-text-danger: #f87171;
+        --color-background-info: rgba(96, 165, 250, 0.15);
+        --color-background-success: rgba(74, 222, 128, 0.15);
+        --color-background-warning: rgba(251, 191, 36, 0.15);
+        --color-background-danger: rgba(248, 113, 113, 0.15);
+      }
+    }
+    #panel-oils-chemistry .bp { padding: 1rem 0; }
+    #panel-oils-chemistry .section { display: none; }
+    #panel-oils-chemistry .section.visible { display: block; }
+    #panel-oils-chemistry .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+    #panel-oils-chemistry .tab { padding: 6px 14px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); font-size: 13px; cursor: pointer; background: transparent; color: var(--color-text-secondary); transition: all .15s; }
+    #panel-oils-chemistry .tab.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; font-weight: 500; }
+    #panel-oils-chemistry .section-head { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; }
+    #panel-oils-chemistry .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) {
+      #panel-oils-chemistry .grid2 { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -1385,15 +1487,29 @@
 <header class="page-hero">
   <div class="page-hero__inner">
     <h1 class="page-hero__h1">Crown Breeds formulation lab</h1>
-    <p class="page-hero__sub">Tallow balm worksheet (ml math, batch review, production) and a guided carrier / EO builder — switch tools below.</p>
-    <p class="page-hero__future">Soap calculators will be added as separate entries later.</p>
+    <p class="page-hero__sub" id="hero-subtitle">Tallow balm worksheet (ml math, batch review, production) and a guided carrier / EO builder.</p>
   </div>
-  <div class="page-hero__tabs-wrap">
-    <nav class="app-tool-tabs" role="tablist" aria-label="Lab tools">
-      <button type="button" class="app-tool-tab is-active" role="tab" id="tab-lab" aria-controls="panel-lab" aria-selected="true" tabindex="0" onclick="setToolTab('lab')">Lab worksheet</button>
-      <button type="button" class="app-tool-tab" role="tab" id="tab-builder" aria-controls="panel-builder" aria-selected="false" tabindex="-1" onclick="setToolTab('builder')">Formula builder</button>
-      <button type="button" class="app-tool-tab" role="tab" id="tab-skin" aria-controls="panel-skin-chemistry" aria-selected="false" tabindex="-1" onclick="setToolTab('skin')">Skin chemistry</button>
+  <div class="page-hero__nav-wrap">
+    <!-- Product category tabs (top tier) -->
+    <nav class="app-product-tabs" role="tablist" aria-label="Product categories">
+      <button type="button" class="app-product-tab is-active" role="tab" id="cat-balms" aria-selected="true" onclick="setProductCategory('balms')">
+        <span class="product-icon">🧴</span> Tallow Balms
+      </button>
+      <button type="button" class="app-product-tab" role="tab" id="cat-oils" aria-selected="false" onclick="setProductCategory('oils')">
+        <span class="product-icon">💧</span> Treatment Oils
+      </button>
+      <button type="button" class="app-product-tab is-coming-soon" role="tab" id="cat-soaps" aria-selected="false" aria-disabled="true">
+        <span class="product-icon">🧼</span> Soaps <span class="coming-badge">Soon</span>
+      </button>
     </nav>
+    <!-- Tool tabs (bottom tier) -->
+    <div class="page-hero__tabs-wrap">
+      <nav class="app-tool-tabs" role="tablist" aria-label="Lab tools">
+        <button type="button" class="app-tool-tab is-active" role="tab" id="tab-lab" aria-controls="panel-lab" aria-selected="true" tabindex="0" onclick="setToolTab('lab')">Lab worksheet</button>
+        <button type="button" class="app-tool-tab" role="tab" id="tab-builder" aria-controls="panel-builder" aria-selected="false" tabindex="-1" onclick="setToolTab('builder')">Formula builder</button>
+        <button type="button" class="app-tool-tab" role="tab" id="tab-skin" aria-controls="panel-skin-chemistry" aria-selected="false" tabindex="-1" onclick="setToolTab('skin')">Skin chemistry</button>
+      </nav>
+    </div>
   </div>
 </header>
 <main class="app-main" id="main-content">
@@ -2113,10 +2229,361 @@
 </div>
 </div>
 
+<!-- ========== TREATMENT OILS PANELS ========== -->
+
+<!-- Treatment Oils: Lab Worksheet -->
+<div id="panel-oils-lab" class="tool-panel" role="tabpanel" aria-labelledby="tab-lab" hidden>
+<div class="w" style="display:block;max-width:900px;">
+  <section class="flow-section">
+    <h2 class="flow-heading"><span class="flow-num">1</span> Formula selection</h2>
+    <p class="flow-lead">Choose your treatment oil formula — <strong>BHA Penetrating Oil</strong> for home/spa use or <strong>Pore Purge Blend</strong> for clinical extractions.</p>
+    
+    <div class="lab-bar">
+      <div class="lab-bar-title">Treatment oil type</div>
+      <div class="lab-grid">
+        <div class="lab-field lab-field--full">
+          <label for="oil-formula-type">Formula</label>
+          <select id="oil-formula-type" class="lab-select" onchange="oilFormulaChange()">
+            <option value="bha_penetrating">BHA Penetrating Oil — home/spa deep pore treatment</option>
+            <option value="pore_purge">Pore Purge Blend — clinical extraction oil (high intensity)</option>
+          </select>
+        </div>
+        <div class="lab-field">
+          <label for="oil-batch-size">Batch size (ml)</label>
+          <input type="number" id="oil-batch-size" class="lab-num" value="30" min="10" max="500" step="5" onchange="oilCalcBatch()">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="flow-section">
+    <h2 class="flow-heading"><span class="flow-num">2</span> Formula breakdown</h2>
+    <p class="flow-lead" id="oil-formula-desc">Deep pore treatment for home/spa use — replaces steam.</p>
+    
+    <div class="lab-bar" id="oil-formula-breakdown">
+      <div class="lab-bar-title">Ingredients (ml)</div>
+      <div id="oil-ingredients-list" style="display:grid;gap:8px;"></div>
+    </div>
+    
+    <div id="oil-warnings" class="warn-box" style="margin-top:12px;">
+      <strong>⚠️ Safety warnings:</strong>
+      <ul style="margin:8px 0 0 16px;font-size:12px;">
+        <li>Wintergreen EO max 3% — toxic at higher doses</li>
+        <li>BHA increases sun sensitivity — use SPF after treatment</li>
+        <li>Tingling is normal; burning means wipe off immediately</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="flow-section">
+    <h2 class="flow-heading"><span class="flow-num">3</span> Usage protocol</h2>
+    <div class="lab-bar">
+      <div class="lab-bar-title" id="oil-usage-title">Application steps</div>
+      <ol id="oil-usage-steps" style="margin:0 0 0 18px;font-size:13px;line-height:1.8;color:var(--text);">
+        <li>Cleanse skin thoroughly</li>
+        <li>Massage 3-5 drops into T-zone or congested areas</li>
+        <li>Wait 5-10 minutes (replaces steaming time)</li>
+        <li>Proceed with extractions if clinical</li>
+        <li>Wipe with warm towel, follow with toner</li>
+      </ol>
+      <div id="oil-pro-tip" class="info-box" style="margin-top:12px;display:none;">
+        <strong>Pro tip:</strong> <span id="oil-pro-tip-text"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="flow-section">
+    <h2 class="flow-heading"><span class="flow-num">4</span> Packout</h2>
+    <div class="lab-bar">
+      <div class="lab-bar-title">Dropper bottles</div>
+      <div id="oil-packout" style="display:flex;gap:20px;align-items:center;">
+        <div style="text-align:center;">
+          <div style="font-size:32px;font-weight:700;color:var(--focus);" id="oil-bottle-count">1</div>
+          <div style="font-size:11px;color:var(--text-muted);">30ml bottles</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);" id="oil-remainder">No remainder</div>
+      </div>
+    </div>
+  </section>
+</div>
+</div>
+
+<!-- Treatment Oils: Formula Builder -->
+<div id="panel-oils-builder" class="tool-panel" role="tabpanel" aria-labelledby="tab-builder" hidden>
+<div class="w" style="display:block;max-width:1100px;">
+  <section class="flow-section">
+    <h2 class="flow-heading"><span class="flow-num">1</span> Build your treatment oil</h2>
+    <p class="flow-lead">Customize carrier ratios and essential oil blend for your treatment oil formula.</p>
+    
+    <div class="lab-bar">
+      <div class="lab-bar-title">Base formula</div>
+      <div class="lab-grid">
+        <div class="lab-field">
+          <label for="oil-builder-type">Formula type</label>
+          <select id="oil-builder-type" class="lab-select" onchange="oilBuilderTypeChange()">
+            <option value="bha_penetrating">BHA Penetrating Oil</option>
+            <option value="pore_purge">Pore Purge Blend (Clinical)</option>
+            <option value="custom">Custom formula</option>
+          </select>
+        </div>
+        <div class="lab-field">
+          <label for="oil-builder-batch">Batch size (ml)</label>
+          <input type="number" id="oil-builder-batch" class="lab-num" value="30" min="10" max="500" step="5">
+        </div>
+      </div>
+    </div>
+    
+    <div class="lab-bar" id="oil-builder-carriers">
+      <div class="lab-bar-title">Carrier oils (adjust ratios)</div>
+      <div id="oil-carrier-sliders" style="display:grid;gap:12px;"></div>
+    </div>
+    
+    <div class="lab-bar" id="oil-builder-actives">
+      <div class="lab-bar-title">Active ingredients</div>
+      <div id="oil-active-sliders" style="display:grid;gap:12px;"></div>
+    </div>
+    
+    <div class="lab-bar" id="oil-builder-eos">
+      <div class="lab-bar-title">Essential oils</div>
+      <div id="oil-eo-sliders" style="display:grid;gap:12px;"></div>
+    </div>
+  </section>
+  
+  <section class="flow-section">
+    <h2 class="flow-heading"><span class="flow-num">2</span> Formula summary</h2>
+    <div class="lab-bar">
+      <div class="lab-bar-title">Final breakdown</div>
+      <div id="oil-builder-summary" style="font-size:13px;"></div>
+    </div>
+  </section>
+</div>
+</div>
+
+<!-- Treatment Oils: Chemistry -->
+<div id="panel-oils-chemistry" class="tool-panel" role="tabpanel" aria-labelledby="tab-skin" hidden>
+<div class="bp" style="max-width:900px;margin:0 auto;">
+  <h2 style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:4px;">Treatment Oil Chemistry</h2>
+  <p class="sub" style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Deep pore penetration — BHA, sebum dissolution, clinical extraction science</p>
+
+  <div class="tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;">
+    <button type="button" class="tab active" onclick="oilChemShow('oil-chem-pore', this)">Pore anatomy</button>
+    <button type="button" class="tab" onclick="oilChemShow('oil-chem-bha', this)">BHA / Salicylates</button>
+    <button type="button" class="tab" onclick="oilChemShow('oil-chem-carriers', this)">Carrier penetration</button>
+    <button type="button" class="tab" onclick="oilChemShow('oil-chem-protocol', this)">Clinical protocol</button>
+    <button type="button" class="tab" onclick="oilChemShow('oil-chem-safety', this)">Safety warnings</button>
+  </div>
+
+  <!-- PORE ANATOMY -->
+  <div id="oil-chem-pore" class="section visible">
+    <p class="section-head">The sebaceous follicle — where blackheads form</p>
+    
+    <div style="margin-bottom:12px">
+      <div class="layer" style="background:var(--color-background-secondary);border-radius:8px;padding:10px 14px;margin-bottom:6px;">
+        <div>
+          <div class="layer-name" style="font-size:13px;font-weight:500;color:var(--text);">Pore opening (infundibulum)</div>
+          <div class="layer-detail" style="font-size:11px;color:var(--text-muted);">Where sebum exits — can be blocked by dead cells + oxidized sebum</div>
+        </div>
+      </div>
+      <div class="layer" style="background:var(--color-background-secondary);border-radius:8px;padding:10px 14px;margin-bottom:6px;">
+        <div>
+          <div class="layer-name" style="font-size:13px;font-weight:500;color:var(--text);">Sebaceous duct</div>
+          <div class="layer-detail" style="font-size:11px;color:var(--text-muted);">Channel where sebum travels — BHA must reach here to dissolve plugs</div>
+        </div>
+      </div>
+      <div class="layer" style="background:var(--color-background-secondary);border-radius:8px;padding:10px 14px;margin-bottom:6px;">
+        <div>
+          <div class="layer-name" style="font-size:13px;font-weight:500;color:var(--text);">Sebaceous gland</div>
+          <div class="layer-detail" style="font-size:11px;color:var(--text-muted);">Produces sebum — overactive in oily/acne-prone skin</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;">
+        <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">Why steam works</div>
+        <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">
+          Heat + moisture softens the sebum plug, dilates the pore opening, and makes extractions easier. But steam is bulky equipment and can over-hydrate skin.
+        </div>
+      </div>
+      <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;">
+        <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">Why treatment oils work better</div>
+        <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">
+          <strong>Jojoba mimics sebum</strong> — pore accepts it as "self." <strong>Squalane dives deep</strong> carrying actives. <strong>Castor pulls</strong> debris to surface. <strong>BHA dissolves</strong> the plug chemically.
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box" style="background:var(--color-background-info);border-radius:var(--radius-md);padding:10px 14px;font-size:12px;color:var(--color-text-info);margin-top:12px;">
+      <strong>Key insight:</strong> Treatment oils create a <em>chemical reaction</em> inside the pore that mimics 15 minutes of hot steaming + alkaline desincrustation fluid — using only plant-based organics.
+    </div>
+  </div>
+
+  <!-- BHA / SALICYLATES -->
+  <div id="oil-chem-bha" class="section">
+    <p class="section-head">BHA sources — natural vs synthetic</p>
+    
+    <div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;">
+        <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">Willow Bark Extract</div>
+        <div class="card-chem" style="font-size:11px;color:var(--color-text-info);font-family:var(--font-mono);margin-bottom:8px;">Salicin → Salicylic acid (in skin)</div>
+        <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">
+          Natural BHA precursor. Gentler than pure salicylic acid. Converts to active form on skin. Good for sensitive skin formulas. Max 10-15% in formula.
+        </div>
+        <div style="margin-top:8px">
+          <span class="pill pill-g" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-success);color:var(--color-text-success);">Gentle</span>
+          <span class="pill pill-g" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-success);color:var(--color-text-success);">Natural</span>
+        </div>
+      </div>
+      <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;">
+        <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">Wintergreen EO</div>
+        <div class="card-chem" style="font-size:11px;color:var(--color-text-info);font-family:var(--font-mono);margin-bottom:8px;">Methyl salicylate — 85-99% concentration</div>
+        <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">
+          <strong>HIGH INTENSITY.</strong> Direct BHA action. Penetrates rapidly. <span style="color:var(--color-text-danger);">DANGER: Max 3% home use, 0.5% clinical.</span> Toxic at higher doses — can cause salicylate poisoning.
+        </div>
+        <div style="margin-top:8px">
+          <span class="pill pill-r" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-danger);color:var(--color-text-danger);">High potency</span>
+          <span class="pill pill-r" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-danger);color:var(--color-text-danger);">Toxic risk</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="warn-box" style="background:var(--color-background-warning);border-radius:var(--radius-md);padding:10px 14px;font-size:12px;color:var(--color-text-warning);margin-top:12px;">
+      <strong>Wintergreen toxicity:</strong> Methyl salicylate is rapidly absorbed through skin. 1 teaspoon of wintergreen oil = ~7g of aspirin. Never exceed 3% in any formula. Clinical use at 0.5% eliminates burn risk while maintaining efficacy.
+    </div>
+  </div>
+
+  <!-- CARRIER PENETRATION -->
+  <div id="oil-chem-carriers" class="section">
+    <p class="section-head">Carrier oil penetration profiles</p>
+    
+    <table class="itbl" style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead>
+        <tr>
+          <th style="text-align:left;padding:6px 10px;font-size:11px;font-weight:500;color:var(--text-muted);border-bottom:0.5px solid var(--border);">Oil</th>
+          <th style="text-align:left;padding:6px 10px;font-size:11px;font-weight:500;color:var(--text-muted);border-bottom:0.5px solid var(--border);">Penetration</th>
+          <th style="text-align:left;padding:6px 10px;font-size:11px;font-weight:500;color:var(--text-muted);border-bottom:0.5px solid var(--border);">Mechanism</th>
+          <th style="text-align:left;padding:6px 10px;font-size:11px;font-weight:500;color:var(--text-muted);border-bottom:0.5px solid var(--border);">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);font-weight:500;">Jojoba</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);">Medium</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);">Mimics sebum wax esters — pore accepts as "self"</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);"><span class="pill pill-g" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-success);color:var(--color-text-success);">Trojan horse</span></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);font-weight:500;">Squalane</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);">Deep</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);">Biomimetic — identical to skin's own squalene</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);"><span class="pill pill-b" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-info);color:var(--color-text-info);">Active carrier</span></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);font-weight:500;">Castor</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);">Surface</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);">Ricinoleic acid creates astringent "pull"</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);"><span class="pill pill-a" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-warning);color:var(--color-text-warning);">Debris lifter</span></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);font-weight:500;">Grapeseed</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);">Medium</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);">High linoleic — thins sticky sebum</td>
+          <td style="padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);"><span class="pill pill-g" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-success);color:var(--color-text-success);">Sebum thinner</span></td>
+        </tr>
+        <tr>
+          <td style="padding:7px 10px;color:var(--text);font-weight:500;">Rosehip</td>
+          <td style="padding:7px 10px;color:var(--text);">Medium</td>
+          <td style="padding:7px 10px;color:var(--text);">Trans-retinoic acid precursor</td>
+          <td style="padding:7px 10px;color:var(--text);"><span class="pill pill-b" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--color-background-info);color:var(--color-text-info);">Post-treatment heal</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CLINICAL PROTOCOL -->
+  <div id="oil-chem-protocol" class="section">
+    <p class="section-head">Clinical extraction protocol</p>
+    
+    <div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <div class="section-head" style="color:var(--color-text-warning);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;">Pore Purge Blend (Clinical)</div>
+        <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:8px;">
+          <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">1. Cleanse</div>
+          <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">Remove makeup and surface debris with gentle cleanser.</div>
+        </div>
+        <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:8px;">
+          <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">2. Apply & massage (3-5 min)</div>
+          <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">Work into nose and chin with firm circular motions. <strong>Feel blackheads "rolling like grains of sand"</strong> under fingertips.</div>
+        </div>
+        <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:8px;">
+          <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">3. Extract</div>
+          <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">Oil provides slip — extractions glide out with minimal trauma. Skin stays calm, not red.</div>
+        </div>
+        <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;">
+          <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">4. Finish</div>
+          <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">Wipe with warm towel. Apply soothing toner. Frankincense in formula tightens pores post-extraction.</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-head" style="color:var(--text-muted);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;">Why it works</div>
+        <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;">
+          <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.8;">
+            <strong>Castor (pulls)</strong> + <strong>Squalane (dives)</strong> + <strong>Wintergreen (dissolves)</strong> = chemical reaction inside the pore that mimics:<br><br>
+            ✓ 15 minutes of hot steaming<br>
+            ✓ Alkaline desincrustation fluid<br>
+            ✓ Professional extraction prep<br><br>
+            <em>Using only 100% plant-based organics.</em>
+          </div>
+        </div>
+        <div class="info-box" style="background:var(--color-background-info);border-radius:var(--radius-md);padding:10px 14px;font-size:12px;color:var(--color-text-info);margin-top:12px;">
+          <strong>The 20x difference:</strong> Because of the Castor Oil, clinicians will feel tiny blackheads popping out and rolling like grains of sand under their fingertips during massage.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAFETY WARNINGS -->
+  <div id="oil-chem-safety" class="section">
+    <p class="section-head">Safety protocols and contraindications</p>
+    
+    <div class="warn-box" style="background:var(--color-background-danger);border-radius:var(--radius-md);padding:14px;font-size:12px;color:var(--color-text-danger);margin-bottom:12px;">
+      <strong>⚠️ WINTERGREEN DANGER</strong><br>
+      Wintergreen EO is extremely powerful. Never increase percentage above 3% (home) or 0.5% (clinical). In high doses, methyl salicylate can be toxic if absorbed too rapidly into bloodstream. 1 tsp wintergreen oil = ~7g aspirin equivalent.
+    </div>
+    
+    <div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;">
+        <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">The "Purge" sensation</div>
+        <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">
+          Some clients experience slight tingling — this is <strong>normal for BHA</strong>. If it <em>burns</em>, wipe off immediately with damp cloth. Tingling ≠ burning.
+        </div>
+      </div>
+      <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;">
+        <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">Sun sensitivity</div>
+        <div class="card-body" style="font-size:12px;color:var(--text-muted);line-height:1.6;">
+          BHA increases UV sensitivity for 24-72h. <strong>Client MUST use SPF 30+</strong> after treatment. Schedule treatments for evenings when possible.
+        </div>
+      </div>
+    </div>
+    
+    <div class="card" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-top:12px;">
+      <div class="card-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px;">Contraindications</div>
+      <ul style="margin:0 0 0 16px;font-size:12px;color:var(--text-muted);line-height:1.8;">
+        <li>Aspirin allergy (salicylate cross-reactivity)</li>
+        <li>Pregnancy (salicylates are Category C)</li>
+        <li>Active rosacea or broken skin</li>
+        <li>Recent chemical peels or laser treatments</li>
+        <li>Children under 12 (salicylate sensitivity)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
 
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="product_config.js"></script>
 <script src="formula_builder_eo_array.js"></script>
 <script src="formula_builder_c_list.js"></script>
 <script src="formula_builder_tab.js"></script>
@@ -2647,52 +3114,296 @@ function scbpFilterOil(tag, btn) {
   });
 }
 
-var TOOL_TAB_IDS=['lab','builder','skin'];
-function setToolTab(name){
-  if(TOOL_TAB_IDS.indexOf(name)<0)return;
-  var lab=document.getElementById('panel-lab');
-  var builder=document.getElementById('panel-builder');
-  var skin=document.getElementById('panel-skin-chemistry');
-  var tabLab=document.getElementById('tab-lab');
-  var tabBuilder=document.getElementById('tab-builder');
-  var tabSkin=document.getElementById('tab-skin');
-  var onLab=(name==='lab');
-  var onBuilder=(name==='builder');
-  var onSkin=(name==='skin');
-  if(lab)lab.hidden=!onLab;
-  if(builder)builder.hidden=!onBuilder;
-  if(skin)skin.hidden=!onSkin;
-  if(tabLab){
-    tabLab.classList.toggle('is-active',onLab);
-    tabLab.setAttribute('aria-selected',onLab?'true':'false');
-    tabLab.setAttribute('tabindex',onLab?'0':'-1');
+/* ========== PRODUCT CATEGORY & TOOL TAB NAVIGATION ========== */
+var currentCategory = 'balms';
+var currentTool = 'lab';
+
+var CATEGORY_IDS = ['balms', 'oils', 'soaps'];
+var TOOL_TAB_IDS = ['lab', 'builder', 'skin'];
+
+var CATEGORY_SUBTITLES = {
+  balms: 'Tallow balm worksheet (ml math, batch review, production) and a guided carrier / EO builder.',
+  oils: 'Treatment oil formulations — BHA penetrating oils and clinical pore purge blends.',
+  soaps: 'Soap formulations coming soon — cold process, hot process, and liquid soaps.'
+};
+
+function setProductCategory(catId) {
+  if (CATEGORY_IDS.indexOf(catId) < 0) return;
+  if (catId === 'soaps') return; // Coming soon
+  
+  currentCategory = catId;
+  
+  // Update category tabs
+  CATEGORY_IDS.forEach(function(id) {
+    var tab = document.getElementById('cat-' + id);
+    if (tab) {
+      var isActive = (id === catId);
+      tab.classList.toggle('is-active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    }
+  });
+  
+  // Update subtitle
+  var subtitle = document.getElementById('hero-subtitle');
+  if (subtitle) subtitle.textContent = CATEGORY_SUBTITLES[catId] || '';
+  
+  // Show/hide category-specific panels
+  var balmsLab = document.getElementById('panel-lab');
+  var balmsBuilder = document.getElementById('panel-builder');
+  var balmsSkin = document.getElementById('panel-skin-chemistry');
+  var oilsLab = document.getElementById('panel-oils-lab');
+  var oilsBuilder = document.getElementById('panel-oils-builder');
+  var oilsSkin = document.getElementById('panel-oils-chemistry');
+  
+  var isBalms = (catId === 'balms');
+  var isOils = (catId === 'oils');
+  
+  // Hide all first
+  if (balmsLab) balmsLab.hidden = true;
+  if (balmsBuilder) balmsBuilder.hidden = true;
+  if (balmsSkin) balmsSkin.hidden = true;
+  if (oilsLab) oilsLab.hidden = true;
+  if (oilsBuilder) oilsBuilder.hidden = true;
+  if (oilsSkin) oilsSkin.hidden = true;
+  
+  // Show current category + tool
+  if (isBalms) {
+    if (currentTool === 'lab' && balmsLab) balmsLab.hidden = false;
+    else if (currentTool === 'builder' && balmsBuilder) balmsBuilder.hidden = false;
+    else if (currentTool === 'skin' && balmsSkin) balmsSkin.hidden = false;
+  } else if (isOils) {
+    if (currentTool === 'lab' && oilsLab) oilsLab.hidden = false;
+    else if (currentTool === 'builder' && oilsBuilder) oilsBuilder.hidden = false;
+    else if (currentTool === 'skin' && oilsSkin) oilsSkin.hidden = false;
   }
-  if(tabBuilder){
-    tabBuilder.classList.toggle('is-active',onBuilder);
-    tabBuilder.setAttribute('aria-selected',onBuilder?'true':'false');
-    tabBuilder.setAttribute('tabindex',onBuilder?'0':'-1');
-  }
-  if(tabSkin){
-    tabSkin.classList.toggle('is-active',onSkin);
-    tabSkin.setAttribute('aria-selected',onSkin?'true':'false');
-    tabSkin.setAttribute('tabindex',onSkin?'0':'-1');
-  }
-  try{ history.replaceState(null,'','#'+name); }catch(e){}
-  if(onLab&&chartPie){
-    requestAnimationFrame(function(){ chartPie.resize(); });
+  
+  try { history.replaceState(null, '', '#' + catId + '-' + currentTool); } catch(e) {}
+}
+
+function setToolTab(name) {
+  if (TOOL_TAB_IDS.indexOf(name) < 0) return;
+  
+  currentTool = name;
+  
+  // Update tool tabs
+  TOOL_TAB_IDS.forEach(function(id) {
+    var tab = document.getElementById('tab-' + id);
+    if (tab) {
+      var isActive = (id === name);
+      tab.classList.toggle('is-active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      tab.setAttribute('tabindex', isActive ? '0' : '-1');
+    }
+  });
+  
+  // Re-apply category to show correct panel
+  setProductCategory(currentCategory);
+  
+  // Resize chart if needed
+  if (name === 'lab' && chartPie) {
+    requestAnimationFrame(function() { chartPie.resize(); });
   }
 }
-window.addEventListener('hashchange',function(){
-  var h=(location.hash||'').replace(/^#/,'');
-  if(h==='builder')setToolTab('builder');
-  else if(h==='skin')setToolTab('skin');
-  else setToolTab('lab');
+
+window.addEventListener('hashchange', function() {
+  var h = (location.hash || '').replace(/^#/, '');
+  var parts = h.split('-');
+  if (parts.length === 2 && CATEGORY_IDS.indexOf(parts[0]) >= 0 && TOOL_TAB_IDS.indexOf(parts[1]) >= 0) {
+    currentCategory = parts[0];
+    currentTool = parts[1];
+    setProductCategory(parts[0]);
+    setToolTab(parts[1]);
+  } else if (TOOL_TAB_IDS.indexOf(h) >= 0) {
+    setToolTab(h);
+  } else if (CATEGORY_IDS.indexOf(h) >= 0) {
+    setProductCategory(h);
+  }
 });
-(function(){
-  var h=(location.hash||'').replace(/^#/,'');
-  if(h==='builder')setToolTab('builder');
-  else if(h==='skin')setToolTab('skin');
+
+(function() {
+  var h = (location.hash || '').replace(/^#/, '');
+  var parts = h.split('-');
+  if (parts.length === 2 && CATEGORY_IDS.indexOf(parts[0]) >= 0 && TOOL_TAB_IDS.indexOf(parts[1]) >= 0) {
+    currentCategory = parts[0];
+    currentTool = parts[1];
+    setProductCategory(parts[0]);
+    setToolTab(parts[1]);
+  } else if (h === 'builder') setToolTab('builder');
+  else if (h === 'skin') setToolTab('skin');
+  else if (h === 'oils') setProductCategory('oils');
 })();
+
+/* ========== TREATMENT OILS FUNCTIONS ========== */
+
+var OIL_FORMULAS = {
+  bha_penetrating: {
+    name: 'BHA Penetrating Oil',
+    desc: 'Deep pore treatment for home/spa use — replaces steam.',
+    ingredients: [
+      { name: 'Jojoba Oil', pct: 0.60, role: 'Carrier — mimics sebum' },
+      { name: 'Rosehip Oil', pct: 0.20, role: 'Regenerator — linoleic acid' },
+      { name: 'Willow Bark Extract', pct: 0.10, role: 'Natural BHA source' },
+      { name: 'Frankincense EO', pct: 0.04, role: 'Pore tightener' },
+      { name: 'Wintergreen EO', pct: 0.03, role: 'High-intensity BHA' },
+      { name: 'Tea Tree EO', pct: 0.03, role: 'Antibacterial' }
+    ],
+    warnings: [
+      'Wintergreen EO max 3% — toxic at higher doses',
+      'BHA increases sun sensitivity — use SPF after treatment',
+      'Tingling is normal; burning means wipe off immediately'
+    ],
+    steps: [
+      'Cleanse skin thoroughly',
+      'Massage 3-5 drops into T-zone or congested areas',
+      'Wait 5-10 minutes (replaces steaming time)',
+      'Proceed with extractions if clinical',
+      'Wipe with warm towel, follow with toner'
+    ],
+    proTip: null,
+    bottleSize: 30
+  },
+  pore_purge: {
+    name: 'Pore Purge Blend (Clinical)',
+    desc: 'High-intensity clinical extraction oil — blackheads roll out like grains of sand.',
+    ingredients: [
+      { name: 'Jojoba Oil', pct: 0.50, role: 'Carrier — sebum mimic' },
+      { name: 'Olive Squalane', pct: 0.20, role: 'Deep penetration carrier' },
+      { name: 'Castor Oil', pct: 0.15, role: 'Astringent pull' },
+      { name: 'Grapeseed Oil', pct: 0.10, role: 'Sebum thinner' },
+      { name: 'Rosehip Oil', pct: 0.035, role: 'Post-extraction healing' },
+      { name: 'Alpha-Bisabolol', pct: 0.005, role: 'Stops redness' },
+      { name: 'Wintergreen EO', pct: 0.005, role: 'BHA (safe clinical dose)' },
+      { name: 'Tea Tree EO', pct: 0.005, role: 'Antibacterial' },
+      { name: 'Frankincense EO', pct: 0.005, role: 'Pore tightening' }
+    ],
+    warnings: [
+      'Clinical use only — trained estheticians',
+      'Wintergreen kept at 0.5% for zero burn risk',
+      'Castor oil creates "rolling" sensation during massage'
+    ],
+    steps: [
+      'Cleanse skin thoroughly',
+      'Massage into nose/chin for 3-5 minutes',
+      'Feel blackheads "rolling like grains of sand"',
+      'Proceed with extractions — oil provides slip',
+      'Wipe with warm towel, apply soothing toner'
+    ],
+    proTip: 'Castor + Squalane + Wintergreen mimics 15min steam + desincrustation fluid — using only plant-based organics.',
+    bottleSize: 30
+  }
+};
+
+var currentOilFormula = 'bha_penetrating';
+
+function oilFormulaChange() {
+  var sel = document.getElementById('oil-formula-type');
+  if (!sel) return;
+  currentOilFormula = sel.value;
+  oilRenderFormula();
+}
+
+function oilRenderFormula() {
+  var formula = OIL_FORMULAS[currentOilFormula];
+  if (!formula) return;
+  
+  var batchSize = parseFloat(document.getElementById('oil-batch-size')?.value) || 30;
+  
+  // Update description
+  var descEl = document.getElementById('oil-formula-desc');
+  if (descEl) descEl.textContent = formula.desc;
+  
+  // Render ingredients
+  var listEl = document.getElementById('oil-ingredients-list');
+  if (listEl) {
+    listEl.innerHTML = formula.ingredients.map(function(ing) {
+      var ml = (ing.pct * batchSize).toFixed(2);
+      var pctDisplay = (ing.pct * 100).toFixed(1);
+      return '<div style="display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:8px 12px;background:var(--surface-2);border-radius:var(--radius-sm);">' +
+        '<div><strong style="color:var(--text);">' + ing.name + '</strong><div style="font-size:11px;color:var(--text-muted);">' + ing.role + '</div></div>' +
+        '<div style="font-size:14px;font-weight:600;color:var(--focus);">' + ml + ' ml</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);">' + pctDisplay + '%</div>' +
+      '</div>';
+    }).join('');
+  }
+  
+  // Update warnings
+  var warnEl = document.getElementById('oil-warnings');
+  if (warnEl) {
+    warnEl.innerHTML = '<strong>⚠️ Safety warnings:</strong><ul style="margin:8px 0 0 16px;font-size:12px;">' +
+      formula.warnings.map(function(w) { return '<li>' + w + '</li>'; }).join('') +
+    '</ul>';
+  }
+  
+  // Update steps
+  var stepsEl = document.getElementById('oil-usage-steps');
+  if (stepsEl) {
+    stepsEl.innerHTML = formula.steps.map(function(s) { return '<li>' + s + '</li>'; }).join('');
+  }
+  
+  // Update pro tip
+  var tipEl = document.getElementById('oil-pro-tip');
+  var tipTextEl = document.getElementById('oil-pro-tip-text');
+  if (tipEl && tipTextEl) {
+    if (formula.proTip) {
+      tipEl.style.display = 'block';
+      tipTextEl.textContent = formula.proTip;
+    } else {
+      tipEl.style.display = 'none';
+    }
+  }
+  
+  // Update packout
+  oilCalcPackout(batchSize, formula.bottleSize);
+}
+
+function oilCalcBatch() {
+  oilRenderFormula();
+}
+
+function oilCalcPackout(batchSize, bottleSize) {
+  var bottles = Math.floor(batchSize / bottleSize);
+  var remainder = batchSize % bottleSize;
+  
+  var countEl = document.getElementById('oil-bottle-count');
+  var remEl = document.getElementById('oil-remainder');
+  
+  if (countEl) countEl.textContent = bottles || 1;
+  if (remEl) {
+    remEl.textContent = remainder > 0 ? remainder.toFixed(1) + ' ml remainder' : 'No remainder';
+  }
+}
+
+function oilChemShow(sectionId, btn) {
+  var panel = document.getElementById('panel-oils-chemistry');
+  if (!panel) return;
+  
+  // Hide all sections
+  panel.querySelectorAll('.section').forEach(function(s) {
+    s.classList.remove('visible');
+  });
+  
+  // Show selected
+  var target = document.getElementById(sectionId);
+  if (target) target.classList.add('visible');
+  
+  // Update tab buttons
+  panel.querySelectorAll('.tab').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  if (btn) btn.classList.add('active');
+}
+
+function oilBuilderTypeChange() {
+  // Placeholder for formula builder type change
+  var sel = document.getElementById('oil-builder-type');
+  if (!sel) return;
+  console.log('Oil builder type:', sel.value);
+}
+
+// Initialize treatment oils on load
+document.addEventListener('DOMContentLoaded', function() {
+  oilRenderFormula();
+});
 </script>
 </body>
 </html>

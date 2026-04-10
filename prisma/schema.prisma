@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ProductType {
+  BALM
+  EXFOLIATOR
+  SOAP
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  role         Role      @default(USER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  formulas     Formula[]
+}
+
+model Formula {
+  id          String      @id @default(cuid())
+  name        String
+  productType ProductType
+  mode        String?     // face | body (for balm/exfoliator)
+  batchSize   Float       @default(100)
+  ingredients Json        // full ingredient pool snapshot
+  eoBlend     Json?       // essential oil blend snapshot
+  soapData    Json?       // lye, water, superfat, cure data
+  notes       String?
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  batches     BatchLog[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+model BatchLog {
+  id        String   @id @default(cuid())
+  formulaId String
+  formula   Formula  @relation(fields: [formulaId], references: [id], onDelete: Cascade)
+  batchSize Float
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([formulaId])
+}
