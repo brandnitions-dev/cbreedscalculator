@@ -2233,129 +2233,243 @@
 
 <!-- Treatment Oils: Lab Worksheet -->
 <div id="panel-oils-lab" class="tool-panel" role="tabpanel" aria-labelledby="tab-lab" hidden>
-<div class="w" style="display:block;max-width:900px;">
-  <section class="flow-section">
-    <h2 class="flow-heading"><span class="flow-num">1</span> Formula selection</h2>
-    <p class="flow-lead">Choose your treatment oil formula — <strong>BHA Penetrating Oil</strong> for home/spa use or <strong>Pore Purge Blend</strong> for clinical extractions.</p>
-    
-    <div class="lab-bar">
-      <div class="lab-bar-title">Treatment oil type</div>
-      <div class="lab-grid">
-        <div class="lab-field lab-field--full">
-          <label for="oil-formula-type">Formula</label>
-          <select id="oil-formula-type" class="lab-select" onchange="oilFormulaChange()">
-            <option value="bha_penetrating">BHA Penetrating Oil — home/spa deep pore treatment</option>
-            <option value="pore_purge">Pore Purge Blend — clinical extraction oil (high intensity)</option>
-          </select>
-        </div>
-        <div class="lab-field">
-          <label for="oil-batch-size">Batch size (ml)</label>
-          <input type="number" id="oil-batch-size" class="lab-num" value="30" min="10" max="500" step="5" onchange="oilCalcBatch()">
-        </div>
-      </div>
-    </div>
-  </section>
+<div class="w">
 
-  <section class="flow-section">
-    <h2 class="flow-heading"><span class="flow-num">2</span> Formula breakdown</h2>
-    <p class="flow-lead" id="oil-formula-desc">Deep pore treatment for home/spa use — replaces steam.</p>
-    
-    <div class="lab-bar" id="oil-formula-breakdown">
-      <div class="lab-bar-title">Ingredients (ml)</div>
-      <div id="oil-ingredients-list" style="display:grid;gap:8px;"></div>
+<section id="oil-section-setup" class="flow-section" aria-labelledby="oil-heading-setup">
+<h2 class="flow-heading" id="oil-heading-setup"><span class="flow-num">1</span> Setup &amp; controls</h2>
+<p class="flow-lead">Choose <strong>formula type</strong> and batch size. Treatment oils are anhydrous (no water) — no preservative needed.</p>
+<div class="lab-bar" id="oil-lab-controls">
+  <div class="lab-bar-title">Formulation controls</div>
+  <div class="lab-grid">
+    <div class="lab-field lab-field--full">
+      <label for="oil-formula-type">Formula type</label>
+      <select id="oil-formula-type" class="lab-select" onchange="oilFormulaChange()">
+        <option value="bha_penetrating">BHA Penetrating Oil — home/spa deep pore treatment (Wintergreen 3%)</option>
+        <option value="pore_purge">Pore Purge Blend — clinical extraction oil (Wintergreen 0.5%)</option>
+      </select>
     </div>
-    
-    <div id="oil-warnings" class="warn-box" style="margin-top:12px;">
-      <strong>⚠️ Safety warnings:</strong>
-      <ul style="margin:8px 0 0 16px;font-size:12px;">
-        <li>Wintergreen EO max 3% — toxic at higher doses</li>
-        <li>BHA increases sun sensitivity — use SPF after treatment</li>
-        <li>Tingling is normal; burning means wipe off immediately</li>
-      </ul>
+    <div class="lab-field">
+      <label for="oil-batch-size">Batch size (ml)</label>
+      <input type="number" id="oil-batch-size" class="lab-num" value="100" min="10" max="1000" step="10" oninput="oilCalcBatch()">
     </div>
-  </section>
+    <div class="lab-field">
+      <label for="oil-bottle-size">Bottle size (ml)</label>
+      <select id="oil-bottle-size" class="lab-select" onchange="oilCalcBatch()">
+        <option value="5">5 ml (sample)</option>
+        <option value="10">10 ml (travel)</option>
+        <option value="15">15 ml (standard dropper)</option>
+        <option value="20">20 ml</option>
+        <option value="30" selected>30 ml (retail dropper)</option>
+        <option value="50">50 ml (professional)</option>
+      </select>
+    </div>
+  </div>
+  <div class="lab-callout" role="note">
+    <div class="callout-title" id="oil-formula-name">BHA Penetrating Oil</div>
+    <p class="ing-meta" style="margin:0" id="oil-formula-desc">Deep pore treatment for home/spa use — replaces steam. Jojoba mimics sebum to "trick" pores into accepting BHA. No heat required — protects delicate rosehip antioxidants.</p>
+  </div>
+</div>
 
-  <section class="flow-section">
-    <h2 class="flow-heading"><span class="flow-num">3</span> Usage protocol</h2>
-    <div class="lab-bar">
-      <div class="lab-bar-title" id="oil-usage-title">Application steps</div>
-      <ol id="oil-usage-steps" style="margin:0 0 0 18px;font-size:13px;line-height:1.8;color:var(--text);">
-        <li>Cleanse skin thoroughly</li>
-        <li>Massage 3-5 drops into T-zone or congested areas</li>
-        <li>Wait 5-10 minutes (replaces steaming time)</li>
-        <li>Proceed with extractions if clinical</li>
-        <li>Wipe with warm towel, follow with toner</li>
-      </ol>
-      <div id="oil-pro-tip" class="info-box" style="margin-top:12px;display:none;">
-        <strong>Pro tip:</strong> <span id="oil-pro-tip-text"></span>
-      </div>
-    </div>
-  </section>
+<div id="oil-warnings" class="warn-banner" role="alert">
+  <strong>⚠️ Wintergreen EO:</strong> Max 3% home use, 0.5% clinical. Methyl salicylate is toxic at higher doses (1 tsp = ~7g aspirin). BHA increases sun sensitivity — SPF required after treatment.
+</div>
+</section>
 
-  <section class="flow-section">
-    <h2 class="flow-heading"><span class="flow-num">4</span> Packout</h2>
-    <div class="lab-bar">
-      <div class="lab-bar-title">Dropper bottles</div>
-      <div id="oil-packout" style="display:flex;gap:20px;align-items:center;">
-        <div style="text-align:center;">
-          <div style="font-size:32px;font-weight:700;color:var(--focus);" id="oil-bottle-count">1</div>
-          <div style="font-size:11px;color:var(--text-muted);">30ml bottles</div>
-        </div>
-        <div style="font-size:12px;color:var(--text-muted);" id="oil-remainder">No remainder</div>
-      </div>
+<section id="oil-section-worksheet" class="flow-section" aria-labelledby="oil-heading-worksheet">
+<h2 class="flow-heading" id="oil-heading-worksheet"><span class="flow-num">2</span> Formulation worksheet</h2>
+<p class="flow-lead">All ingredients calculated from batch size. Treatment oils are 100% anhydrous — no water phase, no emulsifier needed.</p>
+<div class="container">
+
+  <div class="group-header" style="background:#d1fae5">
+    <span class="group-title" style="color:#065f46">Carrier oils</span>
+    <span class="pill p-teal">penetration + sebum mimicry</span>
+    <span class="group-pct" style="color:#065f46" id="oil-pct-carriers">—%</span>
+  </div>
+
+  <div id="oil-carriers-list"></div>
+
+  <div class="group-sep"></div>
+
+  <div class="group-header" style="background:#fef3c7">
+    <span class="group-title" style="color:#92400e">Active ingredients</span>
+    <span class="pill p-amber">BHA + anti-inflammatory</span>
+    <span class="group-pct" style="color:#92400e" id="oil-pct-actives">—%</span>
+  </div>
+
+  <div id="oil-actives-list"></div>
+
+  <div class="group-sep"></div>
+
+  <div class="group-header" style="background:#ede9fe">
+    <span class="group-title" style="color:#5b21b6">Essential oils</span>
+    <span class="pill p-purple">therapeutic + antimicrobial</span>
+    <span class="group-pct" style="color:#5b21b6" id="oil-pct-eos">—%</span>
+  </div>
+
+  <div id="oil-eos-list"></div>
+
+</div>
+</section>
+
+<section id="oil-section-summary" class="flow-section" aria-labelledby="oil-heading-summary">
+<h2 class="flow-heading" id="oil-heading-summary"><span class="flow-num">3</span> Batch summary</h2>
+<p class="flow-lead">Total batch composition with visual breakdown.</p>
+
+<div class="bar-wrap" role="img" aria-label="Batch composition by volume" id="oil-bar-wrap">
+  <div class="seg" id="oil-b-jojoba" style="background:#5DCAA5"></div>
+  <div class="seg" id="oil-b-squalane" style="background:#7DD3C0"></div>
+  <div class="seg" id="oil-b-castor" style="background:#A7F3D0"></div>
+  <div class="seg" id="oil-b-grapeseed" style="background:#BBF7D0"></div>
+  <div class="seg" id="oil-b-rosehip" style="background:#FCA5A5"></div>
+  <div class="seg" id="oil-b-actives" style="background:#FCD34D"></div>
+  <div class="seg" id="oil-b-eos" style="background:#AFA9EC"></div>
+</div>
+<div class="legend" id="oil-legend"></div>
+
+<div class="sec">Batch breakdown</div>
+<div class="charts-split" role="region" aria-label="Batch summary and composition chart">
+  <div class="summary-panel">
+    <h3>Batch summary</h3>
+    <table class="summary-table" id="oil-batch-summary">
+      <thead><tr><th>Ingredient</th><th class="num">ml</th><th class="num">%</th></tr></thead>
+      <tbody id="oil-batch-summary-body"></tbody>
+    </table>
+  </div>
+
+  <div class="chart-widget">
+    <h3>Volume share</h3>
+    <p class="chart-desc">Percent of total batch (ml) per ingredient.</p>
+    <div class="chart-canvas-wrap">
+      <canvas id="oil-chart-pie" aria-label="Doughnut chart of batch composition"></canvas>
     </div>
-  </section>
+  </div>
+</div>
+</section>
+
+<section id="oil-section-production" class="flow-section section-production" aria-labelledby="oil-heading-production">
+<h2 class="flow-heading" id="oil-heading-production"><span class="flow-num">4</span> Production</h2>
+<p class="flow-lead">No heat required — cold blend process. Protects delicate antioxidants in rosehip oil.</p>
+<div class="proc-panel" id="oil-proc-panel">
+  <h3>Production process</h3>
+  <ol class="proc-steps" id="oil-proc-steps">
+    <li><strong>Sterilize:</strong> Clean dark glass beaker and dropper bottles with isopropyl alcohol. Let dry completely.</li>
+    <li><strong>Measure carriers:</strong> Pour carrier oils (Jojoba → Squalane → Castor → Grapeseed → Rosehip) into beaker in order.</li>
+    <li><strong>Add actives:</strong> Stir in Willow Bark Extract / Alpha-Bisabolol until fully incorporated.</li>
+    <li><strong>Add EOs:</strong> Add essential oils one by one (Frankincense → Wintergreen → Tea Tree), stirring slowly between each.</li>
+    <li><strong>Final mix:</strong> Stir gently for 2-3 minutes. Avoid vigorous mixing (introduces air).</li>
+    <li><strong>Bottle:</strong> Transfer to amber glass dropper bottles. Light destroys BHA and rosehip oil.</li>
+    <li><strong>Label:</strong> Date, formula type, batch number. Store in cool, dark place.</li>
+  </ol>
+  <div class="info-box" style="margin-top:12px;background:var(--color-background-info);padding:10px 14px;border-radius:var(--radius-md);">
+    <strong>Why no heat?</strong> Heat degrades the delicate antioxidants in Rosehip oil and can volatilize essential oils. Cold blending preserves potency.
+  </div>
+</div>
+
+<div class="jar-packout" aria-labelledby="oil-packout-heading">
+  <p class="jar-packout__label">Pack-out</p>
+  <h3 class="jar-packout__headline" id="oil-packout-heading"><span id="oil-bottle-size-label">30</span> ml dropper bottles</h3>
+  <div id="oil-chips" class="jar-preview" aria-live="polite"></div>
+  <p class="jar-packout__footer" id="oil-chips-note"></p>
+</div>
+</section>
+
 </div>
 </div>
 
 <!-- Treatment Oils: Formula Builder -->
 <div id="panel-oils-builder" class="tool-panel" role="tabpanel" aria-labelledby="tab-builder" hidden>
-<div class="w" style="display:block;max-width:1100px;">
-  <section class="flow-section">
-    <h2 class="flow-heading"><span class="flow-num">1</span> Build your treatment oil</h2>
-    <p class="flow-lead">Customize carrier ratios and essential oil blend for your treatment oil formula.</p>
-    
-    <div class="lab-bar">
-      <div class="lab-bar-title">Base formula</div>
-      <div class="lab-grid">
-        <div class="lab-field">
-          <label for="oil-builder-type">Formula type</label>
-          <select id="oil-builder-type" class="lab-select" onchange="oilBuilderTypeChange()">
-            <option value="bha_penetrating">BHA Penetrating Oil</option>
-            <option value="pore_purge">Pore Purge Blend (Clinical)</option>
-            <option value="custom">Custom formula</option>
-          </select>
-        </div>
-        <div class="lab-field">
-          <label for="oil-builder-batch">Batch size (ml)</label>
-          <input type="number" id="oil-builder-batch" class="lab-num" value="30" min="10" max="500" step="5">
-        </div>
-      </div>
+<div class="fb-app">
+<div class="fb-left">
+
+<div class="fb-section">
+  <div class="fb-section-title">Batch settings</div>
+  <div class="fb-batch-row">
+    <label for="oilFb-batchSize">Batch size</label>
+    <input type="range" id="oilFb-batchSize" min="30" max="500" step="10" value="100" oninput="oilFbUpdate()">
+    <span id="oilFb-batchSizeVal">100 ml</span>
+  </div>
+  <div class="fb-batch-row">
+    <label>Formula base</label>
+    <div class="fb-product-btns">
+      <button type="button" id="oilFb-prod-bha" class="fb-product-btn active" onclick="oilFbSetFormula(this,'bha_penetrating')">BHA Penetrating</button>
+      <button type="button" id="oilFb-prod-purge" class="fb-product-btn" onclick="oilFbSetFormula(this,'pore_purge')">Pore Purge</button>
+      <button type="button" id="oilFb-prod-custom" class="fb-product-btn" onclick="oilFbSetFormula(this,'custom')">Custom</button>
     </div>
-    
-    <div class="lab-bar" id="oil-builder-carriers">
-      <div class="lab-bar-title">Carrier oils (adjust ratios)</div>
-      <div id="oil-carrier-sliders" style="display:grid;gap:12px;"></div>
-    </div>
-    
-    <div class="lab-bar" id="oil-builder-actives">
-      <div class="lab-bar-title">Active ingredients</div>
-      <div id="oil-active-sliders" style="display:grid;gap:12px;"></div>
-    </div>
-    
-    <div class="lab-bar" id="oil-builder-eos">
-      <div class="lab-bar-title">Essential oils</div>
-      <div id="oil-eo-sliders" style="display:grid;gap:12px;"></div>
-    </div>
-  </section>
-  
-  <section class="flow-section">
-    <h2 class="flow-heading"><span class="flow-num">2</span> Formula summary</h2>
-    <div class="lab-bar">
-      <div class="lab-bar-title">Final breakdown</div>
-      <div id="oil-builder-summary" style="font-size:13px;"></div>
-    </div>
-  </section>
+  </div>
+</div>
+
+<div class="fb-group-banner">Carrier oils — penetration &amp; sebum mimicry</div>
+
+<div class="fb-section">
+  <div class="fb-pool-header">
+    <span class="fb-pool-label">Carrier oils</span>
+    <span class="fb-pool-pct" id="oilFb-label-carriers-pct">85-95% of batch</span>
+  </div>
+  <div id="oilFb-carrierPool"></div>
+  <button type="button" class="fb-add-btn" onclick="oilFbAddIng('carrier')">+ add carrier oil</button>
+  <div id="oilFb-carrierWarning"></div>
+</div>
+
+<div class="fb-group-banner">Active ingredients — BHA &amp; anti-inflammatory</div>
+
+<div class="fb-section">
+  <div class="fb-pool-header">
+    <span class="fb-pool-label">Actives</span>
+    <span class="fb-pool-pct" id="oilFb-label-actives-pct">0.5-10% of batch</span>
+  </div>
+  <div id="oilFb-activePool"></div>
+  <button type="button" class="fb-add-btn" onclick="oilFbAddIng('active')">+ add active</button>
+  <div id="oilFb-activeWarning"></div>
+</div>
+
+<div class="fb-group-banner">Essential oils — therapeutic &amp; antimicrobial</div>
+
+<div class="fb-section">
+  <div class="fb-pool-header">
+    <span class="fb-pool-label">Essential oils</span>
+    <span class="fb-pool-pct" id="oilFb-label-eos-pct">2-10% of batch</span>
+  </div>
+  <div id="oilFb-eoPool"></div>
+  <button type="button" class="fb-add-btn" onclick="oilFbAddIng('eo')">+ add essential oil</button>
+  <div id="oilFb-eoWarning"></div>
+</div>
+
+</div>
+
+<div class="fb-right">
+<div class="fb-beaker-wrap">
+  <svg class="fb-beaker-svg" viewBox="0 0 180 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs><clipPath id="oilFb-glassClip"><path d="M30,20 L30,220 Q30,250 90,250 Q150,250 150,220 L150,20 Z"/></clipPath></defs>
+    <path d="M30,20 L30,220 Q30,250 90,250 Q150,250 150,220 L150,20 Z" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+    <line x1="20" y1="20" x2="160" y2="20" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+    <g id="oilFb-beakerLayers" clip-path="url(#oilFb-glassClip)"></g>
+    <line x1="40" y1="80" x2="50" y2="80" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="120" x2="50" y2="120" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="160" x2="50" y2="160" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+    <line x1="40" y1="200" x2="50" y2="200" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+  </svg>
+</div>
+
+<div class="fb-total-card">
+  <div class="fb-stat"><div class="fb-stat-val" id="oilFb-statTotal">100</div><div class="fb-stat-lbl">total ml</div></div>
+  <div class="fb-stat"><div class="fb-stat-val" id="oilFb-statShelf">8-10mo</div><div class="fb-stat-lbl">est. shelf life</div></div>
+</div>
+
+<div class="fb-ratio-card">
+  <div class="fb-card-title">Formula breakdown</div>
+  <div id="oilFb-ratioList"></div>
+</div>
+
+<div class="fb-benefit-card">
+  <div class="fb-card-title">Treatment profile</div>
+  <div id="oilFb-benefitBars"></div>
+</div>
+
+<div class="fb-synergy-card">
+  <div class="fb-card-title">Notes &amp; warnings</div>
+  <div id="oilFb-synergyList"><div class="fb-synergy-item fb-synergy-info">· Adjust carrier and EO ratios — safety notes and synergies appear here.</div></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -3238,138 +3352,252 @@ window.addEventListener('hashchange', function() {
 var OIL_FORMULAS = {
   bha_penetrating: {
     name: 'BHA Penetrating Oil',
-    desc: 'Deep pore treatment for home/spa use — replaces steam.',
-    ingredients: [
-      { name: 'Jojoba Oil', pct: 0.60, role: 'Carrier — mimics sebum' },
-      { name: 'Rosehip Oil', pct: 0.20, role: 'Regenerator — linoleic acid' },
-      { name: 'Willow Bark Extract', pct: 0.10, role: 'Natural BHA source' },
-      { name: 'Frankincense EO', pct: 0.04, role: 'Pore tightener' },
-      { name: 'Wintergreen EO', pct: 0.03, role: 'High-intensity BHA' },
-      { name: 'Tea Tree EO', pct: 0.03, role: 'Antibacterial' }
+    desc: 'Deep pore treatment for home/spa use — replaces steam. Jojoba mimics sebum to "trick" pores into accepting BHA. No heat required — protects delicate rosehip antioxidants.',
+    carriers: [
+      { id: 'jojoba', name: 'Jojoba Oil', pct: 0.60, color: '#5DCAA5', role: 'Carrier — mimics sebum, tricks pores' },
+      { id: 'rosehip', name: 'Rosehip Oil', pct: 0.20, color: '#FCA5A5', role: 'Regenerator — linoleic acid + Vit A' }
     ],
-    warnings: [
-      'Wintergreen EO max 3% — toxic at higher doses',
-      'BHA increases sun sensitivity — use SPF after treatment',
-      'Tingling is normal; burning means wipe off immediately'
+    actives: [
+      { id: 'willowbark', name: 'Willow Bark Extract', pct: 0.10, color: '#FCD34D', role: 'Natural BHA source — salicin' }
     ],
-    steps: [
-      'Cleanse skin thoroughly',
-      'Massage 3-5 drops into T-zone or congested areas',
-      'Wait 5-10 minutes (replaces steaming time)',
-      'Proceed with extractions if clinical',
-      'Wipe with warm towel, follow with toner'
+    eos: [
+      { id: 'frankincense', name: 'Frankincense EO', pct: 0.04, color: '#C4B5FD', role: 'Pore tightener' },
+      { id: 'wintergreen', name: 'Wintergreen EO', pct: 0.03, color: '#F87171', role: 'High-intensity BHA (methyl salicylate)' },
+      { id: 'teatree', name: 'Tea Tree EO', pct: 0.03, color: '#A7F3D0', role: 'Antibacterial' }
     ],
-    proTip: null,
-    bottleSize: 30
+    shelfLife: '8-10mo'
   },
   pore_purge: {
     name: 'Pore Purge Blend (Clinical)',
-    desc: 'High-intensity clinical extraction oil — blackheads roll out like grains of sand.',
-    ingredients: [
-      { name: 'Jojoba Oil', pct: 0.50, role: 'Carrier — sebum mimic' },
-      { name: 'Olive Squalane', pct: 0.20, role: 'Deep penetration carrier' },
-      { name: 'Castor Oil', pct: 0.15, role: 'Astringent pull' },
-      { name: 'Grapeseed Oil', pct: 0.10, role: 'Sebum thinner' },
-      { name: 'Rosehip Oil', pct: 0.035, role: 'Post-extraction healing' },
-      { name: 'Alpha-Bisabolol', pct: 0.005, role: 'Stops redness' },
-      { name: 'Wintergreen EO', pct: 0.005, role: 'BHA (safe clinical dose)' },
-      { name: 'Tea Tree EO', pct: 0.005, role: 'Antibacterial' },
-      { name: 'Frankincense EO', pct: 0.005, role: 'Pore tightening' }
+    desc: 'High-intensity clinical extraction oil — blackheads roll out like grains of sand. Castor + Squalane + Wintergreen mimics 15min steam + desincrustation fluid.',
+    carriers: [
+      { id: 'jojoba', name: 'Jojoba Oil', pct: 0.50, color: '#5DCAA5', role: 'Carrier — sebum mimic' },
+      { id: 'squalane', name: 'Olive Squalane', pct: 0.20, color: '#7DD3C0', role: 'Deep penetration carrier' },
+      { id: 'castor', name: 'Castor Oil', pct: 0.15, color: '#A7F3D0', role: 'Astringent pull — grips debris' },
+      { id: 'grapeseed', name: 'Grapeseed Oil', pct: 0.10, color: '#BBF7D0', role: 'Sebum thinner — high linoleic' },
+      { id: 'rosehip', name: 'Rosehip Oil', pct: 0.035, color: '#FCA5A5', role: 'Post-extraction healing' }
     ],
-    warnings: [
-      'Clinical use only — trained estheticians',
-      'Wintergreen kept at 0.5% for zero burn risk',
-      'Castor oil creates "rolling" sensation during massage'
+    actives: [
+      { id: 'bisabolol', name: 'Alpha-Bisabolol', pct: 0.005, color: '#FDE68A', role: 'Chamomile extract — stops redness' }
     ],
-    steps: [
-      'Cleanse skin thoroughly',
-      'Massage into nose/chin for 3-5 minutes',
-      'Feel blackheads "rolling like grains of sand"',
-      'Proceed with extractions — oil provides slip',
-      'Wipe with warm towel, apply soothing toner'
+    eos: [
+      { id: 'wintergreen', name: 'Wintergreen EO', pct: 0.005, color: '#F87171', role: 'BHA (safe clinical 0.5%)' },
+      { id: 'teatree', name: 'Tea Tree EO', pct: 0.005, color: '#A7F3D0', role: 'Antibacterial' },
+      { id: 'frankincense', name: 'Frankincense EO', pct: 0.005, color: '#C4B5FD', role: 'Pore tightening' }
     ],
-    proTip: 'Castor + Squalane + Wintergreen mimics 15min steam + desincrustation fluid — using only plant-based organics.',
-    bottleSize: 30
+    shelfLife: '10-12mo'
   }
 };
 
 var currentOilFormula = 'bha_penetrating';
+var oilChartPie = null;
 
 function oilFormulaChange() {
   var sel = document.getElementById('oil-formula-type');
   if (!sel) return;
   currentOilFormula = sel.value;
-  oilRenderFormula();
-}
-
-function oilRenderFormula() {
-  var formula = OIL_FORMULAS[currentOilFormula];
-  if (!formula) return;
-  
-  var batchSize = parseFloat(document.getElementById('oil-batch-size')?.value) || 30;
-  
-  // Update description
-  var descEl = document.getElementById('oil-formula-desc');
-  if (descEl) descEl.textContent = formula.desc;
-  
-  // Render ingredients
-  var listEl = document.getElementById('oil-ingredients-list');
-  if (listEl) {
-    listEl.innerHTML = formula.ingredients.map(function(ing) {
-      var ml = (ing.pct * batchSize).toFixed(2);
-      var pctDisplay = (ing.pct * 100).toFixed(1);
-      return '<div style="display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:8px 12px;background:var(--surface-2);border-radius:var(--radius-sm);">' +
-        '<div><strong style="color:var(--text);">' + ing.name + '</strong><div style="font-size:11px;color:var(--text-muted);">' + ing.role + '</div></div>' +
-        '<div style="font-size:14px;font-weight:600;color:var(--focus);">' + ml + ' ml</div>' +
-        '<div style="font-size:12px;color:var(--text-muted);">' + pctDisplay + '%</div>' +
-      '</div>';
-    }).join('');
-  }
-  
-  // Update warnings
-  var warnEl = document.getElementById('oil-warnings');
-  if (warnEl) {
-    warnEl.innerHTML = '<strong>⚠️ Safety warnings:</strong><ul style="margin:8px 0 0 16px;font-size:12px;">' +
-      formula.warnings.map(function(w) { return '<li>' + w + '</li>'; }).join('') +
-    '</ul>';
-  }
-  
-  // Update steps
-  var stepsEl = document.getElementById('oil-usage-steps');
-  if (stepsEl) {
-    stepsEl.innerHTML = formula.steps.map(function(s) { return '<li>' + s + '</li>'; }).join('');
-  }
-  
-  // Update pro tip
-  var tipEl = document.getElementById('oil-pro-tip');
-  var tipTextEl = document.getElementById('oil-pro-tip-text');
-  if (tipEl && tipTextEl) {
-    if (formula.proTip) {
-      tipEl.style.display = 'block';
-      tipTextEl.textContent = formula.proTip;
-    } else {
-      tipEl.style.display = 'none';
-    }
-  }
-  
-  // Update packout
-  oilCalcPackout(batchSize, formula.bottleSize);
+  oilCalcBatch();
 }
 
 function oilCalcBatch() {
-  oilRenderFormula();
+  var formula = OIL_FORMULAS[currentOilFormula];
+  if (!formula) return;
+  
+  var batchSize = parseFloat(document.getElementById('oil-batch-size')?.value) || 100;
+  var bottleSize = parseFloat(document.getElementById('oil-bottle-size')?.value) || 30;
+  
+  // Update formula name and description
+  var nameEl = document.getElementById('oil-formula-name');
+  var descEl = document.getElementById('oil-formula-desc');
+  if (nameEl) nameEl.textContent = formula.name;
+  if (descEl) descEl.textContent = formula.desc;
+  
+  // Calculate all ingredients
+  var allIngredients = [];
+  var carrierTotal = 0, activeTotal = 0, eoTotal = 0;
+  
+  formula.carriers.forEach(function(ing) {
+    var ml = ing.pct * batchSize;
+    carrierTotal += ing.pct;
+    allIngredients.push({ ...ing, ml: ml, type: 'carrier' });
+  });
+  
+  formula.actives.forEach(function(ing) {
+    var ml = ing.pct * batchSize;
+    activeTotal += ing.pct;
+    allIngredients.push({ ...ing, ml: ml, type: 'active' });
+  });
+  
+  formula.eos.forEach(function(ing) {
+    var ml = ing.pct * batchSize;
+    eoTotal += ing.pct;
+    allIngredients.push({ ...ing, ml: ml, type: 'eo' });
+  });
+  
+  // Update group percentages
+  var pctCarriers = document.getElementById('oil-pct-carriers');
+  var pctActives = document.getElementById('oil-pct-actives');
+  var pctEos = document.getElementById('oil-pct-eos');
+  if (pctCarriers) pctCarriers.textContent = (carrierTotal * 100).toFixed(1) + '%';
+  if (pctActives) pctActives.textContent = (activeTotal * 100).toFixed(1) + '%';
+  if (pctEos) pctEos.textContent = (eoTotal * 100).toFixed(1) + '%';
+  
+  // Render ingredient rows
+  oilRenderIngredientRows(formula, batchSize);
+  
+  // Update composition bar
+  oilUpdateBar(allIngredients, batchSize);
+  
+  // Update legend
+  oilUpdateLegend(allIngredients);
+  
+  // Update summary table
+  oilUpdateSummaryTable(allIngredients, batchSize);
+  
+  // Update chart
+  oilUpdateChart(allIngredients);
+  
+  // Update packout
+  oilUpdatePackout(batchSize, bottleSize);
+  
+  // Update bottle size label
+  var bottleSizeLabel = document.getElementById('oil-bottle-size-label');
+  if (bottleSizeLabel) bottleSizeLabel.textContent = bottleSize;
 }
 
-function oilCalcPackout(batchSize, bottleSize) {
+function oilRenderIngredientRows(formula, batchSize) {
+  var carriersEl = document.getElementById('oil-carriers-list');
+  var activesEl = document.getElementById('oil-actives-list');
+  var eosEl = document.getElementById('oil-eos-list');
+  
+  function renderRow(ing, batchSize) {
+    var ml = (ing.pct * batchSize).toFixed(2);
+    var pctDisplay = (ing.pct * 100).toFixed(1);
+    return '<div class="ing-row">' +
+      '<div class="accent" style="background:' + ing.color + '"></div>' +
+      '<div class="ing-body">' +
+        '<div class="ing-top">' +
+          '<span class="ing-name">' + ing.name + '</span>' +
+          '<span class="pill" style="background:' + ing.color + '22;color:' + ing.color + '">' + pctDisplay + '%</span>' +
+        '</div>' +
+        '<div class="ing-meta">' + ing.role + '</div>' +
+      '</div>' +
+      '<div class="ing-val">' +
+        '<span class="val-num">' + ml + '</span>' +
+        '<span class="val-unit">ml</span>' +
+      '</div>' +
+    '</div>';
+  }
+  
+  if (carriersEl) {
+    carriersEl.innerHTML = formula.carriers.map(function(ing) { return renderRow(ing, batchSize); }).join('');
+  }
+  if (activesEl) {
+    activesEl.innerHTML = formula.actives.map(function(ing) { return renderRow(ing, batchSize); }).join('');
+  }
+  if (eosEl) {
+    eosEl.innerHTML = formula.eos.map(function(ing) { return renderRow(ing, batchSize); }).join('');
+  }
+}
+
+function oilUpdateBar(ingredients, batchSize) {
+  var barWrap = document.getElementById('oil-bar-wrap');
+  if (!barWrap) return;
+  
+  barWrap.innerHTML = ingredients.map(function(ing) {
+    var widthPct = (ing.pct * 100).toFixed(2);
+    return '<div class="seg" style="background:' + ing.color + ';width:' + widthPct + '%"></div>';
+  }).join('');
+}
+
+function oilUpdateLegend(ingredients) {
+  var legendEl = document.getElementById('oil-legend');
+  if (!legendEl) return;
+  
+  legendEl.innerHTML = ingredients.map(function(ing) {
+    return '<div class="li"><div class="dot" style="background:' + ing.color + '"></div>' + ing.name + '</div>';
+  }).join('');
+}
+
+function oilUpdateSummaryTable(ingredients, batchSize) {
+  var tbody = document.getElementById('oil-batch-summary-body');
+  if (!tbody) return;
+  
+  var total = ingredients.reduce(function(sum, ing) { return sum + ing.ml; }, 0);
+  
+  var rows = ingredients.map(function(ing) {
+    return '<tr><td>' + ing.name + '</td><td class="num">' + ing.ml.toFixed(2) + '</td><td class="num">' + (ing.pct * 100).toFixed(1) + '%</td></tr>';
+  }).join('');
+  
+  rows += '<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Total</td><td class="num">' + total.toFixed(2) + '</td><td class="num">100%</td></tr>';
+  
+  tbody.innerHTML = rows;
+}
+
+function oilUpdateChart(ingredients) {
+  var canvas = document.getElementById('oil-chart-pie');
+  if (!canvas) return;
+  
+  var labels = ingredients.map(function(ing) { return ing.name; });
+  var data = ingredients.map(function(ing) { return (ing.pct * 100).toFixed(1); });
+  var colors = ingredients.map(function(ing) { return ing.color; });
+  
+  if (oilChartPie) {
+    oilChartPie.data.labels = labels;
+    oilChartPie.data.datasets[0].data = data;
+    oilChartPie.data.datasets[0].backgroundColor = colors;
+    oilChartPie.update();
+  } else if (typeof Chart !== 'undefined') {
+    oilChartPie = new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: colors,
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) { return ctx.label + ': ' + ctx.parsed + '%'; }
+            }
+          }
+        }
+      }
+    });
+  }
+}
+
+function oilUpdatePackout(batchSize, bottleSize) {
   var bottles = Math.floor(batchSize / bottleSize);
   var remainder = batchSize % bottleSize;
   
-  var countEl = document.getElementById('oil-bottle-count');
-  var remEl = document.getElementById('oil-remainder');
+  var chipsEl = document.getElementById('oil-chips');
+  var noteEl = document.getElementById('oil-chips-note');
   
-  if (countEl) countEl.textContent = bottles || 1;
-  if (remEl) {
-    remEl.textContent = remainder > 0 ? remainder.toFixed(1) + ' ml remainder' : 'No remainder';
+  if (chipsEl) {
+    var chips = '';
+    for (var i = 0; i < Math.min(bottles, 20); i++) {
+      chips += '<div class="jar-chip" title="Bottle ' + (i + 1) + '">💧</div>';
+    }
+    if (bottles > 20) {
+      chips += '<div class="jar-chip" title="' + (bottles - 20) + ' more">+' + (bottles - 20) + '</div>';
+    }
+    chipsEl.innerHTML = chips;
+  }
+  
+  if (noteEl) {
+    if (remainder > 0) {
+      noteEl.innerHTML = '<strong>' + bottles + '</strong> full bottles · <strong>' + remainder.toFixed(1) + ' ml</strong> remainder';
+    } else {
+      noteEl.innerHTML = '<strong>' + bottles + '</strong> full bottles · no remainder';
+    }
   }
 }
 
@@ -3377,32 +3605,102 @@ function oilChemShow(sectionId, btn) {
   var panel = document.getElementById('panel-oils-chemistry');
   if (!panel) return;
   
-  // Hide all sections
   panel.querySelectorAll('.section').forEach(function(s) {
     s.classList.remove('visible');
   });
   
-  // Show selected
   var target = document.getElementById(sectionId);
   if (target) target.classList.add('visible');
   
-  // Update tab buttons
   panel.querySelectorAll('.tab').forEach(function(t) {
     t.classList.remove('active');
   });
   if (btn) btn.classList.add('active');
 }
 
-function oilBuilderTypeChange() {
-  // Placeholder for formula builder type change
-  var sel = document.getElementById('oil-builder-type');
-  if (!sel) return;
-  console.log('Oil builder type:', sel.value);
+/* Treatment Oils Formula Builder */
+var oilFbBatchSize = 100;
+var oilFbFormula = 'bha_penetrating';
+
+function oilFbSetFormula(btn, formula) {
+  document.querySelectorAll('#panel-oils-builder .fb-product-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  oilFbFormula = formula;
+  oilFbUpdate();
+}
+
+function oilFbUpdate() {
+  var batchSlider = document.getElementById('oilFb-batchSize');
+  var batchVal = document.getElementById('oilFb-batchSizeVal');
+  if (batchSlider) {
+    oilFbBatchSize = parseInt(batchSlider.value);
+    if (batchVal) batchVal.textContent = oilFbBatchSize + ' ml';
+  }
+  
+  var statTotal = document.getElementById('oilFb-statTotal');
+  if (statTotal) statTotal.textContent = oilFbBatchSize;
+  
+  // Render formula breakdown in ratio list
+  var formula = OIL_FORMULAS[oilFbFormula];
+  if (!formula) return;
+  
+  var ratioList = document.getElementById('oilFb-ratioList');
+  if (ratioList) {
+    var allIngs = [...formula.carriers, ...formula.actives, ...formula.eos];
+    ratioList.innerHTML = allIngs.map(function(ing) {
+      var ml = (ing.pct * oilFbBatchSize).toFixed(1);
+      var pct = (ing.pct * 100).toFixed(1);
+      return '<div class="fb-ratio-row">' +
+        '<div class="fb-ratio-dot" style="background:' + ing.color + '"></div>' +
+        '<div class="fb-ratio-name">' + ing.name + '</div>' +
+        '<div class="fb-ratio-bar-wrap"><div class="fb-ratio-bar-fill" style="width:' + (ing.pct * 100) + '%;background:' + ing.color + '"></div></div>' +
+        '<div class="fb-ratio-ml">' + ml + 'ml</div>' +
+        '<div class="fb-ratio-pct">' + pct + '%</div>' +
+      '</div>';
+    }).join('');
+  }
+  
+  // Update beaker
+  oilFbUpdateBeaker(formula);
+  
+  // Update shelf life
+  var shelfEl = document.getElementById('oilFb-statShelf');
+  if (shelfEl) shelfEl.textContent = formula.shelfLife || '8-10mo';
+}
+
+function oilFbUpdateBeaker(formula) {
+  var layers = document.getElementById('oilFb-beakerLayers');
+  if (!layers) return;
+  
+  var allIngs = [...formula.carriers, ...formula.actives, ...formula.eos];
+  var total = allIngs.reduce(function(s, i) { return s + i.pct; }, 0) || 1;
+  var y = 20 + 230;
+  
+  layers.innerHTML = '';
+  allIngs.forEach(function(ing) {
+    var h = Math.max(2, (ing.pct / total) * 230);
+    y -= h;
+    var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', '31');
+    rect.setAttribute('y', y.toFixed(1));
+    rect.setAttribute('width', '118');
+    rect.setAttribute('height', h.toFixed(1));
+    rect.setAttribute('fill', ing.color);
+    rect.setAttribute('opacity', '0.85');
+    layers.appendChild(rect);
+  });
+}
+
+function oilFbAddIng(type) {
+  console.log('Add ingredient type:', type);
 }
 
 // Initialize treatment oils on load
 document.addEventListener('DOMContentLoaded', function() {
-  oilRenderFormula();
+  oilCalcBatch();
+  oilFbUpdate();
 });
 </script>
 </body>

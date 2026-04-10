@@ -112,9 +112,17 @@
 ### New Files
 - `product_config.js` — Centralized product definitions, formulas, ingredients
 
-### New Panels Added
-- `#panel-oils-lab` — Treatment oils lab worksheet with formula selector, batch calculator, usage protocol
-- `#panel-oils-builder` — Treatment oils formula builder (placeholder for customization)
+### New Panels Added (Full Structure Matching Tallow Balms)
+- `#panel-oils-lab` — Full lab worksheet:
+  - Section 1: Setup & controls (formula type, batch size, bottle size selector: 5/10/15/20/30/50ml)
+  - Section 2: Formulation worksheet (ingredient rows with color accents, ml values, percentages)
+  - Section 3: Batch summary (composition bar, legend, summary table, doughnut chart)
+  - Section 4: Production (cold blend process steps, packout with bottle chips)
+- `#panel-oils-builder` — Full formula builder:
+  - Batch size slider, formula base selector (BHA/Pore Purge/Custom)
+  - Carrier oils pool, Actives pool, Essential oils pool
+  - Beaker visualization with layered SVG
+  - Ratio breakdown, treatment profile, notes & warnings
 - `#panel-oils-chemistry` — Treatment oils chemistry with tabs: Pore anatomy, BHA/Salicylates, Carrier penetration, Clinical protocol, Safety warnings
 
 ### Key Chemistry Notes (Treatment Oils)
