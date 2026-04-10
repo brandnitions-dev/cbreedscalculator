@@ -3618,9 +3618,78 @@ function oilChemShow(sectionId, btn) {
   if (btn) btn.classList.add('active');
 }
 
-/* Treatment Oils Formula Builder */
+/* Treatment Oils Formula Builder - Full Implementation */
+
+var OILFB_ING = {
+  carrier: [
+    {id:'jojoba',name:'Jojoba Oil',desc:'Wax ester that mimics sebum — tricks pores into accepting treatment. Non-comedogenic, stable.',color:'#5DCAA5',
+     benefits:{penetration:3,sebumControl:3,stability:3},
+     tips:{low:'Light sebum mimicry — good base layer.',mid:'Strong penetration — pores accept treatment readily.',high:'Jojoba-dominant — maximum sebum mimicry, excellent for oily skin.'}},
+    {id:'squalane',name:'Olive Squalane',desc:'Biomimetic to skin lipids — weightless deep penetration. Stable, non-comedogenic.',color:'#7DD3C0',
+     benefits:{penetration:3,moisturizing:2,stability:3},
+     tips:{low:'Light penetration boost.',mid:'Good deep carrier — reaches follicle base.',high:'Squalane-heavy — maximum depth, elegant feel.'}},
+    {id:'castor',name:'Castor Oil',desc:'Ricinoleic acid creates astringent "pull" — grips sebum plugs. Creates rolling sensation during massage.',color:'#A7F3D0',
+     benefits:{extraction:3,antimicrobial:2,viscosity:2},
+     tips:{low:'Subtle grip — mild extraction support.',mid:'Good extraction pull — blackheads start rolling.',high:'Strong castor — maximum grip, very effective but thicker formula.'}},
+    {id:'grapeseed',name:'Grapeseed Oil',desc:'High linoleic acid — thins sebum, non-comedogenic. Light astringent feel.',color:'#BBF7D0',
+     benefits:{sebumControl:3,acne:2,lightness:3},
+     tips:{low:'Light sebum thinning.',mid:'Good linoleic support — sebum flows easier.',high:'Grapeseed-dominant — very light, excellent for congested skin.'}},
+    {id:'rosehip',name:'Rosehip Oil',desc:'Trans-retinoic acid + linoleic — post-extraction healing and scar prevention. Light sensitive.',color:'#FCA5A5',
+     benefits:{healing:3,scarring:3,antiaging:2},
+     tips:{low:'Gentle healing support.',mid:'Good regeneration — helps prevent PIH.',high:'Rosehip-heavy — maximum healing but watch oxidation.'}},
+    {id:'hemp',name:'Hemp Seed Oil',desc:'Perfect 3:1 omega ratio — anti-inflammatory, non-comedogenic. Green tint.',color:'#86EFAC',
+     benefits:{antiinflammatory:3,acne:3,barrier:2},
+     tips:{low:'Mild anti-inflammatory.',mid:'Good omega balance — calms extraction redness.',high:'Hemp-dominant — strong anti-inflammatory, slight green tint.'}},
+    {id:'tamanu',name:'Tamanu Oil',desc:'Calophyllolide — exceptional for scar tissue. Deep green, distinctive scent.',color:'#34D399',
+     benefits:{scarring:3,healing:3,antimicrobial:2},
+     tips:{low:'Trace scar support.',mid:'Good healing dose — calophyllolide active.',high:'Tamanu-heavy — elite scarring formula, noticeable green.'}},
+    {id:'meadowfoam',name:'Meadowfoam Oil',desc:'Long-chain fatty acids — extends shelf life of other oils. Cushioned film.',color:'#A5F3FC',
+     benefits:{stability:3,barrier:2,moisturizing:2},
+     tips:{low:'Subtle stability boost.',mid:'Good shelf life extension.',high:'Meadowfoam-heavy — very stable formula.'}}
+  ],
+  active: [
+    {id:'willowbark',name:'Willow Bark Extract',desc:'Natural salicin (BHA precursor) — gentle exfoliation without synthetic salicylic acid burn.',color:'#FCD34D',
+     benefits:{exfoliation:3,poreClearing:3,antiinflammatory:2},maxPct:0.15,
+     tips:{low:'Gentle BHA activity — daily use safe.',mid:'Good exfoliation — pores clearing noticeably.',high:'Strong willow bark — maximum natural BHA, may tingle.'}},
+    {id:'bisabolol',name:'Alpha-Bisabolol',desc:'Chamomile-derived — stops redness and irritation instantly. Anti-inflammatory powerhouse.',color:'#FDE68A',
+     benefits:{soothing:3,antiinflammatory:3,healing:2},maxPct:0.02,
+     tips:{low:'Trace calming — good baseline.',mid:'Good anti-redness dose.',high:'Strong bisabolol — maximum soothing, excellent post-extraction.'}},
+    {id:'allantoin',name:'Allantoin',desc:'Cell proliferant — speeds healing, softens skin. Very gentle.',color:'#FEF3C7',
+     benefits:{healing:3,softening:3,soothing:2},maxPct:0.02,
+     tips:{low:'Gentle healing support.',mid:'Good cell renewal.',high:'Strong allantoin — maximum healing acceleration.'}},
+    {id:'vitaminE',name:'Vitamin E (Tocopherol)',desc:'Antioxidant — prevents oil oxidation, extends shelf life. Skin healing.',color:'#FBBF24',
+     benefits:{antioxidant:3,stability:3,healing:2},maxPct:0.01,
+     tips:{low:'Baseline antioxidant protection.',mid:'Good stability and healing.',high:'Strong vitamin E — maximum shelf life.'}}
+  ],
+  eo: [
+    {id:'wintergreen',name:'Wintergreen EO',desc:'Methyl salicylate (BHA) — powerful pore penetration. TOXIC above 3%. Clinical use 0.5% max.',color:'#F87171',
+     benefits:{bha:3,penetration:3,antimicrobial:2},maxPct:0.03,warn:true,
+     tips:{low:'Safe BHA dose — gentle penetration.',mid:'Strong BHA — noticeable tingling, effective.',high:'Maximum wintergreen — powerful but watch for sensitivity. Never exceed 3%.'}},
+    {id:'teatree',name:'Tea Tree EO',desc:'Terpinen-4-ol — broad spectrum antimicrobial. Acne gold standard.',color:'#A7F3D0',
+     benefits:{antimicrobial:3,acne:3,antifungal:2},maxPct:0.05,
+     tips:{low:'Mild antimicrobial.',mid:'Good acne-fighting dose.',high:'Strong tea tree — maximum antimicrobial, medicinal scent.'}},
+    {id:'frankincense',name:'Frankincense EO',desc:'Boswellic acids — pore tightening, anti-aging. Resinous, grounding scent.',color:'#C4B5FD',
+     benefits:{firming:3,antiaging:2,calming:2},maxPct:0.05,
+     tips:{low:'Subtle pore tightening.',mid:'Good firming dose.',high:'Frankincense-dominant — strong pore tightening, resinous scent.'}},
+    {id:'lavender',name:'Lavender EO',desc:'Linalool — calming, healing, antimicrobial. Universal skin oil.',color:'#DDD6FE',
+     benefits:{calming:3,healing:2,antimicrobial:2},maxPct:0.05,
+     tips:{low:'Gentle calming.',mid:'Good healing support.',high:'Lavender-heavy — very calming, floral scent.'}},
+    {id:'rosemary',name:'Rosemary EO',desc:'Carnosic acid — antioxidant, stimulating. Extends oil shelf life.',color:'#86EFAC',
+     benefits:{antioxidant:3,stimulating:2,stability:2},maxPct:0.03,
+     tips:{low:'Antioxidant boost.',mid:'Good preservation.',high:'Rosemary-heavy — strong herbal, stimulating.'}},
+    {id:'clary',name:'Clary Sage EO',desc:'Sclareol — balances sebum production. Hormonal skin support.',color:'#A5B4FC',
+     benefits:{sebumControl:3,hormonal:2,calming:2},maxPct:0.03,
+     tips:{low:'Subtle sebum balance.',mid:'Good oil control.',high:'Clary-dominant — strong sebum regulation.'}},
+    {id:'geranium',name:'Geranium EO',desc:'Citronellol — balancing, astringent. Good for all skin types.',color:'#FDA4AF',
+     benefits:{balancing:3,astringent:2,healing:2},maxPct:0.04,
+     tips:{low:'Light balancing.',mid:'Good astringent tone.',high:'Geranium-heavy — floral, balancing.'}}
+  ]
+};
+
 var oilFbBatchSize = 100;
 var oilFbFormula = 'bha_penetrating';
+var oilFbPools = {carrier: [], active: [], eo: []};
+var oilFbIdCtr = 0;
 
 function oilFbSetFormula(btn, formula) {
   document.querySelectorAll('#panel-oils-builder .fb-product-btn').forEach(function(b) {
@@ -3628,7 +3697,195 @@ function oilFbSetFormula(btn, formula) {
   });
   btn.classList.add('active');
   oilFbFormula = formula;
+  
+  // Load preset ingredients for formula
+  if (formula === 'bha_penetrating') {
+    oilFbPools = {
+      carrier: [{id:oilFbIdCtr++,ingId:'jojoba',weight:6},{id:oilFbIdCtr++,ingId:'rosehip',weight:2}],
+      active: [{id:oilFbIdCtr++,ingId:'willowbark',weight:5}],
+      eo: [{id:oilFbIdCtr++,ingId:'frankincense',weight:4},{id:oilFbIdCtr++,ingId:'wintergreen',weight:3},{id:oilFbIdCtr++,ingId:'teatree',weight:3}]
+    };
+  } else if (formula === 'pore_purge') {
+    oilFbPools = {
+      carrier: [{id:oilFbIdCtr++,ingId:'jojoba',weight:5},{id:oilFbIdCtr++,ingId:'squalane',weight:2},{id:oilFbIdCtr++,ingId:'castor',weight:2},{id:oilFbIdCtr++,ingId:'grapeseed',weight:1}],
+      active: [{id:oilFbIdCtr++,ingId:'bisabolol',weight:5}],
+      eo: [{id:oilFbIdCtr++,ingId:'wintergreen',weight:2},{id:oilFbIdCtr++,ingId:'teatree',weight:2},{id:oilFbIdCtr++,ingId:'frankincense',weight:2}]
+    };
+  } else {
+    oilFbPools = {carrier: [], active: [], eo: []};
+  }
+  
+  oilFbRenderAllPools();
   oilFbUpdate();
+}
+
+function oilFbGetTipLevel(weight) {
+  return weight <= 3 ? 'low' : weight <= 7 ? 'mid' : 'high';
+}
+
+function oilFbRenderPool(pool) {
+  var container = document.getElementById('oilFb-' + pool + 'Pool');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  var f = oilFbCalcFormula();
+  var split = pool === 'carrier' ? f.carrierSplit : pool === 'active' ? f.activeSplit : f.eoSplit;
+  
+  oilFbPools[pool].forEach(function(row, i) {
+    var ing = OILFB_ING[pool].find(function(x) { return x.id === row.ingId; });
+    var splitRow = split.find(function(s) { return s.id === row.id; });
+    var pct = splitRow ? (splitRow.pct * 100).toFixed(1) : '—';
+    var ml = splitRow ? (splitRow.pct * oilFbBatchSize).toFixed(1) : '—';
+    
+    var block = document.createElement('div');
+    block.className = 'fb-ing-block';
+    
+    // Top row: select, pct, ml, remove
+    var top = document.createElement('div');
+    top.className = 'fb-ing-top';
+    
+    var sel = document.createElement('select');
+    var used = oilFbPools[pool].filter(function(r) { return r.id !== row.id; }).map(function(r) { return r.ingId; });
+    OILFB_ING[pool].forEach(function(opt) {
+      var o = document.createElement('option');
+      o.value = opt.id;
+      o.textContent = opt.name;
+      if (used.includes(opt.id)) o.disabled = true;
+      if (opt.id === row.ingId) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', function() {
+      row.ingId = this.value;
+      oilFbRenderPool(pool);
+      oilFbUpdate();
+    });
+    
+    var pctSpan = document.createElement('span');
+    pctSpan.className = 'fb-ing-pct';
+    pctSpan.id = 'oilFb-pct_' + row.id;
+    pctSpan.textContent = pct + '%';
+    
+    var mlSpan = document.createElement('span');
+    mlSpan.className = 'fb-ing-ml';
+    mlSpan.id = 'oilFb-ml_' + row.id;
+    mlSpan.textContent = ml + 'ml';
+    
+    var rm = document.createElement('button');
+    rm.type = 'button';
+    rm.className = 'fb-remove-btn';
+    rm.setAttribute('aria-label', 'Remove');
+    rm.textContent = '×';
+    rm.addEventListener('click', function() { oilFbRemoveIng(pool, row.id); });
+    
+    top.appendChild(sel);
+    top.appendChild(pctSpan);
+    top.appendChild(mlSpan);
+    top.appendChild(rm);
+    
+    // Slider row
+    var sliderRow = document.createElement('div');
+    sliderRow.className = 'fb-slider-row';
+    var sliderLabel = document.createElement('span');
+    sliderLabel.className = 'fb-slider-label';
+    sliderLabel.textContent = 'share';
+    var slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = 1;
+    slider.max = 10;
+    slider.step = 1;
+    slider.value = row.weight;
+    slider.addEventListener('input', function() {
+      row.weight = +this.value;
+      oilFbUpdateTip(pool, row.id, this.value);
+      oilFbUpdate();
+    });
+    sliderRow.appendChild(sliderLabel);
+    sliderRow.appendChild(slider);
+    
+    // Description
+    var desc = document.createElement('div');
+    desc.className = 'fb-ing-desc';
+    desc.textContent = ing ? ing.desc : '';
+    
+    // Tip
+    var tipLevel = oilFbGetTipLevel(row.weight);
+    var tipText = ing && ing.tips ? ing.tips[tipLevel] : '';
+    var tipClass = 'fb-ing-tip ' + (tipLevel === 'low' ? 'fb-tip-low' : tipLevel === 'mid' ? 'fb-tip-mid' : ing && ing.warn ? 'fb-tip-warn' : 'fb-tip-high');
+    var tip = document.createElement('div');
+    tip.className = tipClass;
+    tip.id = 'oilFb-tip_' + row.id;
+    tip.textContent = tipText;
+    
+    block.appendChild(top);
+    block.appendChild(sliderRow);
+    block.appendChild(desc);
+    block.appendChild(tip);
+    container.appendChild(block);
+  });
+}
+
+function oilFbRenderAllPools() {
+  oilFbRenderPool('carrier');
+  oilFbRenderPool('active');
+  oilFbRenderPool('eo');
+}
+
+function oilFbUpdateTip(pool, rowId, weight) {
+  var tipLevel = oilFbGetTipLevel(+weight);
+  var row = oilFbPools[pool].find(function(r) { return r.id === rowId; });
+  if (!row) return;
+  var ing = OILFB_ING[pool].find(function(x) { return x.id === row.ingId; });
+  var tipEl = document.getElementById('oilFb-tip_' + rowId);
+  if (tipEl && ing && ing.tips) {
+    tipEl.textContent = ing.tips[tipLevel] || '';
+    tipEl.className = 'fb-ing-tip ' + (tipLevel === 'low' ? 'fb-tip-low' : tipLevel === 'mid' ? 'fb-tip-mid' : ing.warn ? 'fb-tip-warn' : 'fb-tip-high');
+  }
+}
+
+function oilFbAddIng(pool) {
+  var limits = {carrier: 5, active: 3, eo: 6};
+  if (oilFbPools[pool].length >= limits[pool]) return;
+  var used = oilFbPools[pool].map(function(r) { return r.ingId; });
+  var avail = OILFB_ING[pool].filter(function(i) { return !used.includes(i.id); });
+  if (!avail.length) return;
+  oilFbPools[pool].push({id: oilFbIdCtr++, ingId: avail[0].id, weight: 5});
+  oilFbRenderPool(pool);
+  oilFbUpdate();
+}
+
+function oilFbRemoveIng(pool, id) {
+  oilFbPools[pool] = oilFbPools[pool].filter(function(r) { return r.id !== id; });
+  oilFbRenderPool(pool);
+  oilFbUpdate();
+}
+
+function oilFbCalcFormula() {
+  function split(rows, total, pool) {
+    var tw = rows.reduce(function(s, r) { return s + r.weight; }, 0) || 1;
+    return rows.map(function(r) {
+      var ing = OILFB_ING[pool].find(function(x) { return x.id === r.ingId; });
+      var pct = total * r.weight / tw;
+      if (ing && ing.maxPct && pct > ing.maxPct) pct = ing.maxPct;
+      return Object.assign({}, r, {pct: pct, color: ing ? ing.color : '#ccc', name: ing ? ing.name : 'Unknown'});
+    });
+  }
+  
+  var carrierPct = 0.85;
+  var activePct = 0.05;
+  var eoPct = 0.10;
+  
+  var carrierSplit = split(oilFbPools.carrier, carrierPct, 'carrier');
+  var activeSplit = split(oilFbPools.active, activePct, 'active');
+  var eoSplit = split(oilFbPools.eo, eoPct, 'eo');
+  
+  // Normalize to 100%
+  var totalUsed = carrierSplit.reduce(function(s,r){return s+r.pct;},0) + activeSplit.reduce(function(s,r){return s+r.pct;},0) + eoSplit.reduce(function(s,r){return s+r.pct;},0);
+  if (totalUsed > 0 && totalUsed < 1) {
+    var scale = 1 / totalUsed;
+    carrierSplit.forEach(function(r) { r.pct *= scale; });
+  }
+  
+  return {carrierSplit: carrierSplit, activeSplit: activeSplit, eoSplit: eoSplit};
 }
 
 function oilFbUpdate() {
@@ -3642,64 +3899,160 @@ function oilFbUpdate() {
   var statTotal = document.getElementById('oilFb-statTotal');
   if (statTotal) statTotal.textContent = oilFbBatchSize;
   
-  // Render formula breakdown in ratio list
-  var formula = OIL_FORMULAS[oilFbFormula];
-  if (!formula) return;
+  var f = oilFbCalcFormula();
   
-  var ratioList = document.getElementById('oilFb-ratioList');
-  if (ratioList) {
-    var allIngs = [...formula.carriers, ...formula.actives, ...formula.eos];
-    ratioList.innerHTML = allIngs.map(function(ing) {
-      var ml = (ing.pct * oilFbBatchSize).toFixed(1);
-      var pct = (ing.pct * 100).toFixed(1);
-      return '<div class="fb-ratio-row">' +
-        '<div class="fb-ratio-dot" style="background:' + ing.color + '"></div>' +
-        '<div class="fb-ratio-name">' + ing.name + '</div>' +
-        '<div class="fb-ratio-bar-wrap"><div class="fb-ratio-bar-fill" style="width:' + (ing.pct * 100) + '%;background:' + ing.color + '"></div></div>' +
-        '<div class="fb-ratio-ml">' + ml + 'ml</div>' +
-        '<div class="fb-ratio-pct">' + pct + '%</div>' +
-      '</div>';
-    }).join('');
-  }
+  // Update inline pct/ml
+  [...f.carrierSplit, ...f.activeSplit, ...f.eoSplit].forEach(function(row) {
+    var pe = document.getElementById('oilFb-pct_' + row.id);
+    var me = document.getElementById('oilFb-ml_' + row.id);
+    if (pe) pe.textContent = (row.pct * 100).toFixed(1) + '%';
+    if (me) me.textContent = (row.pct * oilFbBatchSize).toFixed(1) + 'ml';
+  });
   
-  // Update beaker
-  oilFbUpdateBeaker(formula);
+  // Update pool percentages
+  var carrierTotal = f.carrierSplit.reduce(function(s,r){return s+r.pct;},0);
+  var activeTotal = f.activeSplit.reduce(function(s,r){return s+r.pct;},0);
+  var eoTotal = f.eoSplit.reduce(function(s,r){return s+r.pct;},0);
   
-  // Update shelf life
-  var shelfEl = document.getElementById('oilFb-statShelf');
-  if (shelfEl) shelfEl.textContent = formula.shelfLife || '8-10mo';
+  var cpEl = document.getElementById('oilFb-label-carriers-pct');
+  var apEl = document.getElementById('oilFb-label-actives-pct');
+  var epEl = document.getElementById('oilFb-label-eos-pct');
+  if (cpEl) cpEl.textContent = (carrierTotal * 100).toFixed(1) + '% of batch';
+  if (apEl) apEl.textContent = (activeTotal * 100).toFixed(1) + '% of batch';
+  if (epEl) epEl.textContent = (eoTotal * 100).toFixed(1) + '% of batch';
+  
+  oilFbUpdateBeaker(f);
+  oilFbUpdateRatios(f);
+  oilFbUpdateBenefits(f);
+  oilFbUpdateSynergies(f);
 }
 
-function oilFbUpdateBeaker(formula) {
+function oilFbUpdateBeaker(f) {
   var layers = document.getElementById('oilFb-beakerLayers');
   if (!layers) return;
   
-  var allIngs = [...formula.carriers, ...formula.actives, ...formula.eos];
-  var total = allIngs.reduce(function(s, i) { return s + i.pct; }, 0) || 1;
+  var all = [...f.carrierSplit, ...f.activeSplit, ...f.eoSplit];
+  var total = all.reduce(function(s, r) { return s + r.pct; }, 0) || 1;
   var y = 20 + 230;
   
   layers.innerHTML = '';
-  allIngs.forEach(function(ing) {
-    var h = Math.max(2, (ing.pct / total) * 230);
+  all.forEach(function(row) {
+    var h = Math.max(2, (row.pct / total) * 230);
     y -= h;
     var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     rect.setAttribute('x', '31');
     rect.setAttribute('y', y.toFixed(1));
     rect.setAttribute('width', '118');
     rect.setAttribute('height', h.toFixed(1));
-    rect.setAttribute('fill', ing.color);
+    rect.setAttribute('fill', row.color);
     rect.setAttribute('opacity', '0.85');
     layers.appendChild(rect);
   });
 }
 
-function oilFbAddIng(type) {
-  console.log('Add ingredient type:', type);
+function oilFbUpdateRatios(f) {
+  var ratioList = document.getElementById('oilFb-ratioList');
+  if (!ratioList) return;
+  
+  var all = [...f.carrierSplit, ...f.activeSplit, ...f.eoSplit];
+  ratioList.innerHTML = all.map(function(row) {
+    var ml = (row.pct * oilFbBatchSize).toFixed(1);
+    var pct = (row.pct * 100).toFixed(1);
+    return '<div class="fb-ratio-row">' +
+      '<div class="fb-ratio-dot" style="background:' + row.color + '"></div>' +
+      '<div class="fb-ratio-name">' + row.name + '</div>' +
+      '<div class="fb-ratio-bar-wrap"><div class="fb-ratio-bar-fill" style="width:' + (row.pct * 100) + '%;background:' + row.color + '"></div></div>' +
+      '<div class="fb-ratio-ml">' + ml + 'ml</div>' +
+      '<div class="fb-ratio-pct">' + pct + '%</div>' +
+    '</div>';
+  }).join('');
+}
+
+function oilFbUpdateBenefits(f) {
+  var benefitBars = document.getElementById('oilFb-benefitBars');
+  if (!benefitBars) return;
+  
+  var benefitScores = {};
+  var all = [...f.carrierSplit, ...f.activeSplit, ...f.eoSplit];
+  
+  all.forEach(function(row) {
+    var pool = f.carrierSplit.includes(row) ? 'carrier' : f.activeSplit.includes(row) ? 'active' : 'eo';
+    var ing = OILFB_ING[pool].find(function(x) { return x.id === row.ingId; });
+    if (ing && ing.benefits) {
+      Object.keys(ing.benefits).forEach(function(b) {
+        benefitScores[b] = (benefitScores[b] || 0) + ing.benefits[b] * row.pct * 10;
+      });
+    }
+  });
+  
+  var sorted = Object.entries(benefitScores).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 6);
+  var maxScore = sorted.length ? sorted[0][1] : 1;
+  
+  var colors = {penetration:'#5DCAA5',sebumControl:'#7DD3C0',extraction:'#A7F3D0',healing:'#FCA5A5',scarring:'#F87171',antimicrobial:'#86EFAC',exfoliation:'#FCD34D',soothing:'#FDE68A',antiinflammatory:'#34D399',acne:'#BBF7D0',bha:'#F87171',firming:'#C4B5FD',calming:'#DDD6FE',antioxidant:'#FBBF24',stability:'#A5F3FC',moisturizing:'#7DD3C0'};
+  
+  benefitBars.innerHTML = sorted.map(function(entry) {
+    var name = entry[0].replace(/([A-Z])/g, ' $1').replace(/^./, function(s) { return s.toUpperCase(); });
+    var width = Math.round((entry[1] / maxScore) * 100);
+    var color = colors[entry[0]] || '#ccc';
+    return '<div class="fb-benefit-row"><span class="fb-benefit-name">' + name + '</span><div class="fb-benefit-bar-wrap"><div class="fb-benefit-bar-fill" style="width:' + width + '%;background:' + color + '"></div></div></div>';
+  }).join('');
+}
+
+function oilFbUpdateSynergies(f) {
+  var synergyList = document.getElementById('oilFb-synergyList');
+  if (!synergyList) return;
+  
+  var notes = [];
+  var all = [...f.carrierSplit, ...f.activeSplit, ...f.eoSplit];
+  
+  // Check for wintergreen
+  var wintergreen = f.eoSplit.find(function(r) { return r.ingId === 'wintergreen'; });
+  if (wintergreen && wintergreen.pct > 0.03) {
+    notes.push({type: 'warn', text: '⚠️ Wintergreen exceeds 3% — TOXIC. Reduce immediately.'});
+  } else if (wintergreen && wintergreen.pct > 0.02) {
+    notes.push({type: 'caution', text: '⚠️ Wintergreen at ' + (wintergreen.pct * 100).toFixed(1) + '% — approaching max safe limit.'});
+  }
+  
+  // Check for castor + squalane synergy
+  var hasCastor = f.carrierSplit.some(function(r) { return r.ingId === 'castor'; });
+  var hasSqualane = f.carrierSplit.some(function(r) { return r.ingId === 'squalane'; });
+  if (hasCastor && hasSqualane) {
+    notes.push({type: 'good', text: '✓ Castor + Squalane — excellent extraction synergy, mimics steam + desincrustation.'});
+  }
+  
+  // Check for jojoba
+  var hasJojoba = f.carrierSplit.some(function(r) { return r.ingId === 'jojoba'; });
+  if (hasJojoba) {
+    notes.push({type: 'info', text: '· Jojoba mimics sebum — pores accept treatment readily.'});
+  }
+  
+  // Check for rosehip + vitamin E
+  var hasRosehip = f.carrierSplit.some(function(r) { return r.ingId === 'rosehip'; });
+  var hasVitE = f.activeSplit.some(function(r) { return r.ingId === 'vitaminE'; });
+  if (hasRosehip && !hasVitE) {
+    notes.push({type: 'caution', text: '⚠️ Rosehip without Vitamin E — add tocopherol to prevent oxidation.'});
+  }
+  
+  if (!notes.length) {
+    notes.push({type: 'info', text: '· Add ingredients to see synergy notes and warnings.'});
+  }
+  
+  synergyList.innerHTML = notes.map(function(n) {
+    var cls = n.type === 'warn' ? 'fb-synergy-warn' : n.type === 'caution' ? 'fb-synergy-caution' : n.type === 'good' ? 'fb-synergy-good' : 'fb-synergy-info';
+    return '<div class="fb-synergy-item ' + cls + '">' + n.text + '</div>';
+  }).join('');
 }
 
 // Initialize treatment oils on load
 document.addEventListener('DOMContentLoaded', function() {
   oilCalcBatch();
+  // Initialize formula builder with BHA Penetrating preset
+  oilFbPools = {
+    carrier: [{id:oilFbIdCtr++,ingId:'jojoba',weight:6},{id:oilFbIdCtr++,ingId:'rosehip',weight:2}],
+    active: [{id:oilFbIdCtr++,ingId:'willowbark',weight:5}],
+    eo: [{id:oilFbIdCtr++,ingId:'frankincense',weight:4},{id:oilFbIdCtr++,ingId:'wintergreen',weight:3},{id:oilFbIdCtr++,ingId:'teatree',weight:3}]
+  };
+  oilFbRenderAllPools();
   oilFbUpdate();
 });
 </script>
