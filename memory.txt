@@ -150,7 +150,8 @@
 - `Tabs` + `TabPanel` — tabbed interface
 
 ### Shared Formula Components (src/components/formula/)
-- `IngredientPool` — dropdown/slider/tip per ingredient, accepts any `PoolIngredient`
+- `IngredientChipGrid` — NEW: click-to-toggle chips + expandable detail cards (replaces dropdown IngredientPool)
+- `IngredientPool` — LEGACY dropdown/slider, still exported but replaced by ChipGrid on all pages
 - `BeakerViz` — SVG layered beaker visualization
 - `BenefitBars` — horizontal benefit score bars
 - `RatioBars` — ingredient ratio bars with ml/pct
@@ -161,35 +162,36 @@
 ### Shared Layout (src/components/layout/)
 - `ProductCalculator` — wraps Lab/Builder/Chemistry tabs with header
 
-### Treatment Oils Page (src/app/oils/)
-- `page.tsx` — main page using ProductCalculator
-- `lab-worksheet.tsx` — full lab with setup, formulation worksheet, batch summary, packout
-- `formula-builder.tsx` — 3 pools (carrier/active/eo), beaker, ratios, benefits, synergies
-- `chemistry.tsx` — 5 tabs: pore anatomy, BHA, carrier penetration, clinical protocol, safety
+### 4-Product Taxonomy (2025-04-11)
+1. **Tallow Balm** (`/balm`) — Face/Body, tallow + beeswax + jojoba + carriers + actives + EOs
+2. **Face Cleaner** (`/cleaner`) — Tallow-based scrub with physical exfoliant C-phase (sugar/coffee/clay)
+3. **Exfoliator** (`/exfoliator`) — BHA penetrating oil / Pore Purge, NO tallow, carrier oils + actives + EOs
+4. **Tallow Soap** (`/soap`) — Cold process soap with lye calculations
+
+- Old `/oils` page REMOVED (was Treatment Oils — replaced by `/exfoliator`)
+- Old `/exfoliator` page content moved to `/cleaner` (was tallow scrub, not real exfoliation)
 
 ### Ingredient Data
-- `src/lib/ingredients/treatment-oils.ts` — OIL_CARRIERS (8), OIL_ACTIVES (4), OIL_EOS (7), OIL_PRESETS (2)
+- `src/lib/ingredients/carriers-a.ts` — 21 carrier oils (shared: Balm, Cleaner)
+- `src/lib/ingredients/actives-b.ts` — 15 active botanicals (shared: Balm, Cleaner)
+- `src/lib/ingredients/essential-oils.ts` — 37 EOs (shared: Balm, Cleaner, Soap)
+- `src/lib/ingredients/exfoliants-c.ts` — 6 physical exfoliants (Cleaner only)
+- `src/lib/ingredients/treatment-oils.ts` — OIL_CARRIERS (8), OIL_ACTIVES (4), OIL_EOS (7), OIL_PRESETS (2) (Exfoliator only)
+- `src/lib/ingredients/soap-oils.ts` — Soap oils with SAP values
+- `src/lib/ingredients/soap-additives.ts` — Soap additives
 
-### Sidebar/TopBar/Layout
-- Sidebar: Lucide icons, Tailwind classes, collapsible, mobile responsive
-- TopBar: Tailwind classes, Lucide Crown icon
-- Layout: Tailwind flex layout, dark mode
-
-### Dashboard
-- GlassCard + Badge components, Lucide icons, Treatment Oils card added
+### Sidebar Nav
+- CALCULATORS: Dashboard, Tallow Balm, Face Cleaner, Exfoliator, Tallow Soap
+- MANAGE: Saved Formulas, Admin
 
 ### Build Status
-- All 12 pages compile (/, /balm, /exfoliator, /oils, /soap, /builder, /formulas, /admin, /login, /_not-found, /api/auth)
+- All pages compile: /, /balm, /cleaner, /exfoliator, /soap, /builder, /formulas, /admin, /login
 - Dev server: `npx next dev -p 3001`
 - Production build: `$env:NODE_OPTIONS="--max-old-space-size=4096"; npx next build`
 
 ### Remaining
-- Balm page still uses inline styles — migrate to Tailwind + shared components
-- Exfoliator page still uses inline styles — migrate
-- Soap page already mostly Tailwind
-- Builder page needs shared IngredientPool
-- Git commit + push after full migration
-
-## Housekeeping
-- After editing `tallow_blend_pro_v5.html`, mirror to `index.html` if that is still the deployment workflow.
-- Ask before assuming: user may want the same UI in `crownbreeds_formula_builder_v3.html` as a separate task.
+- Each product needs Lab Worksheet + Skin Chemistry tabs (currently only Exfoliator-as-oils had them)
+- Soap page still uses old inline styles — migrate to Tailwind + shared components
+- Builder page may be deprecated (each product has own formula builder now)
+- Dashboard cards need updating for 4-product taxonomy
+- Git commit + push after verification

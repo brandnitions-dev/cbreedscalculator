@@ -21,10 +21,9 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, href: '/' },
   { id: 'balm', label: 'Tallow Balm', icon: <FlaskConical size={18} />, href: '/balm' },
+  { id: 'cleaner', label: 'Face Cleaner', icon: <Droplets size={18} />, href: '/cleaner' },
   { id: 'exfoliator', label: 'Exfoliator', icon: <Sparkles size={18} />, href: '/exfoliator' },
-  { id: 'oils', label: 'Treatment Oils', icon: <Droplets size={18} />, href: '/oils' },
-  { id: 'soap', label: 'Tallow Soap', icon: <Beaker size={18} />, href: '/soap', badge: 'NEW' },
-  { id: 'builder', label: 'Formula Builder', icon: <FlaskConical size={18} />, href: '/builder' },
+  { id: 'soap', label: 'Tallow Soap', icon: <Beaker size={18} />, href: '/soap' },
   { id: 'formulas', label: 'Saved Formulas', icon: <FolderOpen size={18} />, href: '/formulas' },
   { id: 'admin', label: 'Admin', icon: <Settings size={18} />, href: '/admin' },
 ];
@@ -83,7 +82,7 @@ export default function Sidebar() {
           <div className="text-[9px] font-bold tracking-[0.12em] uppercase text-text-muted px-2.5 py-1.5 min-h-[28px]">
             {!collapsed && 'CALCULATORS'}
           </div>
-          {NAV_ITEMS.slice(0, 6).map(item => (
+          {NAV_ITEMS.slice(0, 5).map(item => (
             <Link
               key={item.id}
               href={item.href}
@@ -116,7 +115,7 @@ export default function Sidebar() {
           <div className="text-[9px] font-bold tracking-[0.12em] uppercase text-text-muted px-2.5 py-1.5 min-h-[28px]">
             {!collapsed && 'MANAGE'}
           </div>
-          {NAV_ITEMS.slice(6).map(item => (
+          {NAV_ITEMS.slice(5).map(item => (
             <Link
               key={item.id}
               href={item.href}

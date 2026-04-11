@@ -1,4 +1,5 @@
 export { IngredientPool } from './ingredient-pool';
+export { IngredientChipGrid } from './ingredient-chip-grid';
 export { BeakerViz } from './beaker-viz';
 export { BenefitBars } from './benefit-bars';
 export { RatioBars } from './ratio-bars';
