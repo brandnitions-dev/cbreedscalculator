@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FlaskConical, Sparkles, Droplets, Beaker, Leaf, TestTubes, Microscope, Atom } from 'lucide-react';
+import { FlaskConical, Sparkles, Droplets, Beaker, SprayCan, Leaf, TestTubes, Microscope, Atom } from 'lucide-react';
 import { GlassCard, Badge } from '@/components/ui';
 import type { ReactNode } from 'react';
 
@@ -29,11 +29,11 @@ const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: 'exfoliator',
-    title: 'Exfoliator / Scrub',
-    icon: <Sparkles size={28} />,
-    href: '/exfoliator',
-    accent: '#f59e0b',
+    id: 'cleaner',
+    title: 'Face Cleaner',
+    icon: <SprayCan size={28} />,
+    href: '/cleaner',
+    accent: '#10b981',
     desc: 'Tallow-based exfoliating scrub with physical polish phase (C). Sugar, coffee, oat, clay, walnut — with oil absorption chemistry.',
     stats: [
       { label: 'C Phase', value: '5–15%' },
@@ -42,18 +42,17 @@ const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: 'oils',
-    title: 'Treatment Oils',
-    icon: <Droplets size={28} />,
-    href: '/oils',
-    accent: '#5DCAA5',
-    desc: 'BHA penetrating oils and clinical pore purge blends. Jojoba sebum mimicry, wintergreen BHA delivery, and extraction chemistry.',
+    id: 'exfoliator',
+    title: 'Exfoliator',
+    icon: <Sparkles size={28} />,
+    href: '/exfoliator',
+    accent: '#f59e0b',
+    desc: 'BHA penetrating oils & clinical pore purge blends. Jojoba sebum mimicry, wintergreen BHA delivery, and extraction chemistry.',
     stats: [
       { label: 'Carriers', value: '8 oils' },
       { label: 'Actives', value: '4 compounds' },
       { label: 'EOs', value: '7 oils' },
     ],
-    badge: 'NEW',
   },
   {
     id: 'soap',

@@ -189,9 +189,23 @@
 - Dev server: `npx next dev -p 3001`
 - Production build: `$env:NODE_OPTIONS="--max-old-space-size=4096"; npx next build`
 
+### ProductCalculator Wrap (2025-04-12)
+All 4 products now use `ProductCalculator` wrapper with 3 consistent sub-tabs:
+- **Lab Worksheet** — setup checklist, temperature protocol, batch record, safety warnings
+- **Formula Builder** — the existing calculator (extracted to `formula-builder.tsx`)
+- **Skin Chemistry** — science reference with sub-tabs for each topic area
+
+Files created per product:
+- `src/app/balm/` → `page.tsx`, `lab-worksheet.tsx`, `formula-builder.tsx`, `chemistry.tsx`
+- `src/app/cleaner/` → `page.tsx`, `lab-worksheet.tsx`, `formula-builder.tsx`, `chemistry.tsx`
+- `src/app/exfoliator/` → `page.tsx`, `lab-worksheet.tsx`, `formula-builder.tsx`, `chemistry.tsx`
+- `src/app/soap/` → `page.tsx`, `lab-worksheet.tsx`, `formula-builder.tsx`, `chemistry.tsx`
+
+Soap fully migrated from inline styles to Tailwind CSS.
+Dashboard updated for 4-product taxonomy (Face Cleaner + Exfoliator replacing old Exfoliator/Scrub + Treatment Oils).
+Build passes cleanly (12 static pages, 0 errors).
+
 ### Remaining
-- Each product needs Lab Worksheet + Skin Chemistry tabs (currently only Exfoliator-as-oils had them)
-- Soap page still uses old inline styles — migrate to Tailwind + shared components
-- Builder page may be deprecated (each product has own formula builder now)
-- Dashboard cards need updating for 4-product taxonomy
-- Git commit + push after verification
+- Builder page (`/builder`) may be deprecated — each product has own formula builder now
+- Old `/oils` directory can be cleaned up if still present
+- Git commit + push pending
