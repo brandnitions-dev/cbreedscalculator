@@ -5,10 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, FlaskConical, Sparkles, Droplets,
-  Beaker, FolderOpen, Settings, Crown,
-  PanelLeftClose, PanelLeft, Menu,
+  LayoutDashboard, FlaskConical, Sparkles,
+  Beaker, Settings, Crown,
+  PanelLeftClose, PanelLeft, Menu, SprayCan,
 } from 'lucide-react';
+import { ThemeToggle } from './theme-toggle';
 
 interface NavItem {
   id: string;
@@ -21,10 +22,9 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, href: '/' },
   { id: 'balm', label: 'Tallow Balm', icon: <FlaskConical size={18} />, href: '/balm' },
-  { id: 'cleaner', label: 'Face Cleaner', icon: <Droplets size={18} />, href: '/cleaner' },
+  { id: 'cleaner', label: 'Face Cleaner', icon: <SprayCan size={18} />, href: '/cleaner' },
   { id: 'exfoliator', label: 'Exfoliator', icon: <Sparkles size={18} />, href: '/exfoliator' },
   { id: 'soap', label: 'Tallow Soap', icon: <Beaker size={18} />, href: '/soap' },
-  { id: 'formulas', label: 'Saved Formulas', icon: <FolderOpen size={18} />, href: '/formulas' },
   { id: 'admin', label: 'Admin', icon: <Settings size={18} />, href: '/admin' },
 ];
 
@@ -53,7 +53,7 @@ export default function Sidebar() {
 
       <aside className={cn(
         'fixed top-0 left-0 bottom-0 flex flex-col z-[100] border-r border-border-subtle overflow-hidden transition-all duration-300',
-        'bg-gradient-to-b from-surface-sidebar to-[#080c16]',
+        'bg-surface-sidebar',
         collapsed ? 'w-[72px]' : 'w-[260px]',
         'max-md:-translate-x-full',
         mobileOpen && 'max-md:translate-x-0',
@@ -82,7 +82,7 @@ export default function Sidebar() {
           <div className="text-[9px] font-bold tracking-[0.12em] uppercase text-text-muted px-2.5 py-1.5 min-h-[28px]">
             {!collapsed && 'CALCULATORS'}
           </div>
-          {NAV_ITEMS.slice(0, 5).map(item => (
+          {NAV_ITEMS.map(item => (
             <Link
               key={item.id}
               href={item.href}
@@ -110,34 +110,11 @@ export default function Sidebar() {
               )}
             </Link>
           ))}
-
-          <div className="h-px bg-border-subtle mx-3 my-2" />
-          <div className="text-[9px] font-bold tracking-[0.12em] uppercase text-text-muted px-2.5 py-1.5 min-h-[28px]">
-            {!collapsed && 'MANAGE'}
-          </div>
-          {NAV_ITEMS.slice(5).map(item => (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-sm text-[13px] font-medium transition-all duration-150 mb-0.5 relative min-h-[44px] no-underline',
-                isActive(item.href)
-                  ? 'text-text-primary bg-accent-indigo/[0.12]'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
-              )}
-              onClick={() => setMobileOpen(false)}
-            >
-              {isActive(item.href) && (
-                <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r bg-accent-indigo" />
-              )}
-              <span className="shrink-0 w-7 flex justify-center">{item.icon}</span>
-              {!collapsed && <span className="whitespace-nowrap overflow-hidden text-ellipsis">{item.label}</span>}
-            </Link>
-          ))}
         </nav>
 
         {/* Footer */}
-        <div className="px-4 py-4 border-t border-border-subtle">
+        <div className="px-4 py-4 border-t border-border-subtle space-y-3">
+          {!collapsed && <ThemeToggle />}
           {!collapsed && (
             <div className="flex items-center gap-2 text-[11px] text-text-muted">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse-glow" />
