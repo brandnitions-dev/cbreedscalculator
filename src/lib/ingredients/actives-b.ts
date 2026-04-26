@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Active / Therapeutic Oils (Ingredient B)
+ * MOSSKYN LAB — Active / Therapeutic Oils (Ingredient B)
  * Migrated from formula_builder_tab.js FB_ING.b
  */
 

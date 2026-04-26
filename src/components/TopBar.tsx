@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Crown } from 'lucide-react';
+import { Leaf } from 'lucide-react';
 
 const PAGE_TITLES: Record<string, string> = {
   '/': 'Dashboard',
@@ -17,7 +17,7 @@ const PAGE_TITLES: Record<string, string> = {
 
 export default function TopBar() {
   const pathname = usePathname();
-  const title = PAGE_TITLES[pathname] || 'Crown Breeds';
+  const title = PAGE_TITLES[pathname] || 'MOSSKYN LAB';
 
   return (
     <header className="sticky top-0 z-[110] h-16 bg-surface-sidebar/85 backdrop-blur-xl border-b border-border-subtle">
@@ -32,7 +32,7 @@ export default function TopBar() {
             className="w-10 h-10 rounded-full border-2 border-border bg-surface-card flex items-center justify-center cursor-pointer transition-all hover:border-accent-gold hover:shadow-[0_0_12px_rgba(245,158,11,0.2)]"
             aria-label="User menu"
           >
-            <Crown size={18} className="text-accent-gold" />
+            <Leaf size={18} className="text-accent-emerald-light" />
           </button>
         </div>
       </div>

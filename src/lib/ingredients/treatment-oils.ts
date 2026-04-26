@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Treatment Oil Ingredients
+ * MOSSKYN LAB — Treatment Oil Ingredients
  * Carrier oils, actives, and EOs for BHA Penetrating Oil and Pore Purge Blend
  */
 

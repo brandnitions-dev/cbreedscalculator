@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Exfoliant ingredients (Ingredient C)
+ * MOSSKYN LAB — Exfoliant ingredients (Ingredient C)
  * Migrated from formula_builder_c_list.js
  */
 

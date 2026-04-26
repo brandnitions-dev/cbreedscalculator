@@ -1,5 +1,5 @@
 /**
- * Crown Breeds Product Configuration
+ * MOSSKYN LAB Product Configuration
  * Defines all product categories, types, and their formulas
  */
 

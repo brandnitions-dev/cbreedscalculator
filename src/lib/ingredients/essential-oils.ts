@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Essential Oils, Absolutes, CO2 extracts, Resins
+ * MOSSKYN LAB — Essential Oils, Absolutes, CO2 extracts, Resins
  * Migrated from formula_builder_eo_array.js
  */
 

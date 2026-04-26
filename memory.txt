@@ -1,4 +1,4 @@
-# Crown Breeds calculator — notes for future sessions
+# MOSSKYN LAB calculator — notes for future sessions
 
 ## Git (read this before “did you push?” checks)
 - The Git repository root is THIS folder: `crownbreedscalculator/`

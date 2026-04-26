@@ -139,7 +139,7 @@ export function BalmChemistry() {
           <h3 className="text-sm font-bold text-text-primary mb-3">Essential Oil Chemistry</h3>
           <div className="space-y-3 text-[13px] text-text-secondary leading-relaxed">
             <p>Essential oils are volatile terpene compounds added at <strong className="text-text-primary">1% (face) or 2% (body)</strong> maximum. They serve dual purpose: therapeutic activity and scent architecture.</p>
-            <p><strong className="text-text-primary">IFRA Guidelines:</strong> The International Fragrance Association sets maximum percentages for leave-on products. Crown Breeds follows these limits.</p>
+            <p><strong className="text-text-primary">IFRA Guidelines:</strong> The International Fragrance Association sets maximum percentages for leave-on products. MOSSKYN LAB follows these limits.</p>
             <div className="mt-3 space-y-2">
               {[
                 { cat: 'Monoterpene Alcohols', examples: 'Linalool (lavender), geraniol (geranium)', safety: 'Generally safe. Low sensitization.' },
@@ -163,7 +163,7 @@ export function BalmChemistry() {
         <GlassCard>
           <h3 className="text-sm font-bold text-text-primary mb-3">Safety & Concentration Limits</h3>
           <div className="space-y-3 text-[13px] text-text-secondary leading-relaxed">
-            <p>Crown Breeds formulations follow <strong className="text-text-primary">IFRA standards</strong> and <strong className="text-text-primary">dermatological best practices</strong>.</p>
+            <p>MOSSKYN LAB formulations follow <strong className="text-text-primary">IFRA standards</strong> and <strong className="text-text-primary">dermatological best practices</strong>.</p>
             <table className="w-full text-xs mt-3">
               <thead>
                 <tr className="border-b border-border-subtle">

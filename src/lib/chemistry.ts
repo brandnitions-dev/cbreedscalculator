@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Saponification Chemistry Engine
+ * MOSSKYN LAB — Saponification Chemistry Engine
  * Cold-process soap calculations with NaOH lye, water, superfat, and bar quality indices.
  */
 

@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Soap Oils with real SAP values
+ * MOSSKYN LAB — Soap Oils with real SAP values
  * Sources: Bramble Berry, SoapCalc, Certified Lye
  */
 
@@ -18,7 +18,7 @@ export const SOAP_OILS: SoapOil[] = [
     creamy: 47,
     iodine: 42,
     defaultPct: 55,
-    desc: 'The backbone of Crown Breeds soap. Produces an incredibly hard, long-lasting bar with creamy, stable lather. Rich in stearic and oleic acids — the same lipid profile as human sebum.',
+    desc: 'The backbone of MOSSKYN LAB soap. Produces an incredibly hard, long-lasting bar with creamy, stable lather. Rich in stearic and oleic acids — the same lipid profile as human sebum.',
     category: 'base',
   },
   {
@@ -108,7 +108,7 @@ export const SOAP_OILS: SoapOil[] = [
     creamy: 49,
     iodine: 53,
     defaultPct: 0,
-    desc: 'Traditional soap hardener. Similar fatty-acid profile to tallow but plant-based. RSPO-certified only. Not in the default Crown Breeds recipe — tallow replaces it.',
+    desc: 'Traditional soap hardener. Similar fatty-acid profile to tallow but plant-based. RSPO-certified only. Not in the default MOSSKYN LAB recipe — tallow replaces it.',
     category: 'base',
   },
   {

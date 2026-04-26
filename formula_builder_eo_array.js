@@ -1,4 +1,4 @@
-/** Crown Breeds — full EO / absolute / CO2 / resin catalog for formula builder. Merged into FB_ING.eo in formula_builder_tab.js */
+/** MOSSKYN LAB — full EO / absolute / CO2 / resin catalog for formula builder. Merged into FB_ING.eo in formula_builder_tab.js */
 function getFormulaBuilderEoList(){
   var T=function(a,b,c){return{low:a,mid:b,high:c};};
   return [

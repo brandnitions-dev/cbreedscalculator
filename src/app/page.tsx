@@ -81,7 +81,7 @@ export default function Dashboard() {
     <div className="p-6 lg:p-8 space-y-8 animate-fade-in">
       {/* Hero */}
       <section>
-        <p className="text-[11px] font-bold uppercase tracking-widest text-accent-gold mb-2">Crown Breeds Professional</p>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-accent-gold mb-2">MOSSKYN LAB Professional</p>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight mb-3">
           Formulation <span className="bg-gradient-to-r from-accent-indigo via-accent-violet to-accent-gold bg-clip-text text-transparent">Command Center</span>
         </h1>

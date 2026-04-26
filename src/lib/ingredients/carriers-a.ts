@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Carrier Oils (Ingredient A)
+ * MOSSKYN LAB — Carrier Oils (Ingredient A)
  * Migrated from formula_builder_tab.js FB_ING.a
  */
 

@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Soap Additives
+ * MOSSKYN LAB — Soap Additives
  * Usage rates for cold-process soap at trace, lye-water, or oil phase.
  */
 
@@ -108,7 +108,7 @@ export const SOAP_ADDITIVES: SoapAdditive[] = [
     phase: 'trace',
     usageRate: '½–1 tsp per lb of oils',
     desc: 'Exfoliant and hardener. Creates a rustic spa bar. Can produce a crumbly texture at high percentages.',
-    notes: 'For true salt bars (50-100% salt by oil weight), use 80%+ coconut oil. In Crown Breeds tallow bars, keep to light exfoliation.',
+    notes: 'For true salt bars (50-100% salt by oil weight), use 80%+ coconut oil. In MOSSKYN LAB tallow bars, keep to light exfoliation.',
   },
   {
     id: 'coffee_grounds_soap',

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, FlaskConical, Sparkles,
-  Beaker, Settings, Crown,
+  Beaker, Settings, Leaf,
   PanelLeftClose, PanelLeft, Menu, SprayCan,
 } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
@@ -61,10 +61,10 @@ export default function Sidebar() {
         {/* Brand */}
         <div className="flex items-center justify-between px-4 pt-5 pb-4 border-b border-border-subtle min-h-[64px]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <Crown size={24} className="text-accent-gold shrink-0" />
+            <Leaf size={24} className="text-accent-emerald-light shrink-0" />
             {!collapsed && (
               <span className="text-base font-extrabold tracking-tight bg-gradient-to-r from-accent-gold to-accent-gold-light bg-clip-text text-transparent whitespace-nowrap">
-                Crown Breeds
+                MOSSKYN LAB
               </span>
             )}
           </div>

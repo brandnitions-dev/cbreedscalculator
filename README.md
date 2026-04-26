@@ -1,8 +1,7 @@
-# Crown Breeds — Tallow blend calculator
+# MOSSKYN LAB — Formulation platform
 
-- **Repo:** https://github.com/brandnitions-dev/cbreedscalculator  
-- **Live (GitHub Pages):** https://brandnitions-dev.github.io/cbreedscalculator/  
-- **Pages config:** branch `main`, folder `/` (root)
+- **Repo:** https://github.com/brandnitions-dev/mosskynlab
+- **Live (Netlify):** https://gleaming-gingersnap-2f38e7.netlify.app
 
 Files: `index.html` (site entry), `tallow_blend_pro_v5.html` (versioned copy).
 

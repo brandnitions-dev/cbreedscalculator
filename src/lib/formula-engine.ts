@@ -1,5 +1,5 @@
 /**
- * Crown Breeds — Formula calculation engine
+ * MOSSKYN LAB — Formula calculation engine
  * Migrated from formula_builder_tab.js fbCalcFormula()
  */
 

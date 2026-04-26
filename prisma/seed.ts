@@ -15,13 +15,13 @@ async function main() {
   console.log('🌱 Seeding database...');
 
   // Seed admin user
-  const passwordHash = await bcrypt.hash('CrownBreeds2024!', 12);
+  const passwordHash = await bcrypt.hash('MosskynLab2024!', 12);
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@crownbreeds.com' },
+    where: { email: 'admin@mosskynlab.com' },
     update: {},
     create: {
-      email: 'admin@crownbreeds.com',
-      name: 'Crown Breeds Admin',
+      email: 'admin@mosskynlab.com',
+      name: 'MOSSKYN LAB Admin',
       passwordHash,
       role: 'ADMIN',
     },
@@ -273,8 +273,8 @@ async function main() {
   console.log('🎉 Seed complete!');
   console.log('');
   console.log('   Admin login:');
-  console.log('   Email:    admin@crownbreeds.com');
-  console.log('   Password: CrownBreeds2024!');
+  console.log('   Email:    admin@mosskynlab.com');
+  console.log('   Password: MosskynLab2024!');
   console.log('');
   console.log('   ⚠️  Change this password immediately after first login.');
 }

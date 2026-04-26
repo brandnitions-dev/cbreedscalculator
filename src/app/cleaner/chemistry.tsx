@@ -32,7 +32,7 @@ export function CleanerChemistry() {
             <h3 className="text-sm font-bold text-text-primary mb-3">Physical vs Chemical Exfoliation</h3>
             <div className="space-y-3 text-[13px] text-text-secondary leading-relaxed">
               <p>The Face Cleaner uses <strong className="text-text-primary">physical (mechanical) exfoliation</strong> — particles physically loosen and remove dead corneocytes from the stratum corneum.</p>
-              <p>This differs from chemical exfoliation (AHA/BHA) which dissolves the intercellular glue (desmosomes) between dead cells. The Crown Breeds Exfoliator product handles chemical exfoliation.</p>
+              <p>This differs from chemical exfoliation (AHA/BHA) which dissolves the intercellular glue (desmosomes) between dead cells. The MOSSKYN LAB Exfoliator product handles chemical exfoliation.</p>
             </div>
           </GlassCard>
 
