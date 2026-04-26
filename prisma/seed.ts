@@ -8,6 +8,7 @@ import { ESSENTIAL_OILS } from '@/lib/ingredients/essential-oils';
 import { SOAP_OILS } from '@/lib/ingredients/soap-oils';
 import { SOAP_ADDITIVES } from '@/lib/ingredients/soap-additives';
 import { OIL_CARRIERS, OIL_ACTIVES, OIL_EOS } from '@/lib/ingredients/treatment-oils';
+import { getDefaultBalmDermalForSlug } from '@/lib/ingredients/balm-dermal-defaults';
 
 const prisma = new PrismaClient();
 
@@ -66,7 +67,9 @@ async function main() {
     meta?: Prisma.InputJsonObject;
     groupKeys: string[];
     productTypes: Array<'BALM' | 'CLEANER' | 'EXFOLIATOR' | 'SOAP' | 'TREATMENT_OIL'>;
+    balmDermalFocus?: 'universal' | 'dry' | 'oily';
   }) => {
+    const dermal = params.balmDermalFocus ?? 'universal';
     const ing = await prisma.ingredient.upsert({
       where: { slug: params.slug },
       update: {
@@ -79,6 +82,7 @@ async function main() {
         benefits: (params.benefits ?? {}) as Prisma.InputJsonValue,
         tips: (params.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
         meta: (params.meta ?? {}) as Prisma.InputJsonValue,
+        balmDermalFocus: dermal,
       },
       create: {
         slug: params.slug,
@@ -91,6 +95,7 @@ async function main() {
         benefits: (params.benefits ?? {}) as Prisma.InputJsonValue,
         tips: (params.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
         meta: (params.meta ?? {}) as Prisma.InputJsonValue,
+        balmDermalFocus: dermal,
       },
       select: { id: true, slug: true },
     });
@@ -134,6 +139,7 @@ async function main() {
       tips: i.tips,
       groupKeys: ['carriers_a'],
       productTypes: ['BALM', 'CLEANER'],
+      balmDermalFocus: getDefaultBalmDermalForSlug(i.id),
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
@@ -147,6 +153,7 @@ async function main() {
       tips: i.tips,
       groupKeys: ['actives_b'],
       productTypes: ['BALM', 'CLEANER'],
+      balmDermalFocus: getDefaultBalmDermalForSlug(i.id),
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
@@ -173,6 +180,7 @@ async function main() {
       tips: i.tips,
       groupKeys: ['essential_oils'],
       productTypes: ['BALM', 'CLEANER', 'SOAP'],
+      balmDermalFocus: getDefaultBalmDermalForSlug(i.id),
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }

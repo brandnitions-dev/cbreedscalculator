@@ -21,6 +21,7 @@ type AdminIngredient = {
   benefits: Record<string, number>;
   tips: Tips;
   meta: Record<string, unknown>;
+  balmDermalFocus: 'universal' | 'dry' | 'oily';
   updatedAt: string;
   groupKeys: string[];
   productTypes: string[];
@@ -40,6 +41,7 @@ type Draft = {
   benefits: Record<string, number>;
   tips: Tips;
   meta: Record<string, string>;
+  balmDermalFocus: 'universal' | 'dry' | 'oily';
 };
 
 const PRODUCT_TYPES = [
@@ -102,6 +104,7 @@ const emptyDraft = (productType: string, groupKey: string): Draft => ({
   benefits: {},
   tips: { ...EMPTY_TIPS },
   meta: {},
+  balmDermalFocus: 'universal',
 });
 
 function productLabel(key: string) {
@@ -138,6 +141,7 @@ function draftFromIngredient(ing: AdminIngredient): Draft {
     benefits: ing.benefits ?? {},
     tips: ing.tips ?? { ...EMPTY_TIPS },
     meta: asMeta(ing.meta),
+    balmDermalFocus: ing.balmDermalFocus ?? 'universal',
   };
 }
 
@@ -522,6 +526,7 @@ export default function AdminIngredientLibrary() {
         benefits: draft.benefits,
         tips: draft.tips,
         meta: normalizeMeta(draft),
+        balmDermalFocus: draft.balmDermalFocus,
       };
 
       const res = await fetch(creating ? '/api/admin/ingredients' : `/api/admin/ingredients/${draft.id}`, {
@@ -753,6 +758,24 @@ export default function AdminIngredientLibrary() {
                         })}
                       </div>
                     </div>
+
+                    {draft.productTypes.includes('BALM') && (
+                      <div className="rounded-md border border-border-subtle/80 bg-surface-elevated/30 p-3">
+                        <div className="form-label">Tallow Balm: fatty-acid / skin focus</div>
+                        <p className="text-[11px] text-text-muted mb-2 leading-relaxed">
+                          Linoleic (LA)–leaning vs α-linolenic (ALA) / barrier–leaning. “Universal” appears in all three builder toggles (All, Dry, Oily).
+                        </p>
+                        <select
+                          className="input"
+                          value={draft.balmDermalFocus}
+                          onChange={e => setDraftValue('balmDermalFocus', e.target.value as Draft['balmDermalFocus'])}
+                        >
+                          <option value="universal">Universal — show in all modes</option>
+                          <option value="dry">Dry / sensitive (ALA-leaning)</option>
+                          <option value="oily">Oily / acne (LA-leaning)</option>
+                        </select>
+                      </div>
+                    )}
                   </div>
                 </Section>
 

@@ -26,6 +26,13 @@ enum IngredientPotency {
   strong
 }
 
+// Tallow Balm: filter pools by skin concern (LA/linoleic-leaning vs ALA/anti-inflammatory-leaning)
+enum BalmDermalFocus {
+  universal
+  dry
+  oily
+}
+
 model User {
   id           String    @id @default(cuid())
   email        String    @unique
@@ -56,6 +63,9 @@ model Ingredient {
 
   // For soap oils/additives or any future group-specific fields
   meta      Json    @default("{}")
+
+  // Tallow Balm: which skin profile this row is most relevant to (universal = show in all)
+  balmDermalFocus BalmDermalFocus @default(universal)
 
   groups    IngredientGroupAssignment[]
   products  IngredientProductAssignment[]

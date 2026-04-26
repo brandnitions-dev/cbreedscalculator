@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
 import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
@@ -8,6 +8,7 @@ import { CARRIERS_A } from '@/lib/ingredients/carriers-a';
 import { ACTIVES_B } from '@/lib/ingredients/actives-b';
 import { ESSENTIAL_OILS } from '@/lib/ingredients/essential-oils';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
+import { getDefaultBalmDermalForSlug, isBalmDermalMatch } from '@/lib/ingredients/balm-dermal-defaults';
 import { calcFormula, FB_COLORS, BENEFIT_LABELS, FB_BENEFIT_COLORS } from '@/lib/formula-engine';
 import type { PoolRow, Ingredient } from '@/types';
 
@@ -18,21 +19,8 @@ function toIngredient(i: { slug: string; name: string; desc: string; benefits: R
 let idCounter = 0;
 
 export function BalmFormulaBuilder() {
-  const { groups } = useIngredientGroups('BALM');
-  const db = useMemo(() => {
-    const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(x => toIngredient(x))]) ?? []);
-    return {
-      a: byKey.get('carriers_a') ?? CARRIERS_A,
-      b: byKey.get('actives_b') ?? ACTIVES_B,
-      eo: byKey.get('essential_oils') ?? ESSENTIAL_OILS,
-    };
-  }, [groups]);
-
-  const POOLS_CONFIG = useMemo(() => ([
-    { key: 'a' as const, label: 'Carrier Oils (A)', data: db.a, max: 4, color: '#85B7EB' },
-    { key: 'b' as const, label: 'Active Botanicals (B)', data: db.b, max: 3, color: '#D85A30' },
-    { key: 'eo' as const, label: 'Essential Oils', data: db.eo, max: 12, color: '#534AB7' },
-  ]), [db]);
+  const [dermalMode, setDermalMode] = useState<'all' | 'dry' | 'oily'>('all');
+  const { groups } = useIngredientGroups('BALM', dermalMode);
 
   const [mode, setMode] = useState<'face' | 'body'>('face');
   const [batchSize, setBatchSize] = useState(100);
@@ -41,6 +29,40 @@ export function BalmFormulaBuilder() {
   const [pools, setPools] = useState<{ a: PoolRow[]; b: PoolRow[]; eo: PoolRow[] }>({
     a: [], b: [], eo: [],
   });
+
+  const filterStatic = useCallback(
+    (list: Ingredient[]) =>
+      dermalMode === 'all'
+        ? list
+        : list.filter(ing => isBalmDermalMatch(getDefaultBalmDermalForSlug(ing.id), dermalMode)),
+    [dermalMode],
+  );
+
+  const db = useMemo(() => {
+    const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(x => toIngredient(x))]) ?? []);
+    return {
+      a: byKey.get('carriers_a') ?? filterStatic(CARRIERS_A),
+      b: byKey.get('actives_b') ?? filterStatic(ACTIVES_B),
+      eo: byKey.get('essential_oils') ?? filterStatic(ESSENTIAL_OILS),
+    };
+  }, [groups, filterStatic]);
+
+  useEffect(() => {
+    const allowA = new Set(db.a.map(x => x.id));
+    const allowB = new Set(db.b.map(x => x.id));
+    const allowEo = new Set(db.eo.map(x => x.id));
+    setPools(p => ({
+      a: p.a.filter(r => allowA.has(r.ingId)),
+      b: p.b.filter(r => allowB.has(r.ingId)),
+      eo: p.eo.filter(r => allowEo.has(r.ingId)),
+    }));
+  }, [db]);
+
+  const POOLS_CONFIG = useMemo(() => ([
+    { key: 'a' as const, label: 'Carrier Oils (A)', data: db.a, max: 4, color: '#85B7EB' },
+    { key: 'b' as const, label: 'Active Botanicals (B)', data: db.b, max: 3, color: '#D85A30' },
+    { key: 'eo' as const, label: 'Essential Oils', data: db.eo, max: 12, color: '#534AB7' },
+  ]), [db]);
 
   const formula = useMemo(() =>
     calcFormula(mode, 'balm', { ...pools, c: [] }, 0.08, beeswaxOn),
@@ -57,7 +79,7 @@ export function BalmFormulaBuilder() {
       if (prev[pool].length >= config.max) return prev;
       return { ...prev, [pool]: [...prev[pool], { id: idCounter++, ingId, weight: 5 }] };
     });
-  }, []);
+  }, [POOLS_CONFIG]);
 
   const removeIng = useCallback((pool: 'a' | 'b' | 'eo', rowId: number) => {
     setPools(prev => ({ ...prev, [pool]: prev[pool].filter(r => r.id !== rowId) }));
@@ -107,13 +129,14 @@ export function BalmFormulaBuilder() {
       v: 1 as const,
       mode,
       beeswaxOn,
+      dermal: dermalMode,
       pools: {
         a: pools.a.map(({ ingId, weight }) => ({ ingId, weight })),
         b: pools.b.map(({ ingId, weight }) => ({ ingId, weight })),
         eo: pools.eo.map(({ ingId, weight }) => ({ ingId, weight })),
       },
     }),
-    [mode, beeswaxOn, pools],
+    [mode, beeswaxOn, dermalMode, pools],
   );
 
   const onLoaded = useCallback(
@@ -122,10 +145,12 @@ export function BalmFormulaBuilder() {
         v: number;
         mode?: 'face' | 'body';
         beeswaxOn: boolean;
+        dermal?: 'all' | 'dry' | 'oily';
         pools: { a: { ingId: string; weight: number }[]; b: { ingId: string; weight: number }[]; eo: { ingId: string; weight: number }[] };
       };
       if (!s || s.v !== 1 || !s.pools) return;
       setBatchSize(b);
+      if (s.dermal === 'all' || s.dermal === 'dry' || s.dermal === 'oily') setDermalMode(s.dermal);
       if (s.mode === 'face' || s.mode === 'body') setMode(s.mode);
       else if (m === 'face' || m === 'body') setMode(m);
       setBeeswaxOn(s.beeswaxOn);
@@ -154,6 +179,34 @@ export function BalmFormulaBuilder() {
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
       <div className="space-y-5">
         <GlassCard>
+          <p className="text-[11px] text-text-muted mb-2 font-medium uppercase tracking-wider">Fatty acid focus</p>
+          <p className="text-xs text-text-secondary mb-2.5 leading-relaxed">
+            Linoleic (LA) leans toward oily, acne-prone skin; α-linolenic (ALA) and similar lipids support dry, sensitive, barrier-focused work.
+            “All” shows every Balm-tagged item; Dry/Oily limit the picker to that profile (plus universal picks).
+          </p>
+          <div className="flex flex-wrap gap-1.5 mb-3.5">
+            {(
+              [
+                { id: 'all' as const, label: 'All' },
+                { id: 'dry' as const, label: 'Dry / sensitive (ALA-leaning)' },
+                { id: 'oily' as const, label: 'Oily / acne (LA-leaning)' },
+              ] as const
+            ).map(opt => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setDermalMode(opt.id)}
+                className={cn(
+                  'px-3 py-2 rounded-xs text-xs font-medium border transition-all',
+                  dermalMode === opt.id
+                    ? 'bg-accent-gold/15 border-accent-gold/40 text-accent-gold-light'
+                    : 'bg-surface-input border-border text-text-tertiary hover:text-text-secondary hover:border-border-strong',
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
           <div className="flex gap-3 flex-wrap items-center mb-3.5">
             <div className="flex gap-1.5">
               {(['face', 'body'] as const).map(m => (

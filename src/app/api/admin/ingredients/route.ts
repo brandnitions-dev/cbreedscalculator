@@ -41,6 +41,7 @@ export async function GET(req: Request) {
       benefits: true,
       tips: true,
       meta: true,
+      balmDermalFocus: true,
       updatedAt: true,
       groups: { select: { group: { select: { key: true, label: true } } } },
       products: { select: { productType: true } },
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
     meta?: Prisma.InputJsonObject;
     groupKeys?: string[];
     productTypes?: string[];
+    balmDermalFocus?: 'universal' | 'dry' | 'oily';
   };
 
   if (!body?.slug || !body?.name || !body?.desc) {
@@ -91,6 +93,7 @@ export async function POST(req: Request) {
       benefits: (body.benefits ?? {}) as Prisma.InputJsonValue,
       tips: (body.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
       meta: (body.meta ?? {}) as Prisma.InputJsonValue,
+      balmDermalFocus: (body.balmDermalFocus ?? 'universal') as 'universal' | 'dry' | 'oily',
       groups: body.groupKeys?.length
         ? {
             create: body.groupKeys.map(k => ({

@@ -6,6 +6,7 @@ import prisma from '@/lib/prisma';
  *
  * Query params:
  * - productType: BALM | CLEANER | EXFOLIATOR | SOAP | TREATMENT_OIL
+ * - dermal: all | dry | oily — only for BALM: filter by balmDermalFocus
  */
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -13,6 +14,9 @@ export async function GET(req: Request) {
   if (!productType) {
     return NextResponse.json({ error: 'productType is required' }, { status: 400 });
   }
+  const dermal = searchParams.get('dermal');
+  const dermalMode =
+    productType === 'BALM' && (dermal === 'dry' || dermal === 'oily') ? dermal : null;
 
   const groups = await prisma.ingredientGroup.findMany({
     orderBy: [{ sortOrder: 'asc' }, { label: 'asc' }],
@@ -26,6 +30,9 @@ export async function GET(req: Request) {
         where: {
           ingredient: {
             products: { some: { productType: productType as never } },
+            ...(dermalMode
+              ? { OR: [{ balmDermalFocus: 'universal' }, { balmDermalFocus: dermalMode }] }
+              : {}),
           },
         },
         select: {
@@ -43,6 +50,7 @@ export async function GET(req: Request) {
               benefits: true,
               tips: true,
               meta: true,
+              balmDermalFocus: true,
               updatedAt: true,
             },
           },
