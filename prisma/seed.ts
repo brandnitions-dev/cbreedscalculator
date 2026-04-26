@@ -96,27 +96,34 @@ async function main() {
     });
 
     // Group assignments
-    for (const groupKey of params.groupKeys) {
-      const g = groupByKey.get(groupKey);
-      if (!g) continue;
-      await prisma.ingredientGroupAssignment.upsert({
-        where: { ingredientId_groupId: { ingredientId: ing.id, groupId: g.id } },
-        update: {},
-        create: { ingredientId: ing.id, groupId: g.id },
-      });
-    }
+    await Promise.all(
+      params.groupKeys
+        .map((groupKey) => {
+          const g = groupByKey.get(groupKey);
+          if (!g) return null;
+          return prisma.ingredientGroupAssignment.upsert({
+            where: { ingredientId_groupId: { ingredientId: ing.id, groupId: g.id } },
+            update: {},
+            create: { ingredientId: ing.id, groupId: g.id },
+          });
+        })
+        .filter(Boolean)
+    );
 
     // Product assignments
-    for (const productType of params.productTypes) {
-      await prisma.ingredientProductAssignment.upsert({
-        where: { ingredientId_productType: { ingredientId: ing.id, productType } },
-        update: {},
-        create: { ingredientId: ing.id, productType },
-      });
-    }
+    await Promise.all(
+      params.productTypes.map((productType) =>
+        prisma.ingredientProductAssignment.upsert({
+          where: { ingredientId_productType: { ingredientId: ing.id, productType } },
+          update: {},
+          create: { ingredientId: ing.id, productType },
+        })
+      )
+    );
   };
 
   // Balm/Cleaner shared pools
+  let n = 0;
   for (const i of CARRIERS_A) {
     await upsertIngredient({
       slug: i.id,
@@ -128,6 +135,7 @@ async function main() {
       groupKeys: ['carriers_a'],
       productTypes: ['BALM', 'CLEANER'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
   for (const i of ACTIVES_B) {
     await upsertIngredient({
@@ -140,6 +148,7 @@ async function main() {
       groupKeys: ['actives_b'],
       productTypes: ['BALM', 'CLEANER'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
   for (const i of EXFOLIANTS_C) {
     await upsertIngredient({
@@ -152,6 +161,7 @@ async function main() {
       groupKeys: ['exfoliants_c'],
       productTypes: ['CLEANER'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
   for (const i of ESSENTIAL_OILS) {
     await upsertIngredient({
@@ -164,6 +174,7 @@ async function main() {
       groupKeys: ['essential_oils'],
       productTypes: ['BALM', 'CLEANER', 'SOAP'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
 
   // Exfoliator / Treatment oil pools (keep their separate ids)
@@ -180,6 +191,7 @@ async function main() {
       groupKeys: ['oil_carriers'],
       productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
   for (const i of OIL_ACTIVES) {
     await upsertIngredient({
@@ -194,6 +206,7 @@ async function main() {
       groupKeys: ['oil_actives'],
       productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
   for (const i of OIL_EOS) {
     await upsertIngredient({
@@ -208,6 +221,7 @@ async function main() {
       groupKeys: ['oil_eos'],
       productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
 
   // Soap oils (store SAP/indices in meta)
@@ -232,6 +246,7 @@ async function main() {
       groupKeys: ['soap_oils'],
       productTypes: ['SOAP'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
 
   // Soap additives (store additive fields in meta)
@@ -249,6 +264,7 @@ async function main() {
       groupKeys: ['soap_additives'],
       productTypes: ['SOAP'],
     });
+    if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
 
   console.log('✅ Ingredient library seeded.');
