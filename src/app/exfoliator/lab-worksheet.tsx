@@ -75,11 +75,12 @@ export function ExfoliatorLabWorksheet() {
 
       <GlassCard>
         <h3 className="flex items-center gap-2 text-sm font-bold text-text-primary mb-3">
-          <AlertTriangle size={16} className="text-accent-rose" /> Safety Warnings
+          <AlertTriangle size={16} className="text-accent-rose" /> Safety Guidelines
         </h3>
         <div className="space-y-2 text-[13px] text-text-secondary leading-relaxed">
-          <p><strong className="text-accent-rose">Wintergreen EO</strong> contains methyl salicylate (98%). 1 tsp = ~7g aspirin equivalent. Never exceed 3% in formula. Keep away from children.</p>
-          <p><strong className="text-accent-rose">BHA sensitivity</strong>: This formula increases photosensitivity. Always use SPF 30+ after treatment.</p>
+          <p><strong className="text-accent-rose">Essential Oils:</strong> Check individual EO safety limits. Some (like Wintergreen) contain potent compounds — never exceed recommended percentages.</p>
+          <p><strong className="text-accent-rose">Photosensitivity:</strong> BHA and some citrus EOs increase sun sensitivity. Always use SPF 30+ after treatment.</p>
+          <p><strong className="text-text-primary">Patch Test:</strong> Apply 2 drops to inner forearm, wait 24h before facial use.</p>
           <p><strong className="text-text-primary">Shelf life:</strong> 6 months in amber glass. Discard if scent changes or cloudiness appears.</p>
           <p><strong className="text-text-primary">Usage:</strong> 3-5 drops, massage 60 seconds, steam 2 minutes, wipe with warm cloth. Max 2x per week.</p>
         </div>

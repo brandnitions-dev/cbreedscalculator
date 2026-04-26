@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { AlertTriangle, Zap } from 'lucide-react';
 import { GlassCard } from '@/components/ui';
-import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars } from '@/components/formula';
+import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportSVGButton } from '@/components/formula';
 import { OIL_CARRIERS, OIL_ACTIVES, OIL_EOS, OIL_PRESETS } from '@/lib/ingredients/treatment-oils';
 import type { OilIngredient } from '@/lib/ingredients/treatment-oils';
 
@@ -229,18 +229,33 @@ export function ExfoliatorFormulaBuilder() {
         {/* Right: Results */}
         <div className="space-y-5">
           <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Composition</h3>
-            <CompositionBar segments={allLayers.map(l => ({ name: l.name, pct: l.pct, color: l.color }))} />
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Composition</h3>
+              <ExportSVGButton targetId="exf-composition" filename="exfoliator-composition" />
+            </div>
+            <div id="exf-composition">
+              <CompositionBar segments={allLayers.map(l => ({ name: l.name, pct: l.pct, color: l.color }))} />
+            </div>
           </GlassCard>
 
           <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Ratio Breakdown</h3>
-            <RatioBars items={ratioItems} />
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Ratio Breakdown</h3>
+              <ExportSVGButton targetId="exf-ratios" filename="exfoliator-ratios" />
+            </div>
+            <div id="exf-ratios">
+              <RatioBars items={ratioItems} />
+            </div>
           </GlassCard>
 
           <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Benefit Profile</h3>
-            <BenefitBars scores={benefitScores} maxItems={8} />
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Benefit Profile</h3>
+              <ExportSVGButton targetId="exf-benefits" filename="exfoliator-benefits" />
+            </div>
+            <div id="exf-benefits">
+              <BenefitBars scores={benefitScores} maxItems={8} />
+            </div>
           </GlassCard>
 
           <GlassCard>
@@ -253,10 +268,25 @@ export function ExfoliatorFormulaBuilder() {
               <li>Apply 3-5 drops to face; massage 60s in circular motions</li>
               <li>Steam or warm towel 2min; wipe — blackheads roll out</li>
             </ol>
-            <div className="mt-3 flex items-start gap-2 rounded-md border border-accent-rose/30 bg-accent-rose/[0.06] px-3 py-2.5 text-xs text-accent-rose">
-              <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-              Wintergreen contains methyl salicylate — never exceed 3%. Patch test 24h before first use.
-            </div>
+            {/* Dynamic warnings based on selected ingredients */}
+            {pools.eos.some(r => r.ingId === 'wintergreen') && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-accent-rose/30 bg-accent-rose/[0.06] px-3 py-2.5 text-xs text-accent-rose">
+                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                <span><strong>Wintergreen</strong> contains methyl salicylate — never exceed 3%. Patch test 24h before first use.</span>
+              </div>
+            )}
+            {pools.eos.some(r => r.ingId === 'teatree') && eoPct > 0.05 && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-accent-gold/30 bg-accent-gold/[0.06] px-3 py-2.5 text-xs text-accent-gold">
+                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                <span><strong>Tea Tree</strong> at high concentrations can cause skin sensitization. Keep total EO under 5% for facial use.</span>
+              </div>
+            )}
+            {pools.actives.some(r => r.ingId === 'bisabolol') && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-accent-emerald/30 bg-accent-emerald/[0.06] px-3 py-2.5 text-xs text-accent-emerald">
+                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                <span><strong>BHA/Bisabolol</strong> increases photosensitivity. Use SPF 30+ after treatment.</span>
+              </div>
+            )}
           </GlassCard>
 
           <GlassCard>

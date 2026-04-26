@@ -25,10 +25,17 @@ export function SoapFormulaBuilder() {
     getDefaultSoapOils().map(oil => ({ id: oil.id, oil, pct: oil.defaultPct }))
   );
   const [selectedAdditives, setSelectedAdditives] = useState<string[]>([]);
+  const [selectedEOs, setSelectedEOs] = useState<string[]>(['lavender', 'rosemary']);
 
   const soapSafeEOs = useMemo(() =>
     ESSENTIAL_OILS.filter(eo => SOAP_SAFE_EO_IDS.includes(eo.id)), []
   );
+
+  function toggleEO(id: string) {
+    setSelectedEOs(prev =>
+      prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]
+    );
+  }
 
   const result = useMemo(() =>
     calculateSoap(
@@ -189,18 +196,51 @@ export function SoapFormulaBuilder() {
           </div>
         </GlassCard>
 
-        {/* Soap-safe EOs */}
+        {/* Essential Oils Selection */}
         <GlassCard>
-          <h3 className="text-sm font-bold text-text-primary mb-2">Recommended EOs for Cold-Process Soap</h3>
-          <p className="text-[12px] text-text-secondary mb-3">These essential oils survive saponification and retain scent through cure.</p>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-bold text-text-primary">Essential Oils</h3>
+            <span className={cn(
+              'text-[11px] font-semibold px-2.5 py-1 rounded-full',
+              selectedEOs.length > 0 ? 'bg-accent-gold/15 text-accent-gold-light' : 'bg-surface-elevated text-text-muted'
+            )}>{selectedEOs.length} selected · {eoPct}% of oils</span>
+          </div>
+          <p className="text-[12px] text-text-secondary mb-3">Click to select EOs. These survive saponification and retain scent through cure.</p>
           <div className="flex flex-wrap gap-2">
             {soapSafeEOs.map(eo => (
-              <div key={eo.id} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-elevated/60 border border-border-subtle text-[12px] text-text-secondary">
+              <button
+                key={eo.id}
+                onClick={() => toggleEO(eo.id)}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] transition-all border',
+                  selectedEOs.includes(eo.id)
+                    ? 'border-accent-gold/40 bg-accent-gold/[0.12] text-accent-gold-light'
+                    : 'border-border-subtle bg-surface-elevated/60 text-text-secondary hover:border-border hover:text-text-primary'
+                )}
+              >
                 <span className="font-semibold">{eo.name}</span>
                 {eo.potency === 'strong' && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent-rose/15 text-accent-rose font-medium">potent</span>}
-              </div>
+              </button>
             ))}
           </div>
+          {selectedEOs.length > 0 && (
+            <div className="mt-4 p-3 rounded-sm bg-surface-elevated/40 border border-border-subtle">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-text-muted mb-2">Selected Blend ({result.eoWeight}g total)</div>
+              <div className="space-y-1.5">
+                {selectedEOs.map(id => {
+                  const eo = soapSafeEOs.find(e => e.id === id);
+                  if (!eo) return null;
+                  const perEoWeight = (result.eoWeight / selectedEOs.length).toFixed(1);
+                  return (
+                    <div key={id} className="flex items-center justify-between text-[12px]">
+                      <span className="text-text-primary font-medium">{eo.name}</span>
+                      <span className="text-text-muted font-mono">{perEoWeight}g</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </GlassCard>
       </div>
 
