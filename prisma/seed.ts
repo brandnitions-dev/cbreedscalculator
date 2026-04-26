@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { CARRIERS_A } from '@/lib/ingredients/carriers-a';
 import { ACTIVES_B } from '@/lib/ingredients/actives-b';
@@ -63,7 +63,7 @@ async function main() {
     warn?: boolean;
     benefits?: Record<string, number>;
     tips?: { low: string; mid: string; high: string };
-    meta?: Record<string, unknown>;
+    meta?: Prisma.InputJsonObject;
     groupKeys: string[];
     productTypes: Array<'BALM' | 'CLEANER' | 'EXFOLIATOR' | 'SOAP' | 'TREATMENT_OIL'>;
   }) => {
@@ -76,9 +76,9 @@ async function main() {
         potency: params.potency ?? undefined,
         maxPct: params.maxPct ?? undefined,
         warn: params.warn ?? undefined,
-        benefits: params.benefits ?? {},
-        tips: params.tips ?? { low: '', mid: '', high: '' },
-        meta: params.meta ?? {},
+        benefits: (params.benefits ?? {}) as Prisma.InputJsonValue,
+        tips: (params.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
+        meta: (params.meta ?? {}) as Prisma.InputJsonValue,
       },
       create: {
         slug: params.slug,
@@ -88,9 +88,9 @@ async function main() {
         potency: params.potency ?? undefined,
         maxPct: params.maxPct ?? undefined,
         warn: params.warn ?? false,
-        benefits: params.benefits ?? {},
-        tips: params.tips ?? { low: '', mid: '', high: '' },
-        meta: params.meta ?? {},
+        benefits: (params.benefits ?? {}) as Prisma.InputJsonValue,
+        tips: (params.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
+        meta: (params.meta ?? {}) as Prisma.InputJsonValue,
       },
       select: { id: true, slug: true },
     });

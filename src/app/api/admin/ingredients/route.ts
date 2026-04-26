@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAdmin } from '@/lib/require-admin';
+import { Prisma } from '@prisma/client';
 
 export async function GET(req: Request) {
   const admin = await requireAdmin();
@@ -69,7 +70,7 @@ export async function POST(req: Request) {
     warn?: boolean;
     benefits?: Record<string, number>;
     tips?: { low: string; mid: string; high: string };
-    meta?: Record<string, unknown>;
+    meta?: Prisma.InputJsonObject;
     groupKeys?: string[];
     productTypes?: string[];
   };
@@ -87,9 +88,9 @@ export async function POST(req: Request) {
       potency: (body.potency ?? undefined) as never,
       maxPct: body.maxPct ?? undefined,
       warn: body.warn ?? false,
-      benefits: body.benefits ?? {},
-      tips: body.tips ?? { low: '', mid: '', high: '' },
-      meta: body.meta ?? {},
+      benefits: (body.benefits ?? {}) as Prisma.InputJsonValue,
+      tips: (body.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
+      meta: (body.meta ?? {}) as Prisma.InputJsonValue,
       groups: body.groupKeys?.length
         ? {
             create: body.groupKeys.map(k => ({
