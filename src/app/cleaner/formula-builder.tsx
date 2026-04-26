@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
-import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars } from '@/components/formula';
+import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
 import { CARRIERS_A } from '@/lib/ingredients/carriers-a';
 import { ACTIVES_B } from '@/lib/ingredients/actives-b';
 import { EXFOLIANTS_C } from '@/lib/ingredients/exfoliants-c';
@@ -118,7 +118,61 @@ export function CleanerFormulaBuilder() {
     return formula.eoSplit;
   };
 
+  const getSnapshot = useCallback(
+    () => ({
+      v: 1 as const,
+      mode,
+      beeswaxOn,
+      cPct,
+      pools: {
+        a: pools.a.map(({ ingId, weight }) => ({ ingId, weight })),
+        b: pools.b.map(({ ingId, weight }) => ({ ingId, weight })),
+        c: pools.c.map(({ ingId, weight }) => ({ ingId, weight })),
+        eo: pools.eo.map(({ ingId, weight }) => ({ ingId, weight })),
+      },
+    }),
+    [mode, beeswaxOn, cPct, pools],
+  );
+
+  const onLoaded = useCallback(
+    (ingredients: unknown, b: number, m: string | null) => {
+      const s = ingredients as {
+        v: number;
+        mode?: 'face' | 'body';
+        beeswaxOn: boolean;
+        cPct: number;
+        pools: { a: { ingId: string; weight: number }[]; b: { ingId: string; weight: number }[]; c: { ingId: string; weight: number }[]; eo: { ingId: string; weight: number }[] };
+      };
+      if (!s || s.v !== 1 || !s.pools) return;
+      setBatchSize(b);
+      if (s.mode === 'face' || s.mode === 'body') setMode(s.mode);
+      else if (m === 'face' || m === 'body') setMode(m);
+      setBeeswaxOn(s.beeswaxOn);
+      if (typeof s.cPct === 'number' && s.cPct >= 5 && s.cPct <= 15) setCPct(s.cPct);
+      idCounter = 200;
+      let c = 200;
+      const mapPool = (rows: { ingId: string; weight: number }[]) =>
+        rows.map(r => ({ id: c++, ingId: r.ingId, weight: r.weight }));
+      setPools({
+        a: mapPool(s.pools.a),
+        b: mapPool(s.pools.b),
+        c: mapPool(s.pools.c),
+        eo: mapPool(s.pools.eo),
+      });
+      idCounter = c;
+    },
+    [],
+  );
+
   return (
+    <div className="space-y-5">
+      <FormulaSaveBar
+        productType="CLEANER"
+        getSnapshot={getSnapshot}
+        batchSize={batchSize}
+        mode={mode}
+        onLoaded={onLoaded}
+      />
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
         {/* Left */}
         <div className="space-y-5">
@@ -191,23 +245,35 @@ export function CleanerFormulaBuilder() {
 
         {/* Right: Results */}
         <div className="space-y-5">
-          <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Composition</h3>
+          <GlassCard id="cleaner-composition-card">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Composition</h3>
+              <ExportCardActions targetId="cleaner-composition-card" filename="mosskyn-cleaner-composition" />
+            </div>
             <CompositionBar segments={allLayers.map(l => ({ name: l.name, pct: l.pct, color: l.color }))} />
           </GlassCard>
 
-          <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Ratio Breakdown</h3>
+          <GlassCard id="cleaner-ratio-card">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Ratio Breakdown</h3>
+              <ExportCardActions targetId="cleaner-ratio-card" filename="mosskyn-cleaner-ratio-breakdown" />
+            </div>
             <RatioBars items={ratioItems} />
           </GlassCard>
 
-          <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Benefit Profile</h3>
+          <GlassCard id="cleaner-benefits-card">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Benefit Profile</h3>
+              <ExportCardActions targetId="cleaner-benefits-card" filename="mosskyn-cleaner-benefit-profile" />
+            </div>
             <BenefitBars scores={benefitScores} maxItems={8} />
           </GlassCard>
 
-          <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Production Steps</h3>
+          <GlassCard id="cleaner-production-card">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Production Steps</h3>
+              <ExportCardActions targetId="cleaner-production-card" filename="mosskyn-cleaner-production-steps" />
+            </div>
             <ol className="pl-5 text-[13px] text-text-secondary leading-[1.8] list-decimal">
               <li>Melt tallow{beeswaxOn ? ' + beeswax' : ''} in double boiler at 140°F</li>
               <li>Add jojoba and carrier oils (A); stir until uniform</li>
@@ -225,8 +291,11 @@ export function CleanerFormulaBuilder() {
             )}
           </GlassCard>
 
-          <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Batch Stats</h3>
+          <GlassCard id="cleaner-batch-card">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Batch Stats</h3>
+              <ExportCardActions targetId="cleaner-batch-card" filename="mosskyn-cleaner-batch-stats" />
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="text-center py-3 rounded-sm bg-surface-input/50 border border-border-subtle">
                 <div className="text-2xl font-black text-accent-indigo-light">{batchSize}</div>
@@ -240,5 +309,6 @@ export function CleanerFormulaBuilder() {
           </GlassCard>
         </div>
       </div>
+    </div>
   );
 }

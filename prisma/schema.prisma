@@ -112,6 +112,8 @@ model Formula {
   ingredients Json        // full ingredient pool snapshot
   eoBlend     Json?       // essential oil blend snapshot
   soapData    Json?       // lye, water, superfat, cure data
+  // User labels, e.g. "dry skin", "body", "summer"
+  tags        Json         @default("[]")
   notes       String?
   userId      String
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)

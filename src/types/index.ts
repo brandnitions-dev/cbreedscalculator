@@ -114,6 +114,7 @@ export interface SavedFormula {
   ingredients: unknown;
   eoBlend?: unknown;
   soapData?: unknown;
+  tags: string[];
   notes?: string;
   createdAt: string;
   updatedAt: string;

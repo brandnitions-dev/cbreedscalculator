@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
-import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars } from '@/components/formula';
+import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
 import { CARRIERS_A } from '@/lib/ingredients/carriers-a';
 import { ACTIVES_B } from '@/lib/ingredients/actives-b';
 import { ESSENTIAL_OILS } from '@/lib/ingredients/essential-oils';
@@ -102,7 +102,55 @@ export function BalmFormulaBuilder() {
     name: l.name, pct: l.pct, ml: l.pct * batchSize, color: l.color,
   })), [allLayers, batchSize]);
 
+  const getSnapshot = useCallback(
+    () => ({
+      v: 1 as const,
+      mode,
+      beeswaxOn,
+      pools: {
+        a: pools.a.map(({ ingId, weight }) => ({ ingId, weight })),
+        b: pools.b.map(({ ingId, weight }) => ({ ingId, weight })),
+        eo: pools.eo.map(({ ingId, weight }) => ({ ingId, weight })),
+      },
+    }),
+    [mode, beeswaxOn, pools],
+  );
+
+  const onLoaded = useCallback(
+    (ingredients: unknown, b: number, m: string | null) => {
+      const s = ingredients as {
+        v: number;
+        mode?: 'face' | 'body';
+        beeswaxOn: boolean;
+        pools: { a: { ingId: string; weight: number }[]; b: { ingId: string; weight: number }[]; eo: { ingId: string; weight: number }[] };
+      };
+      if (!s || s.v !== 1 || !s.pools) return;
+      setBatchSize(b);
+      if (s.mode === 'face' || s.mode === 'body') setMode(s.mode);
+      else if (m === 'face' || m === 'body') setMode(m);
+      setBeeswaxOn(s.beeswaxOn);
+      let c = 0;
+      const mapPool = (rows: { ingId: string; weight: number }[]) =>
+        rows.map(r => ({ id: ++c, ingId: r.ingId, weight: r.weight }));
+      setPools({
+        a: mapPool(s.pools.a),
+        b: mapPool(s.pools.b),
+        eo: mapPool(s.pools.eo),
+      });
+      idCounter = c + 1;
+    },
+    [],
+  );
+
   return (
+    <div className="space-y-5">
+      <FormulaSaveBar
+        productType="BALM"
+        getSnapshot={getSnapshot}
+        batchSize={batchSize}
+        mode={mode}
+        onLoaded={onLoaded}
+      />
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
       <div className="space-y-5">
         <GlassCard>
@@ -148,20 +196,32 @@ export function BalmFormulaBuilder() {
       </div>
 
       <div className="space-y-5">
-        <GlassCard>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Composition</h3>
+        <GlassCard id="balm-composition-card">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Composition</h3>
+            <ExportCardActions targetId="balm-composition-card" filename="mosskyn-balm-composition" />
+          </div>
           <CompositionBar segments={allLayers.map(l => ({ name: l.name, pct: l.pct, color: l.color }))} />
         </GlassCard>
-        <GlassCard>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Ratio Breakdown</h3>
+        <GlassCard id="balm-ratio-card">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Ratio Breakdown</h3>
+            <ExportCardActions targetId="balm-ratio-card" filename="mosskyn-balm-ratio-breakdown" />
+          </div>
           <RatioBars items={ratioItems} />
         </GlassCard>
-        <GlassCard>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Benefit Profile</h3>
+        <GlassCard id="balm-benefits-card">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Benefit Profile</h3>
+            <ExportCardActions targetId="balm-benefits-card" filename="mosskyn-balm-benefit-profile" />
+          </div>
           <BenefitBars scores={benefitScores} maxItems={8} />
         </GlassCard>
-        <GlassCard>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Batch Stats</h3>
+        <GlassCard id="balm-batch-card">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Batch Stats</h3>
+            <ExportCardActions targetId="balm-batch-card" filename="mosskyn-balm-batch-stats" />
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="text-center py-3 rounded-sm bg-surface-input/50 border border-border-subtle">
               <div className="text-2xl font-black text-accent-indigo-light">{batchSize}</div>
@@ -175,5 +235,6 @@ export function BalmFormulaBuilder() {
         </GlassCard>
       </div>
     </div>
+  </div>
   );
 }

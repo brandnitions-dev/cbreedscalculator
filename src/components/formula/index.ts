@@ -7,4 +7,5 @@ export { SynergyPanel } from './synergy-panel';
 export type { SynergyNote } from './synergy-panel';
 export { PackoutGrid } from './packout-grid';
 export { CompositionBar } from './composition-bar';
-export { ExportSVGButton } from './export-svg-button';
+export { ExportSVGButton, ExportCardActions } from './export-svg-button';
+export { FormulaSaveBar } from './formula-save-bar';

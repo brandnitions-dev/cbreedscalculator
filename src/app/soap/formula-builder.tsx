@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
+import { ExportCardActions, FormulaSaveBar } from '@/components/formula';
 import { SOAP_OILS, getDefaultSoapOils } from '@/lib/ingredients/soap-oils';
 import { SOAP_ADDITIVES } from '@/lib/ingredients/soap-additives';
 import { ESSENTIAL_OILS, SOAP_SAFE_EO_IDS } from '@/lib/ingredients/essential-oils';
@@ -135,7 +136,60 @@ export function SoapFormulaBuilder() {
     cat === 'carrier' ? 'bg-accent-emerald/15 text-accent-emerald-light' :
     'bg-accent-gold/15 text-accent-gold-light';
 
+  const getSnapshot = useCallback(
+    () => ({
+      v: 1 as const,
+      superfat,
+      lyeConc,
+      eoPct,
+      oilRows: oilRows.map(r => ({ id: r.id, pct: r.pct })),
+      selectedAdditives,
+      selectedEOs,
+    }),
+    [superfat, lyeConc, eoPct, oilRows, selectedAdditives, selectedEOs],
+  );
+
+  const onLoaded = useCallback(
+    (ingredients: unknown, batchG: number) => {
+      const s = ingredients as {
+        v: number;
+        superfat: number;
+        lyeConc: number;
+        eoPct: number;
+        oilRows: { id: string; pct: number }[];
+        selectedAdditives: string[];
+        selectedEOs: string[];
+      };
+      if (!s || s.v !== 1) return;
+      setTotalOilWeight(Math.max(100, batchG));
+      setSuperfat(s.superfat);
+      setLyeConc(s.lyeConc);
+      setEoPct(s.eoPct);
+      const next: OilRow[] = [];
+      for (const r of s.oilRows) {
+        const oil = db.soapOils.find(o => o.id === r.id);
+        if (oil) next.push({ id: r.id, oil, pct: r.pct });
+      }
+      if (next.length) setOilRows(next);
+      if (s.selectedAdditives?.length) {
+        setSelectedAdditives(s.selectedAdditives.filter(a => db.additives.some(x => x.id === a)));
+      }
+      if (s.selectedEOs?.length) {
+        setSelectedEOs(s.selectedEOs.filter(e => db.eos.some(x => x.id === e)));
+      }
+    },
+    [db.additives, db.eos, db.soapOils],
+  );
+
   return (
+    <div className="space-y-5">
+      <FormulaSaveBar
+        productType="SOAP"
+        getSnapshot={getSnapshot}
+        batchSize={totalOilWeight}
+        mode={null}
+        onLoaded={onLoaded}
+      />
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(360px,440px)] gap-6 items-start">
       {/* Left: Oil Recipe */}
       <div className="space-y-5">
@@ -311,8 +365,11 @@ export function SoapFormulaBuilder() {
       {/* Right: Results */}
       <div className="space-y-5">
         {/* Lye Calculation */}
-        <GlassCard>
-          <h3 className="text-sm font-bold text-accent-emerald-light mb-4">⚗️ Lye Calculation</h3>
+        <GlassCard id="soap-lye-card">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h3 className="text-sm font-bold text-accent-emerald-light">⚗️ Lye Calculation</h3>
+            <ExportCardActions targetId="soap-lye-card" filename="mosskyn-soap-lye-calculation" />
+          </div>
           <div className="grid grid-cols-2 gap-3">
             {[
               { value: `${result.lyeNaOH}g`, label: 'NaOH (lye)', color: 'text-accent-rose' },
@@ -332,8 +389,11 @@ export function SoapFormulaBuilder() {
         </GlassCard>
 
         {/* Oil Breakdown */}
-        <GlassCard>
-          <h3 className="text-sm font-bold text-text-primary mb-3">Oil Breakdown</h3>
+        <GlassCard id="soap-oil-breakdown-card">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 className="text-sm font-bold text-text-primary">Oil Breakdown</h3>
+            <ExportCardActions targetId="soap-oil-breakdown-card" filename="mosskyn-soap-oil-breakdown" />
+          </div>
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-border-subtle">
@@ -357,8 +417,11 @@ export function SoapFormulaBuilder() {
         </GlassCard>
 
         {/* Bar Quality */}
-        <GlassCard>
-          <h3 className="text-sm font-bold text-text-primary mb-3">Bar Quality Indices</h3>
+        <GlassCard id="soap-quality-card">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 className="text-sm font-bold text-text-primary">Bar Quality Indices</h3>
+            <ExportCardActions targetId="soap-quality-card" filename="mosskyn-soap-quality-indices" />
+          </div>
           {Object.entries(QUALITY_RANGES).map(([key, range]) => {
             const value = key === 'hardness' ? result.hardnessIndex :
                           key === 'cleansing' ? result.cleansingIndex :
@@ -391,8 +454,11 @@ export function SoapFormulaBuilder() {
         </GlassCard>
 
         {/* Production Notes */}
-        <GlassCard>
-          <h3 className="text-sm font-bold text-text-primary mb-3">Production Notes</h3>
+        <GlassCard id="soap-production-card">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 className="text-sm font-bold text-text-primary">Production Notes</h3>
+            <ExportCardActions targetId="soap-production-card" filename="mosskyn-soap-production-notes" />
+          </div>
           <div className="text-center py-3 rounded-sm bg-surface-input/50 border border-border-subtle mb-3">
             <div className="text-2xl font-black text-accent-violet">{result.cureWeeks} weeks</div>
             <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mt-1">Estimated Cure Time</div>
@@ -415,8 +481,11 @@ export function SoapFormulaBuilder() {
 
         {/* Selected Additives */}
         {selectedAdditives.length > 0 && (
-          <GlassCard>
-            <h3 className="text-sm font-bold text-text-primary mb-3">Selected Additives</h3>
+          <GlassCard id="soap-additives-card">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-sm font-bold text-text-primary">Selected Additives</h3>
+              <ExportCardActions targetId="soap-additives-card" filename="mosskyn-soap-selected-additives" />
+            </div>
             {selectedAdditives.map(id => {
               const add = db.additives.find(a => a.id === id);
               if (!add) return null;
@@ -431,6 +500,7 @@ export function SoapFormulaBuilder() {
           </GlassCard>
         )}
       </div>
+    </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { AlertTriangle, Zap } from 'lucide-react';
 import { GlassCard } from '@/components/ui';
-import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportSVGButton } from '@/components/formula';
+import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
 import { OIL_CARRIERS, OIL_ACTIVES, OIL_EOS, OIL_PRESETS } from '@/lib/ingredients/treatment-oils';
 import type { OilIngredient } from '@/lib/ingredients/treatment-oils';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
@@ -182,7 +182,58 @@ export function ExfoliatorFormulaBuilder() {
     return formula.eoSplit;
   };
 
+  const getSnapshot = useCallback(
+    () => ({
+      v: 1 as const,
+      activePct,
+      eoPct,
+      pools: {
+        carriers: pools.carriers.map(({ ingId, weight }) => ({ ingId, weight })),
+        actives: pools.actives.map(({ ingId, weight }) => ({ ingId, weight })),
+        eos: pools.eos.map(({ ingId, weight }) => ({ ingId, weight })),
+      },
+    }),
+    [activePct, eoPct, pools],
+  );
+
+  const onLoaded = useCallback(
+    (ingredients: unknown, b: number) => {
+      const s = ingredients as {
+        v: number;
+        activePct: number;
+        eoPct: number;
+        pools: {
+          carriers: { ingId: string; weight: number }[];
+          actives: { ingId: string; weight: number }[];
+          eos: { ingId: string; weight: number }[];
+        };
+      };
+      if (!s || s.v !== 1 || !s.pools) return;
+      setBatchSize(b);
+      setActivePct(s.activePct);
+      setEoPct(s.eoPct);
+      let c = 300;
+      const mapP = (rows: { ingId: string; weight: number }[]) =>
+        rows.map(r => ({ id: c++, ingId: r.ingId, weight: r.weight }));
+      setPools({
+        carriers: mapP(s.pools.carriers),
+        actives: mapP(s.pools.actives),
+        eos: mapP(s.pools.eos),
+      });
+      idCounter = c;
+    },
+    [],
+  );
+
   return (
+    <div className="space-y-5">
+      <FormulaSaveBar
+        productType="EXFOLIATOR"
+        getSnapshot={getSnapshot}
+        batchSize={batchSize}
+        mode={null}
+        onLoaded={onLoaded}
+      />
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
         {/* Left */}
         <div className="space-y-5">
@@ -248,38 +299,41 @@ export function ExfoliatorFormulaBuilder() {
 
         {/* Right: Results */}
         <div className="space-y-5">
-          <GlassCard>
+          <GlassCard id="exf-composition-card">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Composition</h3>
-              <ExportSVGButton targetId="exf-composition" filename="exfoliator-composition" />
+              <ExportCardActions targetId="exf-composition-card" filename="mosskyn-exfoliator-composition" />
             </div>
             <div id="exf-composition">
               <CompositionBar segments={allLayers.map(l => ({ name: l.name, pct: l.pct, color: l.color }))} />
             </div>
           </GlassCard>
 
-          <GlassCard>
+          <GlassCard id="exf-ratios-card">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Ratio Breakdown</h3>
-              <ExportSVGButton targetId="exf-ratios" filename="exfoliator-ratios" />
+              <ExportCardActions targetId="exf-ratios-card" filename="mosskyn-exfoliator-ratio-breakdown" />
             </div>
             <div id="exf-ratios">
               <RatioBars items={ratioItems} />
             </div>
           </GlassCard>
 
-          <GlassCard>
+          <GlassCard id="exf-benefits-card">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Benefit Profile</h3>
-              <ExportSVGButton targetId="exf-benefits" filename="exfoliator-benefits" />
+              <ExportCardActions targetId="exf-benefits-card" filename="mosskyn-exfoliator-benefit-profile" />
             </div>
             <div id="exf-benefits">
               <BenefitBars scores={benefitScores} maxItems={8} />
             </div>
           </GlassCard>
 
-          <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Production Steps</h3>
+          <GlassCard id="exf-production-card">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Production Steps</h3>
+              <ExportCardActions targetId="exf-production-card" filename="mosskyn-exfoliator-production-steps" />
+            </div>
             <ol className="pl-5 text-[13px] text-text-secondary leading-[1.8] list-decimal">
               <li>Measure carrier oils into glass dropper bottle</li>
               <li>Add active ingredients; swirl gently to combine</li>
@@ -309,8 +363,11 @@ export function ExfoliatorFormulaBuilder() {
             )}
           </GlassCard>
 
-          <GlassCard>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Batch Stats</h3>
+          <GlassCard id="exf-batch-card">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Batch Stats</h3>
+              <ExportCardActions targetId="exf-batch-card" filename="mosskyn-exfoliator-batch-stats" />
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="text-center py-3 rounded-sm bg-surface-input/50 border border-border-subtle">
                 <div className="text-2xl font-black text-accent-indigo-light">{batchSize}</div>
@@ -324,5 +381,6 @@ export function ExfoliatorFormulaBuilder() {
           </GlassCard>
         </div>
       </div>
+    </div>
   );
 }

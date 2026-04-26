@@ -8,6 +8,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/balm': 'Tallow Balm Calculator',
   '/exfoliator': 'Exfoliator Calculator',
   '/oils': 'Treatment Oils Calculator',
+  '/cleaner': 'Face Cleaner Calculator',
   '/soap': 'Tallow Soap Calculator',
   '/builder': 'Formula Builder',
   '/formulas': 'Saved Formulas',

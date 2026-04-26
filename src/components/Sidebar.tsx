@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, FlaskConical, Sparkles,
   Beaker, Settings, Leaf,
-  PanelLeftClose, PanelLeft, Menu, SprayCan,
+  PanelLeftClose, PanelLeft, Menu, SprayCan, Library,
 } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
 
@@ -25,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'cleaner', label: 'Face Cleaner', icon: <SprayCan size={18} />, href: '/cleaner' },
   { id: 'exfoliator', label: 'Exfoliator', icon: <Sparkles size={18} />, href: '/exfoliator' },
   { id: 'soap', label: 'Tallow Soap', icon: <Beaker size={18} />, href: '/soap' },
+  { id: 'formulas', label: 'Saved Formulas', icon: <Library size={18} />, href: '/formulas' },
   { id: 'admin', label: 'Admin', icon: <Settings size={18} />, href: '/admin' },
 ];
 
