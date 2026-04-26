@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/ui';
 import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportSVGButton } from '@/components/formula';
 import { OIL_CARRIERS, OIL_ACTIVES, OIL_EOS, OIL_PRESETS } from '@/lib/ingredients/treatment-oils';
 import type { OilIngredient } from '@/lib/ingredients/treatment-oils';
+import { useIngredientGroups } from '@/lib/use-ingredient-groups';
 
 /* ── Formula engine for tallow-free exfoliator ────────────────────── */
 
@@ -42,15 +43,34 @@ const BENEFIT_COLORS: Record<string, string> = {
   hormonal: '#A5B4FC', astringent: '#FDA4AF', viscosity: '#A7F3D0',
 };
 
-const POOL_DEFS = [
-  { key: 'carriers' as const, label: 'Carrier Oils', data: OIL_CARRIERS, max: 6, color: '#5DCAA5' },
-  { key: 'actives' as const, label: 'Active Ingredients', data: OIL_ACTIVES, max: 4, color: '#FCD34D' },
-  { key: 'eos' as const, label: 'Essential Oils', data: OIL_EOS, max: 6, color: '#C4B5FD' },
-];
-
 let idCounter = 300;
 
 export function ExfoliatorFormulaBuilder() {
+  const { groups } = useIngredientGroups('EXFOLIATOR');
+  const db = useMemo(() => {
+    const mapOil = (i: any): OilIngredient => ({
+      id: i.slug,
+      name: i.name,
+      desc: i.desc,
+      color: i.color ?? '#888',
+      benefits: i.benefits ?? {},
+      tips: i.tips ?? { low: '', mid: '', high: '' },
+      maxPct: i.maxPct ?? undefined,
+      warn: i.warn ?? false,
+    });
+    const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(mapOil)]) ?? []);
+    return {
+      carriers: (byKey.get('oil_carriers') as OilIngredient[] | undefined) ?? OIL_CARRIERS,
+      actives: (byKey.get('oil_actives') as OilIngredient[] | undefined) ?? OIL_ACTIVES,
+      eos: (byKey.get('oil_eos') as OilIngredient[] | undefined) ?? OIL_EOS,
+    };
+  }, [groups]);
+
+  const POOLS = useMemo(() => ([
+    { key: 'carriers' as const, label: 'Carrier Oils', data: db.carriers, max: 6, color: '#5DCAA5' },
+    { key: 'actives' as const, label: 'Active Ingredients', data: db.actives, max: 4, color: '#FCD34D' },
+    { key: 'eos' as const, label: 'Essential Oils', data: db.eos, max: 6, color: '#C4B5FD' },
+  ]), [db]);
   const [batchSize, setBatchSize] = useState(100);
   const [activePct, setActivePct] = useState(0.05);
   const [eoPct, setEoPct] = useState(0.10);
@@ -81,7 +101,7 @@ export function ExfoliatorFormulaBuilder() {
       if (existing) {
         return { ...prev, [pool]: prev[pool].filter(r => r.ingId !== ingId) };
       }
-      const def = POOL_DEFS.find(d => d.key === pool)!;
+      const def = POOLS.find(d => d.key === pool)!;
       if (prev[pool].length >= def.max) return prev;
       return { ...prev, [pool]: [...prev[pool], { id: idCounter++, ingId, weight: 5 }] };
     });
@@ -110,21 +130,21 @@ export function ExfoliatorFormulaBuilder() {
 
   const allLayers = useMemo(() => [
     ...formula.carrierSplit.map(r => ({
-      name: OIL_CARRIERS.find(x => x.id === r.ingId)?.name || r.ingId,
+      name: db.carriers.find(x => x.id === r.ingId)?.name || r.ingId,
       pct: r.pct,
-      color: OIL_CARRIERS.find(x => x.id === r.ingId)?.color || '#5DCAA5',
+      color: db.carriers.find(x => x.id === r.ingId)?.color || '#5DCAA5',
     })),
     ...formula.activeSplit.map(r => ({
-      name: OIL_ACTIVES.find(x => x.id === r.ingId)?.name || r.ingId,
+      name: db.actives.find(x => x.id === r.ingId)?.name || r.ingId,
       pct: r.pct,
-      color: OIL_ACTIVES.find(x => x.id === r.ingId)?.color || '#FCD34D',
+      color: db.actives.find(x => x.id === r.ingId)?.color || '#FCD34D',
     })),
     ...formula.eoSplit.map(r => ({
-      name: OIL_EOS.find(x => x.id === r.ingId)?.name || r.ingId,
+      name: db.eos.find(x => x.id === r.ingId)?.name || r.ingId,
       pct: r.pct,
-      color: OIL_EOS.find(x => x.id === r.ingId)?.color || '#C4B5FD',
+      color: db.eos.find(x => x.id === r.ingId)?.color || '#C4B5FD',
     })),
-  ], [formula]);
+  ], [formula, db]);
 
   const ratioItems = useMemo(() => allLayers.map(l => ({
     name: l.name, pct: l.pct, ml: l.pct * batchSize, color: l.color,
@@ -141,9 +161,9 @@ export function ExfoliatorFormulaBuilder() {
         });
       });
     };
-    addScores(formula.carrierSplit, OIL_CARRIERS, 1);
-    addScores(formula.activeSplit, OIL_ACTIVES, 2);
-    addScores(formula.eoSplit, OIL_EOS, 1.5);
+    addScores(formula.carrierSplit, db.carriers, 1);
+    addScores(formula.activeSplit, db.actives, 2);
+    addScores(formula.eoSplit, db.eos, 1.5);
     const maxScore = Math.max(...Object.values(scores), 0.001);
     return Object.entries(scores)
       .filter(([, v]) => v > 0)
@@ -154,7 +174,7 @@ export function ExfoliatorFormulaBuilder() {
         score: Math.round((v / maxScore) * 100),
         color: BENEFIT_COLORS[name] || '#888',
       }));
-  }, [formula]);
+  }, [formula, db]);
 
   const getSplit = (key: string) => {
     if (key === 'carriers') return formula.carrierSplit;
@@ -200,7 +220,7 @@ export function ExfoliatorFormulaBuilder() {
           </GlassCard>
 
           {/* Ingredient Pools — Chip Grid */}
-          {POOL_DEFS.map(def => {
+          {POOLS.map(def => {
             const split = getSplit(def.key);
             const totalPct = split.reduce((s, r) => s + r.pct, 0);
             return (

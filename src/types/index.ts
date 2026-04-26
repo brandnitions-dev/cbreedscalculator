@@ -108,7 +108,7 @@ export interface SoapCalcResult {
 export interface SavedFormula {
   id: string;
   name: string;
-  productType: 'BALM' | 'EXFOLIATOR' | 'SOAP';
+  productType: 'BALM' | 'CLEANER' | 'EXFOLIATOR' | 'SOAP' | 'TREATMENT_OIL';
   mode?: string;
   batchSize: number;
   ingredients: unknown;

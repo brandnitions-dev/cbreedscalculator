@@ -14,8 +14,16 @@ enum Role {
 
 enum ProductType {
   BALM
+  CLEANER
   EXFOLIATOR
   SOAP
+  TREATMENT_OIL
+}
+
+enum IngredientPotency {
+  mild
+  moderate
+  strong
 }
 
 model User {
@@ -27,6 +35,72 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   formulas     Formula[]
+}
+
+model Ingredient {
+  id        String  @id @default(cuid())
+  // Stable identifier used throughout calculators (matches prior hardcoded ids)
+  slug      String  @unique
+  name      String
+  desc      String
+
+  // Cosmetic/formula metadata (optional per group)
+  color     String?
+  potency   IngredientPotency?
+  maxPct    Float?
+  warn      Boolean @default(false)
+
+  // Rich content carried over from hardcoded data
+  benefits  Json    @default("{}")
+  tips      Json    @default("{\"low\":\"\",\"mid\":\"\",\"high\":\"\"}")
+
+  // For soap oils/additives or any future group-specific fields
+  meta      Json    @default("{}")
+
+  groups    IngredientGroupAssignment[]
+  products  IngredientProductAssignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IngredientGroup {
+  id        String  @id @default(cuid())
+  // Machine key e.g. carriers_a, actives_b, essential_oils, soap_oils
+  key       String  @unique
+  label     String
+  sortOrder Int     @default(0)
+
+  ingredients IngredientGroupAssignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IngredientGroupAssignment {
+  id           String         @id @default(cuid())
+  ingredientId String
+  groupId      String
+  sortOrder    Int            @default(0)
+
+  ingredient Ingredient     @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  group      IngredientGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([ingredientId, groupId])
+  @@index([groupId])
+  @@index([ingredientId])
+}
+
+model IngredientProductAssignment {
+  id           String      @id @default(cuid())
+  ingredientId String
+  productType  ProductType
+
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([ingredientId, productType])
+  @@index([productType])
+  @@index([ingredientId])
 }
 
 model Formula {

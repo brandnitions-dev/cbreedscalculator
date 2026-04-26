@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
 import { SOAP_OILS, getDefaultSoapOils } from '@/lib/ingredients/soap-oils';
 import { SOAP_ADDITIVES } from '@/lib/ingredients/soap-additives';
 import { ESSENTIAL_OILS, SOAP_SAFE_EO_IDS } from '@/lib/ingredients/essential-oils';
+import { useIngredientGroups } from '@/lib/use-ingredient-groups';
 import { calculateSoap, QUALITY_RANGES, getQualityRating } from '@/lib/chemistry';
 import type { SoapOil } from '@/types';
 
@@ -17,6 +18,59 @@ interface OilRow {
 }
 
 export function SoapFormulaBuilder() {
+  const { groups } = useIngredientGroups('SOAP');
+  const didInitFromDb = useRef(false);
+
+  const db = useMemo(() => {
+    const byKey = new Map(groups?.map(g => [g.key, g.ingredients]) ?? []);
+
+    const dbSoapOils: SoapOil[] = (byKey.get('soap_oils') ?? []).map((i: any) => {
+      const m = (i.meta ?? {}) as Record<string, unknown>;
+      return {
+        id: i.slug,
+        name: i.name,
+        desc: i.desc,
+        sapNaOH: Number(m.sapNaOH ?? 0),
+        sapKOH: Number(m.sapKOH ?? 0),
+        hardness: Number(m.hardness ?? 0),
+        cleansing: Number(m.cleansing ?? 0),
+        conditioning: Number(m.conditioning ?? 0),
+        bubbly: Number(m.bubbly ?? 0),
+        creamy: Number(m.creamy ?? 0),
+        iodine: Number(m.iodine ?? 0),
+        defaultPct: Number(m.defaultPct ?? 0),
+        category: (m.category as SoapOil['category']) ?? 'base',
+      };
+    });
+
+    const dbAdditives = (byKey.get('soap_additives') ?? []).map((i: any) => {
+      const m = (i.meta ?? {}) as Record<string, unknown>;
+      return {
+        id: i.slug,
+        name: i.name,
+        desc: i.desc,
+        phase: (m.phase as any) ?? 'trace',
+        usageRate: String(m.usageRate ?? ''),
+        notes: String(m.notes ?? ''),
+      };
+    });
+
+    const dbEos = (byKey.get('essential_oils') ?? []).map((i: any) => ({
+      id: i.slug,
+      name: i.name,
+      desc: i.desc,
+      benefits: i.benefits ?? {},
+      tips: i.tips ?? { low: '', mid: '', high: '' },
+      potency: i.potency ?? undefined,
+    }));
+
+    return {
+      soapOils: dbSoapOils.length ? dbSoapOils : SOAP_OILS,
+      additives: dbAdditives.length ? dbAdditives : SOAP_ADDITIVES,
+      eos: dbEos.length ? dbEos : ESSENTIAL_OILS,
+    };
+  }, [groups]);
+
   const [totalOilWeight, setTotalOilWeight] = useState(1000);
   const [superfat, setSuperfat] = useState(5);
   const [lyeConc, setLyeConc] = useState(33);
@@ -28,8 +82,18 @@ export function SoapFormulaBuilder() {
   const [selectedEOs, setSelectedEOs] = useState<string[]>(['lavender', 'rosemary']);
 
   const soapSafeEOs = useMemo(() =>
-    ESSENTIAL_OILS.filter(eo => SOAP_SAFE_EO_IDS.includes(eo.id)), []
+    db.eos.filter(eo => SOAP_SAFE_EO_IDS.includes(eo.id)), [db.eos]
   );
+
+  useEffect(() => {
+    if (didInitFromDb.current) return;
+    if (!groups) return;
+    const defaults = db.soapOils.filter(o => o.defaultPct > 0);
+    if (defaults.length) {
+      setOilRows(defaults.map(oil => ({ id: oil.id, oil, pct: oil.defaultPct })));
+      didInitFromDb.current = true;
+    }
+  }, [groups, db.soapOils]);
 
   function toggleEO(id: string) {
     setSelectedEOs(prev =>
@@ -51,7 +115,7 @@ export function SoapFormulaBuilder() {
   }
 
   function addOil(oilId: string) {
-    const oil = SOAP_OILS.find(o => o.id === oilId);
+    const oil = db.soapOils.find(o => o.id === oilId);
     if (!oil || oilRows.find(r => r.id === oilId)) return;
     setOilRows(prev => [...prev, { id: oil.id, oil, pct: 5 }]);
   }
@@ -161,7 +225,7 @@ export function SoapFormulaBuilder() {
               defaultValue=""
             >
               <option value="" disabled>+ Add oil to recipe…</option>
-              {SOAP_OILS.filter(o => !oilRows.find(r => r.id === o.id)).map(oil => (
+              {db.soapOils.filter(o => !oilRows.find(r => r.id === o.id)).map(oil => (
                 <option key={oil.id} value={oil.id}>{oil.name} (SAP {oil.sapNaOH})</option>
               ))}
             </select>
@@ -172,7 +236,7 @@ export function SoapFormulaBuilder() {
         <GlassCard>
           <h3 className="text-sm font-bold text-text-primary mb-4">Additives</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-            {SOAP_ADDITIVES.map(add => (
+            {db.additives.map(add => (
               <label key={add.id} className={cn(
                 'p-3 rounded-sm border cursor-pointer transition-all',
                 selectedAdditives.includes(add.id)
@@ -354,7 +418,7 @@ export function SoapFormulaBuilder() {
           <GlassCard>
             <h3 className="text-sm font-bold text-text-primary mb-3">Selected Additives</h3>
             {selectedAdditives.map(id => {
-              const add = SOAP_ADDITIVES.find(a => a.id === id);
+              const add = db.additives.find(a => a.id === id);
               if (!add) return null;
               return (
                 <div key={id} className="mb-3 pb-3 border-b border-border-subtle last:border-0 last:mb-0 last:pb-0">

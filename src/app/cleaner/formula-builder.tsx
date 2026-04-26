@@ -9,19 +9,35 @@ import { CARRIERS_A } from '@/lib/ingredients/carriers-a';
 import { ACTIVES_B } from '@/lib/ingredients/actives-b';
 import { EXFOLIANTS_C } from '@/lib/ingredients/exfoliants-c';
 import { ESSENTIAL_OILS } from '@/lib/ingredients/essential-oils';
+import { useIngredientGroups } from '@/lib/use-ingredient-groups';
 import { calcFormula, FB_COLORS, BENEFIT_LABELS, FB_BENEFIT_COLORS } from '@/lib/formula-engine';
 import type { PoolRow, Ingredient } from '@/types';
 
-const POOL_DEFS = [
-  { key: 'c' as const, label: 'Physical Exfoliants (C)', data: EXFOLIANTS_C, max: 3, color: '#C4A574' },
-  { key: 'a' as const, label: 'Carrier Oils (A)', data: CARRIERS_A, max: 4, color: '#85B7EB' },
-  { key: 'b' as const, label: 'Active Botanicals (B)', data: ACTIVES_B, max: 3, color: '#D85A30' },
-  { key: 'eo' as const, label: 'Essential Oils', data: ESSENTIAL_OILS, max: 12, color: '#534AB7' },
-];
+function toIngredient(i: { slug: string; name: string; desc: string; benefits: Record<string, number>; tips: { low: string; mid: string; high: string }; potency: Ingredient['potency'] | null }): Ingredient {
+  return { id: i.slug, name: i.name, desc: i.desc, benefits: i.benefits ?? {}, tips: i.tips ?? { low: '', mid: '', high: '' }, potency: i.potency ?? undefined };
+}
 
 let idCounter = 200;
 
 export function CleanerFormulaBuilder() {
+  const { groups } = useIngredientGroups('CLEANER');
+  const db = useMemo(() => {
+    const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(x => toIngredient(x))]) ?? []);
+    return {
+      a: byKey.get('carriers_a') ?? CARRIERS_A,
+      b: byKey.get('actives_b') ?? ACTIVES_B,
+      c: byKey.get('exfoliants_c') ?? EXFOLIANTS_C,
+      eo: byKey.get('essential_oils') ?? ESSENTIAL_OILS,
+    };
+  }, [groups]);
+
+  const POOL_DEFS = useMemo(() => ([
+    { key: 'c' as const, label: 'Physical Exfoliants (C)', data: db.c, max: 3, color: '#C4A574' },
+    { key: 'a' as const, label: 'Carrier Oils (A)', data: db.a, max: 4, color: '#85B7EB' },
+    { key: 'b' as const, label: 'Active Botanicals (B)', data: db.b, max: 3, color: '#D85A30' },
+    { key: 'eo' as const, label: 'Essential Oils', data: db.eo, max: 12, color: '#534AB7' },
+  ]), [db]);
+
   const [mode, setMode] = useState<'face' | 'body'>('body');
   const [batchSize, setBatchSize] = useState(100);
   const [beeswaxOn, setBeeswaxOn] = useState(true);
@@ -63,11 +79,11 @@ export function CleanerFormulaBuilder() {
 
   const allLayers = useMemo(() => [
     ...formula.fixed.map(f => ({ name: f.name, pct: f.pct, color: f.color })),
-    ...formula.aSplit.map((r, i) => ({ name: CARRIERS_A.find(x => x.id === r.ingId)?.name || 'A', pct: r.pct, color: FB_COLORS[`a${i}`] || '#85B7EB' })),
-    ...formula.bSplit.map((r, i) => ({ name: ACTIVES_B.find(x => x.id === r.ingId)?.name || 'B', pct: r.pct, color: FB_COLORS[`b${i}`] || '#D85A30' })),
-    ...formula.cSplit.map((r, i) => ({ name: EXFOLIANTS_C.find(x => x.id === r.ingId)?.name || 'C', pct: r.pct, color: FB_COLORS[`c${i}`] || '#C4A574' })),
-    ...formula.eoSplit.map((r, i) => ({ name: ESSENTIAL_OILS.find(x => x.id === r.ingId)?.name || 'EO', pct: r.pct, color: FB_COLORS[`eo${i}`] || '#534AB7' })),
-  ], [formula]);
+    ...formula.aSplit.map((r, i) => ({ name: db.a.find(x => x.id === r.ingId)?.name || 'A', pct: r.pct, color: FB_COLORS[`a${i}`] || '#85B7EB' })),
+    ...formula.bSplit.map((r, i) => ({ name: db.b.find(x => x.id === r.ingId)?.name || 'B', pct: r.pct, color: FB_COLORS[`b${i}`] || '#D85A30' })),
+    ...formula.cSplit.map((r, i) => ({ name: db.c.find(x => x.id === r.ingId)?.name || 'C', pct: r.pct, color: FB_COLORS[`c${i}`] || '#C4A574' })),
+    ...formula.eoSplit.map((r, i) => ({ name: db.eo.find(x => x.id === r.ingId)?.name || 'EO', pct: r.pct, color: FB_COLORS[`eo${i}`] || '#534AB7' })),
+  ], [formula, db]);
 
   const ratioItems = useMemo(() => allLayers.map(l => ({
     name: l.name, pct: l.pct, ml: l.pct * batchSize, color: l.color,
@@ -83,17 +99,17 @@ export function CleanerFormulaBuilder() {
         Object.entries(ing.benefits).forEach(([b, v]) => { scores[b] = (scores[b] || 0) + v * r.pct * w; });
       });
     };
-    addScores(formula.aSplit, CARRIERS_A, 1);
-    addScores(formula.bSplit, ACTIVES_B, 1.5);
-    addScores(formula.cSplit, EXFOLIANTS_C, 1);
-    addScores(formula.eoSplit, ESSENTIAL_OILS, 2);
+    addScores(formula.aSplit, db.a, 1);
+    addScores(formula.bSplit, db.b, 1.5);
+    addScores(formula.cSplit, db.c, 1);
+    addScores(formula.eoSplit, db.eo, 2);
     const maxScore = Math.max(...Object.values(scores), 0.001);
     return BENEFIT_LABELS
       .filter(b => scores[b] > 0)
       .sort((a, b) => scores[b] - scores[a])
       .slice(0, 8)
       .map(b => ({ name: b.replace('anti', 'anti-'), score: Math.round((scores[b] / maxScore) * 100), color: FB_BENEFIT_COLORS[b] || '#888' }));
-  }, [formula]);
+  }, [formula, db]);
 
   const getSplit = (key: string) => {
     if (key === 'a') return formula.aSplit;
