@@ -40,6 +40,10 @@ const ACTIVE_INGREDIENT_SLUGS = new Set([
   'coffee_grounds',
   'charcoal',
   'sea_salt_cleaner',
+
+  // Clinical actives - BHA oil only
+  'willowbark',
+  'bisabolol',
 ]);
 
 async function main() {
