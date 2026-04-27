@@ -5,9 +5,7 @@ import { AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
 import { ExportCardActions, FormulaSaveBar } from '@/components/formula';
-import { SOAP_OILS, getDefaultSoapOils } from '@/lib/ingredients/soap-oils';
-import { SOAP_ADDITIVES } from '@/lib/ingredients/soap-additives';
-import { ESSENTIAL_OILS, SOAP_SAFE_EO_IDS } from '@/lib/ingredients/essential-oils';
+import { SOAP_SAFE_EO_IDS } from '@/lib/ingredients/essential-oils';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
 import { calculateSoap, QUALITY_RANGES, getQualityRating } from '@/lib/chemistry';
 import type { SoapOil } from '@/types';
@@ -66,9 +64,9 @@ export function SoapFormulaBuilder() {
     }));
 
     return {
-      soapOils: dbSoapOils.length ? dbSoapOils : SOAP_OILS,
-      additives: dbAdditives.length ? dbAdditives : SOAP_ADDITIVES,
-      eos: dbEos.length ? dbEos : ESSENTIAL_OILS,
+      soapOils: dbSoapOils,
+      additives: dbAdditives,
+      eos: dbEos,
     };
   }, [groups]);
 
@@ -76,11 +74,9 @@ export function SoapFormulaBuilder() {
   const [superfat, setSuperfat] = useState(5);
   const [lyeConc, setLyeConc] = useState(33);
   const [eoPct, setEoPct] = useState(2.5);
-  const [oilRows, setOilRows] = useState<OilRow[]>(() =>
-    getDefaultSoapOils().map(oil => ({ id: oil.id, oil, pct: oil.defaultPct }))
-  );
+  const [oilRows, setOilRows] = useState<OilRow[]>([]);
   const [selectedAdditives, setSelectedAdditives] = useState<string[]>([]);
-  const [selectedEOs, setSelectedEOs] = useState<string[]>(['lavender', 'rosemary']);
+  const [selectedEOs, setSelectedEOs] = useState<string[]>(['rosemary']);
 
   const soapSafeEOs = useMemo(() =>
     db.eos.filter(eo => SOAP_SAFE_EO_IDS.includes(eo.id)), [db.eos]
@@ -95,6 +91,15 @@ export function SoapFormulaBuilder() {
       didInitFromDb.current = true;
     }
   }, [groups, db.soapOils]);
+
+  useEffect(() => {
+    const allowedOilIds = new Set(db.soapOils.map(o => o.id));
+    const allowedAdditiveIds = new Set(db.additives.map(a => a.id));
+    const allowedEoIds = new Set(soapSafeEOs.map(e => e.id));
+    setOilRows(rows => rows.filter(r => allowedOilIds.has(r.oil.id)));
+    setSelectedAdditives(ids => ids.filter(id => allowedAdditiveIds.has(id)));
+    setSelectedEOs(ids => ids.filter(id => allowedEoIds.has(id)));
+  }, [db.soapOils, db.additives, soapSafeEOs]);
 
   function toggleEO(id: string) {
     setSelectedEOs(prev =>
@@ -175,10 +180,10 @@ export function SoapFormulaBuilder() {
         setSelectedAdditives(s.selectedAdditives.filter(a => db.additives.some(x => x.id === a)));
       }
       if (s.selectedEOs?.length) {
-        setSelectedEOs(s.selectedEOs.filter(e => db.eos.some(x => x.id === e)));
+        setSelectedEOs(s.selectedEOs.filter(e => soapSafeEOs.some(x => x.id === e)));
       }
     },
-    [db.additives, db.eos, db.soapOils],
+    [db.additives, db.soapOils, soapSafeEOs],
   );
 
   return (

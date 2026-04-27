@@ -10,6 +10,7 @@ export type IngredientFeedItem = {
   potency: 'mild' | 'moderate' | 'strong' | null;
   maxPct: number | null;
   warn: boolean;
+  active: boolean;
   benefits: Record<string, number>;
   tips: { low: string; mid: string; high: string };
   meta: Record<string, unknown>;

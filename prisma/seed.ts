@@ -12,6 +12,36 @@ import { getDefaultBalmDermalForSlug } from '@/lib/ingredients/balm-dermal-defau
 
 const prisma = new PrismaClient();
 
+const ACTIVE_INGREDIENT_SLUGS = new Set([
+  // Base / fixed formula ingredients that are represented in the ingredient DB.
+  'beef_tallow',
+  'jojoba',
+  'beeswax',
+  'vitaminE',
+
+  // Carrier oils A
+  'rosehip',
+  'grapeseed',
+  'sesame',
+
+  // Active oils B
+  'blackseed',
+
+  // Essential oils
+  'sandalwood',
+  'neroli',
+  'oud',
+  'peppermint',
+  'rosemary',
+  'vanilla_abs',
+
+  // Cleaners
+  'ground_ginger',
+  'coffee_grounds',
+  'charcoal',
+  'sea_salt_cleaner',
+]);
+
 async function main() {
   console.log('🌱 Seeding database...');
 
@@ -70,6 +100,7 @@ async function main() {
     balmDermalFocus?: 'universal' | 'dry' | 'oily';
   }) => {
     const dermal = params.balmDermalFocus ?? 'universal';
+    const active = ACTIVE_INGREDIENT_SLUGS.has(params.slug);
     const ing = await prisma.ingredient.upsert({
       where: { slug: params.slug },
       update: {
@@ -82,6 +113,7 @@ async function main() {
         benefits: (params.benefits ?? {}) as Prisma.InputJsonValue,
         tips: (params.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
         meta: (params.meta ?? {}) as Prisma.InputJsonValue,
+        active,
         balmDermalFocus: dermal,
       },
       create: {
@@ -95,6 +127,7 @@ async function main() {
         benefits: (params.benefits ?? {}) as Prisma.InputJsonValue,
         tips: (params.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
         meta: (params.meta ?? {}) as Prisma.InputJsonValue,
+        active,
         balmDermalFocus: dermal,
       },
       select: { id: true, slug: true },
@@ -187,6 +220,7 @@ async function main() {
 
   // Exfoliator / Treatment oil pools (keep their separate ids)
   for (const i of OIL_CARRIERS) {
+    const sharedBase = i.id === 'jojoba';
     await upsertIngredient({
       slug: i.id,
       name: i.name,
@@ -196,12 +230,13 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
-      groupKeys: ['oil_carriers'],
-      productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
+      groupKeys: sharedBase ? ['oil_carriers', 'carriers_a'] : ['oil_carriers'],
+      productTypes: sharedBase ? ['EXFOLIATOR', 'TREATMENT_OIL', 'BALM', 'CLEANER'] : ['EXFOLIATOR', 'TREATMENT_OIL'],
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
   for (const i of OIL_ACTIVES) {
+    const sharedBase = i.id === 'vitaminE';
     await upsertIngredient({
       slug: i.id,
       name: i.name,
@@ -211,8 +246,8 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
-      groupKeys: ['oil_actives'],
-      productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
+      groupKeys: sharedBase ? ['oil_actives', 'actives_b'] : ['oil_actives'],
+      productTypes: sharedBase ? ['EXFOLIATOR', 'TREATMENT_OIL', 'BALM', 'CLEANER'] : ['EXFOLIATOR', 'TREATMENT_OIL'],
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }

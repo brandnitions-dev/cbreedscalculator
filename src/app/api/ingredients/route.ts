@@ -29,6 +29,7 @@ export async function GET(req: Request) {
         orderBy: [{ sortOrder: 'asc' }, { ingredient: { name: 'asc' } }],
         where: {
           ingredient: {
+            active: true,
             products: { some: { productType: productType as never } },
             ...(dermalMode
               ? { OR: [{ balmDermalFocus: 'universal' }, { balmDermalFocus: dermalMode }] }
@@ -47,6 +48,7 @@ export async function GET(req: Request) {
               potency: true,
               maxPct: true,
               warn: true,
+              active: true,
               benefits: true,
               tips: true,
               meta: true,

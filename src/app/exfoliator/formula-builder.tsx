@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { AlertTriangle, Zap } from 'lucide-react';
 import { GlassCard } from '@/components/ui';
 import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
-import { OIL_CARRIERS, OIL_ACTIVES, OIL_EOS, OIL_PRESETS } from '@/lib/ingredients/treatment-oils';
+import { OIL_PRESETS } from '@/lib/ingredients/treatment-oils';
 import type { OilIngredient } from '@/lib/ingredients/treatment-oils';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
 
@@ -60,11 +60,16 @@ export function ExfoliatorFormulaBuilder() {
     });
     const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(mapOil)]) ?? []);
     return {
-      carriers: (byKey.get('oil_carriers') as OilIngredient[] | undefined) ?? OIL_CARRIERS,
-      actives: (byKey.get('oil_actives') as OilIngredient[] | undefined) ?? OIL_ACTIVES,
-      eos: (byKey.get('oil_eos') as OilIngredient[] | undefined) ?? OIL_EOS,
+      carriers: (byKey.get('oil_carriers') as OilIngredient[] | undefined) ?? [],
+      actives: (byKey.get('oil_actives') as OilIngredient[] | undefined) ?? [],
+      eos: (byKey.get('oil_eos') as OilIngredient[] | undefined) ?? [],
     };
   }, [groups]);
+  const allowed = useMemo(() => ({
+    carriers: new Set(db.carriers.map(x => x.id)),
+    actives: new Set(db.actives.map(x => x.id)),
+    eos: new Set(db.eos.map(x => x.id)),
+  }), [db]);
 
   const POOLS = useMemo(() => ([
     { key: 'carriers' as const, label: 'Carrier Oils', data: db.carriers, max: 6, color: '#5DCAA5' },
@@ -76,19 +81,18 @@ export function ExfoliatorFormulaBuilder() {
   const [eoPct, setEoPct] = useState(0.10);
   const [expandedIds, setExpandedIds] = useState<Record<string, number | null>>({});
   const [pools, setPools] = useState<{ carriers: PoolRow[]; actives: PoolRow[]; eos: PoolRow[] }>({
-    carriers: [
-      { id: idCounter++, ingId: 'jojoba', weight: 5 },
-      { id: idCounter++, ingId: 'squalane', weight: 2 },
-      { id: idCounter++, ingId: 'castor', weight: 2 },
-      { id: idCounter++, ingId: 'grapeseed', weight: 1 },
-    ],
-    actives: [{ id: idCounter++, ingId: 'bisabolol', weight: 5 }],
-    eos: [
-      { id: idCounter++, ingId: 'wintergreen', weight: 2 },
-      { id: idCounter++, ingId: 'teatree', weight: 2 },
-      { id: idCounter++, ingId: 'frankincense', weight: 2 },
-    ],
+    carriers: [{ id: idCounter++, ingId: 'jojoba', weight: 5 }],
+    actives: [{ id: idCounter++, ingId: 'vitaminE', weight: 5 }],
+    eos: [],
   });
+
+  useEffect(() => {
+    setPools(p => ({
+      carriers: p.carriers.filter(r => allowed.carriers.has(r.ingId)),
+      actives: p.actives.filter(r => allowed.actives.has(r.ingId)),
+      eos: p.eos.filter(r => allowed.eos.has(r.ingId)),
+    }));
+  }, [allowed]);
 
   const formula = useMemo(() =>
     calcExfoliatorFormula(pools, activePct, eoPct),
@@ -122,11 +126,11 @@ export function ExfoliatorFormulaBuilder() {
     const preset = OIL_PRESETS.find(p => p.id === presetId);
     if (!preset) return;
     setPools({
-      carriers: preset.carriers.map(c => ({ id: idCounter++, ingId: c.ingId, weight: c.weight })),
-      actives: preset.actives.map(a => ({ id: idCounter++, ingId: a.ingId, weight: a.weight })),
-      eos: preset.eos.map(e => ({ id: idCounter++, ingId: e.ingId, weight: e.weight })),
+      carriers: preset.carriers.filter(c => allowed.carriers.has(c.ingId)).map(c => ({ id: idCounter++, ingId: c.ingId, weight: c.weight })),
+      actives: preset.actives.filter(a => allowed.actives.has(a.ingId)).map(a => ({ id: idCounter++, ingId: a.ingId, weight: a.weight })),
+      eos: preset.eos.filter(e => allowed.eos.has(e.ingId)).map(e => ({ id: idCounter++, ingId: e.ingId, weight: e.weight })),
     });
-  }, []);
+  }, [allowed]);
 
   const allLayers = useMemo(() => [
     ...formula.carrierSplit.map(r => ({
@@ -213,16 +217,16 @@ export function ExfoliatorFormulaBuilder() {
       setActivePct(s.activePct);
       setEoPct(s.eoPct);
       let c = 300;
-      const mapP = (rows: { ingId: string; weight: number }[]) =>
-        rows.map(r => ({ id: c++, ingId: r.ingId, weight: r.weight }));
+      const mapP = (rows: { ingId: string; weight: number }[], allow: Set<string>) =>
+        rows.filter(r => allow.has(r.ingId)).map(r => ({ id: c++, ingId: r.ingId, weight: r.weight }));
       setPools({
-        carriers: mapP(s.pools.carriers),
-        actives: mapP(s.pools.actives),
-        eos: mapP(s.pools.eos),
+        carriers: mapP(s.pools.carriers, allowed.carriers),
+        actives: mapP(s.pools.actives, allowed.actives),
+        eos: mapP(s.pools.eos, allowed.eos),
       });
       idCounter = c;
     },
-    [],
+    [allowed],
   );
 
   return (

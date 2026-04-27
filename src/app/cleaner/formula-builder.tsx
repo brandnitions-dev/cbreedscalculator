@@ -1,14 +1,10 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
 import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
-import { CARRIERS_A } from '@/lib/ingredients/carriers-a';
-import { ACTIVES_B } from '@/lib/ingredients/actives-b';
-import { EXFOLIANTS_C } from '@/lib/ingredients/exfoliants-c';
-import { ESSENTIAL_OILS } from '@/lib/ingredients/essential-oils';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
 import { calcFormula, FB_COLORS, BENEFIT_LABELS, FB_BENEFIT_COLORS } from '@/lib/formula-engine';
 import type { PoolRow, Ingredient } from '@/types';
@@ -24,10 +20,10 @@ export function CleanerFormulaBuilder() {
   const db = useMemo(() => {
     const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(x => toIngredient(x))]) ?? []);
     return {
-      a: byKey.get('carriers_a') ?? CARRIERS_A,
-      b: byKey.get('actives_b') ?? ACTIVES_B,
-      c: byKey.get('exfoliants_c') ?? EXFOLIANTS_C,
-      eo: byKey.get('essential_oils') ?? ESSENTIAL_OILS,
+      a: byKey.get('carriers_a') ?? [],
+      b: byKey.get('actives_b') ?? [],
+      c: byKey.get('exfoliants_c') ?? [],
+      eo: byKey.get('essential_oils') ?? [],
     };
   }, [groups]);
 
@@ -45,9 +41,22 @@ export function CleanerFormulaBuilder() {
   const [expandedIds, setExpandedIds] = useState<Record<string, number | null>>({});
   const [pools, setPools] = useState<{ a: PoolRow[]; b: PoolRow[]; c: PoolRow[]; eo: PoolRow[] }>({
     a: [], b: [],
-    c: [{ id: idCounter++, ingId: 'sugar', weight: 5 }],
+    c: [],
     eo: [],
   });
+
+  useEffect(() => {
+    const allowA = new Set(db.a.map(x => x.id));
+    const allowB = new Set(db.b.map(x => x.id));
+    const allowC = new Set(db.c.map(x => x.id));
+    const allowEo = new Set(db.eo.map(x => x.id));
+    setPools(p => ({
+      a: p.a.filter(r => allowA.has(r.ingId)),
+      b: p.b.filter(r => allowB.has(r.ingId)),
+      c: p.c.filter(r => allowC.has(r.ingId)),
+      eo: p.eo.filter(r => allowEo.has(r.ingId)),
+    }));
+  }, [db]);
 
   const formula = useMemo(() =>
     calcFormula(mode, 'scrub', pools, cPct / 100, beeswaxOn),
@@ -151,17 +160,21 @@ export function CleanerFormulaBuilder() {
       if (typeof s.cPct === 'number' && s.cPct >= 5 && s.cPct <= 15) setCPct(s.cPct);
       idCounter = 200;
       let c = 200;
-      const mapPool = (rows: { ingId: string; weight: number }[]) =>
-        rows.map(r => ({ id: c++, ingId: r.ingId, weight: r.weight }));
+      const allowA = new Set(db.a.map(x => x.id));
+      const allowB = new Set(db.b.map(x => x.id));
+      const allowC = new Set(db.c.map(x => x.id));
+      const allowEo = new Set(db.eo.map(x => x.id));
+      const mapPool = (rows: { ingId: string; weight: number }[], allow: Set<string>) =>
+        rows.filter(r => allow.has(r.ingId)).map(r => ({ id: c++, ingId: r.ingId, weight: r.weight }));
       setPools({
-        a: mapPool(s.pools.a),
-        b: mapPool(s.pools.b),
-        c: mapPool(s.pools.c),
-        eo: mapPool(s.pools.eo),
+        a: mapPool(s.pools.a, allowA),
+        b: mapPool(s.pools.b, allowB),
+        c: mapPool(s.pools.c, allowC),
+        eo: mapPool(s.pools.eo, allowEo),
       });
       idCounter = c;
     },
-    [],
+    [db],
   );
 
   return (

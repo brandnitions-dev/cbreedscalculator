@@ -38,6 +38,7 @@ export async function GET(req: Request) {
       potency: true,
       maxPct: true,
       warn: true,
+      active: true,
       benefits: true,
       tips: true,
       meta: true,
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
     potency?: 'mild' | 'moderate' | 'strong' | null;
     maxPct?: number | null;
     warn?: boolean;
+    active?: boolean;
     benefits?: Record<string, number>;
     tips?: { low: string; mid: string; high: string };
     meta?: Prisma.InputJsonObject;
@@ -90,6 +92,7 @@ export async function POST(req: Request) {
       potency: (body.potency ?? undefined) as never,
       maxPct: body.maxPct ?? undefined,
       warn: body.warn ?? false,
+      active: body.active ?? false,
       benefits: (body.benefits ?? {}) as Prisma.InputJsonValue,
       tips: (body.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
       meta: (body.meta ?? {}) as Prisma.InputJsonValue,

@@ -18,6 +18,7 @@ type AdminIngredient = {
   potency: 'mild' | 'moderate' | 'strong' | null;
   maxPct: number | null;
   warn: boolean;
+  active: boolean;
   benefits: Record<string, number>;
   tips: Tips;
   meta: Record<string, unknown>;
@@ -36,6 +37,7 @@ type Draft = {
   potency: '' | 'mild' | 'moderate' | 'strong';
   maxPct: string;
   warn: boolean;
+  active: boolean;
   groupKeys: string[];
   productTypes: string[];
   benefits: Record<string, number>;
@@ -99,6 +101,7 @@ const emptyDraft = (productType: string, groupKey: string): Draft => ({
   potency: '',
   maxPct: '',
   warn: false,
+  active: false,
   groupKeys: groupKey ? [groupKey] : [],
   productTypes: productType ? [productType] : ['CLEANER'],
   benefits: {},
@@ -136,6 +139,7 @@ function draftFromIngredient(ing: AdminIngredient): Draft {
     potency: ing.potency ?? '',
     maxPct: ing.maxPct == null ? '' : String(ing.maxPct),
     warn: ing.warn,
+    active: ing.active ?? false,
     groupKeys: ing.groupKeys ?? [],
     productTypes: ing.productTypes ?? [],
     benefits: ing.benefits ?? {},
@@ -428,6 +432,7 @@ export default function AdminIngredientLibrary() {
     ingredients.forEach(i => i.productTypes.forEach(p => counts.set(p, (counts.get(p) ?? 0) + 1)));
     return counts;
   }, [ingredients]);
+  const activeCount = useMemo(() => ingredients.filter(i => i.active).length, [ingredients]);
 
   const groupLabelByKey = useMemo(() => {
     const m = new Map<string, string>();
@@ -521,6 +526,7 @@ export default function AdminIngredientLibrary() {
         potency: draft.potency || null,
         maxPct: draft.maxPct === '' ? null : Number(draft.maxPct),
         warn: draft.warn,
+        active: draft.active,
         groupKeys: draft.groupKeys,
         productTypes: draft.productTypes,
         benefits: draft.benefits,
@@ -589,10 +595,10 @@ export default function AdminIngredientLibrary() {
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatCard label="Visible ingredients" value={ingredients.length} />
+          <StatCard label="Admin rows" value={ingredients.length} />
+          <StatCard label="Active in builders" value={activeCount} />
           <StatCard label="Groups" value={groups.length} />
           <StatCard label={productLabel(productType)} value={countByProduct.get(productType) ?? ingredients.length} />
-          <StatCard label="DB status" value="Live" />
         </div>
       </section>
 
@@ -648,11 +654,21 @@ export default function AdminIngredientLibrary() {
                     </div>
                     <div className="mt-1 font-mono text-[11px] text-text-muted">{ing.slug}</div>
                   </div>
-                  {ing.warn && (
-                    <span className="rounded-full border border-accent-rose/30 bg-accent-rose/[0.08] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-rose">
-                      Safety
+                  <div className="flex shrink-0 flex-col items-end gap-1.5">
+                    <span className={cn(
+                      'rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-wider',
+                      ing.active
+                        ? 'border-accent-emerald/30 bg-accent-emerald/[0.08] text-accent-emerald-light'
+                        : 'border-border-subtle bg-surface-elevated/60 text-text-muted'
+                    )}>
+                      {ing.active ? 'Active' : 'Off'}
                     </span>
-                  )}
+                    {ing.warn && (
+                      <span className="rounded-full border border-accent-rose/30 bg-accent-rose/[0.08] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-rose">
+                        Safety
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <p className="line-clamp-2 text-[12px] leading-relaxed text-text-secondary">{ing.desc}</p>
                 <div className="mt-4 flex flex-wrap gap-1.5">
@@ -722,6 +738,34 @@ export default function AdminIngredientLibrary() {
 
                 <Section title="Where it appears" eyebrow="Library placement">
                   <div className="space-y-4">
+                    <button
+                      type="button"
+                      onClick={() => setDraftValue('active', !draft.active)}
+                      className={cn(
+                        'flex w-full items-center justify-between gap-3 rounded-md border px-4 py-3 text-left transition-all',
+                        draft.active
+                          ? 'border-accent-emerald/40 bg-accent-emerald/[0.10] text-accent-emerald-light'
+                          : 'border-border-subtle bg-surface-elevated/40 text-text-secondary hover:text-text-primary'
+                      )}
+                    >
+                      <span>
+                        <span className="block text-[13px] font-black uppercase tracking-[0.12em]">
+                          {draft.active ? 'Active in builders' : 'Off in builders'}
+                        </span>
+                        <span className="mt-1 block text-[11px] leading-relaxed text-text-muted">
+                          Only active ingredients appear in formula builders. Admin can still edit off ingredients here.
+                        </span>
+                      </span>
+                      <span className={cn(
+                        'rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-wider',
+                        draft.active
+                          ? 'border-accent-emerald/50 bg-accent-emerald/[0.14]'
+                          : 'border-border-subtle bg-surface-card'
+                      )}>
+                        {draft.active ? 'Active' : 'Off'}
+                      </span>
+                    </button>
+
                     <div>
                       <div className="form-label">Products</div>
                       <div className="flex flex-wrap gap-2">

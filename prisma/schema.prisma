@@ -56,6 +56,8 @@ model Ingredient {
   potency   IngredientPotency?
   maxPct    Float?
   warn      Boolean @default(false)
+  // Only active ingredients are exposed to public formula builders.
+  active    Boolean @default(false)
 
   // Rich content carried over from hardcoded data
   benefits  Json    @default("{}")

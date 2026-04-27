@@ -4,11 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
 import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
-import { CARRIERS_A } from '@/lib/ingredients/carriers-a';
-import { ACTIVES_B } from '@/lib/ingredients/actives-b';
-import { ESSENTIAL_OILS } from '@/lib/ingredients/essential-oils';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
-import { getDefaultBalmDermalForSlug, isBalmDermalMatch } from '@/lib/ingredients/balm-dermal-defaults';
 import { calcFormula, FB_COLORS, BENEFIT_LABELS, FB_BENEFIT_COLORS } from '@/lib/formula-engine';
 import type { PoolRow, Ingredient } from '@/types';
 
@@ -30,22 +26,14 @@ export function BalmFormulaBuilder() {
     a: [], b: [], eo: [],
   });
 
-  const filterStatic = useCallback(
-    (list: Ingredient[]) =>
-      dermalMode === 'all'
-        ? list
-        : list.filter(ing => isBalmDermalMatch(getDefaultBalmDermalForSlug(ing.id), dermalMode)),
-    [dermalMode],
-  );
-
   const db = useMemo(() => {
     const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(x => toIngredient(x))]) ?? []);
     return {
-      a: byKey.get('carriers_a') ?? filterStatic(CARRIERS_A),
-      b: byKey.get('actives_b') ?? filterStatic(ACTIVES_B),
-      eo: byKey.get('essential_oils') ?? filterStatic(ESSENTIAL_OILS),
+      a: byKey.get('carriers_a') ?? [],
+      b: byKey.get('actives_b') ?? [],
+      eo: byKey.get('essential_oils') ?? [],
     };
-  }, [groups, filterStatic]);
+  }, [groups]);
 
   useEffect(() => {
     const allowA = new Set(db.a.map(x => x.id));
@@ -155,16 +143,19 @@ export function BalmFormulaBuilder() {
       else if (m === 'face' || m === 'body') setMode(m);
       setBeeswaxOn(s.beeswaxOn);
       let c = 0;
-      const mapPool = (rows: { ingId: string; weight: number }[]) =>
-        rows.map(r => ({ id: ++c, ingId: r.ingId, weight: r.weight }));
+      const allowA = new Set(db.a.map(x => x.id));
+      const allowB = new Set(db.b.map(x => x.id));
+      const allowEo = new Set(db.eo.map(x => x.id));
+      const mapPool = (rows: { ingId: string; weight: number }[], allow: Set<string>) =>
+        rows.filter(r => allow.has(r.ingId)).map(r => ({ id: ++c, ingId: r.ingId, weight: r.weight }));
       setPools({
-        a: mapPool(s.pools.a),
-        b: mapPool(s.pools.b),
-        eo: mapPool(s.pools.eo),
+        a: mapPool(s.pools.a, allowA),
+        b: mapPool(s.pools.b, allowB),
+        eo: mapPool(s.pools.eo, allowEo),
       });
       idCounter = c + 1;
     },
-    [],
+    [db],
   );
 
   return (
@@ -182,7 +173,7 @@ export function BalmFormulaBuilder() {
           <p className="text-[11px] text-text-muted mb-2 font-medium uppercase tracking-wider">Fatty acid focus</p>
           <p className="text-xs text-text-secondary mb-2.5 leading-relaxed">
             Linoleic (LA) leans toward oily, acne-prone skin; α-linolenic (ALA) and similar lipids support dry, sensitive, barrier-focused work.
-            “All” shows every Balm-tagged item; Dry/Oily limit the picker to that profile (plus universal picks).
+            “All” shows every active Balm item; Dry/Oily limit the picker to that profile (plus universal picks).
           </p>
           <div className="flex flex-wrap gap-1.5 mb-3.5">
             {(

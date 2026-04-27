@@ -16,6 +16,7 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
     potency?: 'mild' | 'moderate' | 'strong' | null;
     maxPct?: number | null;
     warn?: boolean;
+    active?: boolean;
     benefits?: Record<string, number>;
     tips?: { low: string; mid: string; high: string };
     meta?: Prisma.InputJsonObject;
@@ -34,6 +35,7 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
       potency: (body.potency ?? undefined) as never,
       maxPct: body.maxPct ?? undefined,
       warn: body.warn ?? undefined,
+      active: body.active ?? undefined,
       benefits: (body.benefits ?? undefined) as Prisma.InputJsonValue | undefined,
       tips: (body.tips ?? undefined) as Prisma.InputJsonValue | undefined,
       meta: (body.meta ?? undefined) as Prisma.InputJsonValue | undefined,
