@@ -10,7 +10,7 @@ export type BalmDermal = 'universal' | 'dry' | 'oily';
  */
 const OVERRIDES: Record<string, BalmDermal> = {
   // Carriers (A) — from typical fatty acid & copy emphasis
-  rosehip: 'oily',
+  rosehip: 'dry',
   grapeseed: 'oily',
   sunflower: 'oily',
   watermelon: 'oily',

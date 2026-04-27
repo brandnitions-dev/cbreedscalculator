@@ -267,6 +267,7 @@ async function main() {
 
   // Exfoliator / Treatment oil pools (keep their separate ids)
   for (const i of OIL_CARRIERS) {
+    const sharedSelectable = i.id === 'rosehip' || i.id === 'grapeseed';
     await upsertIngredient({
       slug: i.id,
       name: i.name,
@@ -276,8 +277,9 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
-      groupKeys: ['oil_carriers'],
-      productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
+      groupKeys: sharedSelectable ? ['oil_carriers', 'carriers_a'] : ['oil_carriers'],
+      productTypes: sharedSelectable ? ['EXFOLIATOR', 'TREATMENT_OIL', 'BALM', 'CLEANER'] : ['EXFOLIATOR', 'TREATMENT_OIL'],
+      balmDermalFocus: sharedSelectable ? getDefaultBalmDermalForSlug(i.id) : undefined,
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
@@ -297,6 +299,7 @@ async function main() {
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
   for (const i of OIL_EOS) {
+    const sharedSelectable = i.id === 'rosemary';
     await upsertIngredient({
       slug: i.id,
       name: i.name,
@@ -306,8 +309,9 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
-      groupKeys: ['oil_eos'],
-      productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
+      groupKeys: sharedSelectable ? ['oil_eos', 'essential_oils'] : ['oil_eos'],
+      productTypes: sharedSelectable ? ['EXFOLIATOR', 'TREATMENT_OIL', 'BALM', 'CLEANER', 'SOAP'] : ['EXFOLIATOR', 'TREATMENT_OIL'],
+      balmDermalFocus: sharedSelectable ? getDefaultBalmDermalForSlug(i.id) : undefined,
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
