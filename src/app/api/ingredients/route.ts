@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+const PUBLIC_GROUP_KEYS: Record<string, string[]> = {
+  BALM: ['carriers_a', 'actives_b', 'essential_oils'],
+  CLEANER: ['carriers_a', 'actives_b', 'exfoliants_c', 'essential_oils'],
+  EXFOLIATOR: ['oil_carriers', 'oil_actives', 'oil_eos'],
+  TREATMENT_OIL: ['oil_carriers', 'oil_actives', 'oil_eos'],
+  SOAP: ['soap_oils', 'soap_additives', 'essential_oils'],
+};
+
 /**
  * Public ingredient feed for calculators.
  *
@@ -14,11 +22,16 @@ export async function GET(req: Request) {
   if (!productType) {
     return NextResponse.json({ error: 'productType is required' }, { status: 400 });
   }
+  const groupKeys = PUBLIC_GROUP_KEYS[productType];
+  if (!groupKeys) {
+    return NextResponse.json({ error: 'Invalid productType' }, { status: 400 });
+  }
   const dermal = searchParams.get('dermal');
   const dermalMode =
     productType === 'BALM' && (dermal === 'dry' || dermal === 'oily') ? dermal : null;
 
   const groups = await prisma.ingredientGroup.findMany({
+    where: { key: { in: groupKeys } },
     orderBy: [{ sortOrder: 'asc' }, { label: 'asc' }],
     select: {
       id: true,
