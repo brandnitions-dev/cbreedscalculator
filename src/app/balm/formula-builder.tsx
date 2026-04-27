@@ -16,9 +16,9 @@ let idCounter = 0;
 
 export function BalmFormulaBuilder() {
   const [dermalMode, setDermalMode] = useState<'all' | 'dry' | 'oily'>('all');
-  const { groups } = useIngredientGroups('BALM', dermalMode);
 
   const [mode, setMode] = useState<'face' | 'body'>('face');
+  const { groups } = useIngredientGroups('BALM', dermalMode, mode);
   const [batchSize, setBatchSize] = useState(100);
   const [beeswaxOn, setBeeswaxOn] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Record<string, number | null>>({});

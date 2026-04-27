@@ -23,6 +23,7 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
     groupKeys?: string[];
     productTypes?: string[];
     balmDermalFocus?: 'universal' | 'dry' | 'oily';
+    usageFocus?: 'universal' | 'face' | 'body';
   };
 
   const updated = await prisma.ingredient.update({
@@ -40,6 +41,7 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
       tips: (body.tips ?? undefined) as Prisma.InputJsonValue | undefined,
       meta: (body.meta ?? undefined) as Prisma.InputJsonValue | undefined,
       balmDermalFocus: body.balmDermalFocus ?? undefined,
+      usageFocus: body.usageFocus ?? undefined,
       groups: body.groupKeys
         ? {
             deleteMany: {},

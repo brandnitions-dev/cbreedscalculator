@@ -15,6 +15,7 @@ export type IngredientFeedItem = {
   tips: { low: string; mid: string; high: string };
   meta: Record<string, unknown>;
   balmDermalFocus?: 'universal' | 'dry' | 'oily';
+  usageFocus?: 'universal' | 'face' | 'body';
 };
 
 export type IngredientFeedGroup = {
@@ -27,6 +28,7 @@ export type IngredientFeedGroup = {
 export function useIngredientGroups(
   productType: string,
   balmDermal: 'all' | 'dry' | 'oily' = 'all',
+  usage: 'all' | 'face' | 'body' = 'all',
 ) {
   const [groups, setGroups] = useState<IngredientFeedGroup[] | null>(null);
   const [error, setError] = useState<string>('');
@@ -40,6 +42,9 @@ export function useIngredientGroups(
         q.set('productType', productType);
         if (productType === 'BALM' && balmDermal !== 'all') {
           q.set('dermal', balmDermal);
+        }
+        if (usage !== 'all') {
+          q.set('usage', usage);
         }
         const res = await fetch(`/api/ingredients?${q.toString()}`, { cache: 'no-store' });
         if (!res.ok) throw new Error('Failed to load ingredients');
@@ -56,7 +61,7 @@ export function useIngredientGroups(
     return () => {
       cancelled = true;
     };
-  }, [productType, balmDermal]);
+  }, [productType, balmDermal, usage]);
 
   return { groups, error };
 }

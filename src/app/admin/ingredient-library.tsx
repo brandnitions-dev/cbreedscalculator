@@ -23,6 +23,7 @@ type AdminIngredient = {
   tips: Tips;
   meta: Record<string, unknown>;
   balmDermalFocus: 'universal' | 'dry' | 'oily';
+  usageFocus: 'universal' | 'face' | 'body';
   updatedAt: string;
   groupKeys: string[];
   productTypes: string[];
@@ -44,6 +45,7 @@ type Draft = {
   tips: Tips;
   meta: Record<string, string>;
   balmDermalFocus: 'universal' | 'dry' | 'oily';
+  usageFocus: 'universal' | 'face' | 'body';
 };
 
 const PRODUCT_TYPES = [
@@ -108,6 +110,7 @@ const emptyDraft = (productType: string, groupKey: string): Draft => ({
   tips: { ...EMPTY_TIPS },
   meta: {},
   balmDermalFocus: 'universal',
+  usageFocus: 'universal',
 });
 
 function productLabel(key: string) {
@@ -146,6 +149,7 @@ function draftFromIngredient(ing: AdminIngredient): Draft {
     tips: ing.tips ?? { ...EMPTY_TIPS },
     meta: asMeta(ing.meta),
     balmDermalFocus: ing.balmDermalFocus ?? 'universal',
+    usageFocus: ing.usageFocus ?? 'universal',
   };
 }
 
@@ -533,6 +537,7 @@ export default function AdminIngredientLibrary() {
         tips: draft.tips,
         meta: normalizeMeta(draft),
         balmDermalFocus: draft.balmDermalFocus,
+        usageFocus: draft.usageFocus,
       };
 
       const res = await fetch(creating ? '/api/admin/ingredients' : `/api/admin/ingredients/${draft.id}`, {
@@ -820,6 +825,22 @@ export default function AdminIngredientLibrary() {
                         </select>
                       </div>
                     )}
+
+                    <div className="rounded-md border border-border-subtle/80 bg-surface-elevated/30 p-3">
+                      <div className="form-label">Face / body usage</div>
+                      <p className="mb-2 text-[11px] leading-relaxed text-text-muted">
+                        Formula builders show “Universal” ingredients in both modes. Face-only and body-only ingredients are filtered by the selected batch surface.
+                      </p>
+                      <select
+                        className="input"
+                        value={draft.usageFocus}
+                        onChange={e => setDraftValue('usageFocus', e.target.value as Draft['usageFocus'])}
+                      >
+                        <option value="universal">Universal — face and body</option>
+                        <option value="face">Face only</option>
+                        <option value="body">Body only</option>
+                      </select>
+                    </div>
                   </div>
                 </Section>
 

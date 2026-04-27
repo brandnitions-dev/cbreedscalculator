@@ -46,6 +46,30 @@ const ACTIVE_INGREDIENT_SLUGS = new Set([
   'bisabolol',
 ]);
 
+function getDefaultUsageFocusForSlug(slug: string): 'universal' | 'face' | 'body' {
+  if (
+    [
+      'rosehip',
+      'grapeseed',
+      'blackseed',
+      'ground_ginger',
+      'charcoal',
+      'neroli',
+      'rosemary',
+      'willowbark',
+      'bisabolol',
+    ].includes(slug)
+  ) {
+    return 'face';
+  }
+
+  if (['coffee_grounds', 'sea_salt_cleaner', 'peppermint'].includes(slug)) {
+    return 'body';
+  }
+
+  return 'universal';
+}
+
 async function main() {
   console.log('🌱 Seeding database...');
 
@@ -102,8 +126,10 @@ async function main() {
     groupKeys: string[];
     productTypes: Array<'BALM' | 'CLEANER' | 'EXFOLIATOR' | 'SOAP' | 'TREATMENT_OIL'>;
     balmDermalFocus?: 'universal' | 'dry' | 'oily';
+    usageFocus?: 'universal' | 'face' | 'body';
   }) => {
     const dermal = params.balmDermalFocus ?? 'universal';
+    const usageFocus = params.usageFocus ?? getDefaultUsageFocusForSlug(params.slug);
     const active = ACTIVE_INGREDIENT_SLUGS.has(params.slug);
     const ing = await prisma.ingredient.upsert({
       where: { slug: params.slug },
@@ -119,6 +145,7 @@ async function main() {
         meta: (params.meta ?? {}) as Prisma.InputJsonValue,
         active,
         balmDermalFocus: dermal,
+        usageFocus,
       },
       create: {
         slug: params.slug,
@@ -133,11 +160,21 @@ async function main() {
         meta: (params.meta ?? {}) as Prisma.InputJsonValue,
         active,
         balmDermalFocus: dermal,
+        usageFocus,
       },
       select: { id: true, slug: true },
     });
 
-    // Group assignments
+    // Group assignments (seed is the source of truth for stock placement)
+    const targetGroupIds = params.groupKeys
+      .map(groupKey => groupByKey.get(groupKey)?.id)
+      .filter((id): id is string => Boolean(id));
+    await prisma.ingredientGroupAssignment.deleteMany({
+      where: {
+        ingredientId: ing.id,
+        groupId: { notIn: targetGroupIds },
+      },
+    });
     await Promise.all(
       params.groupKeys
         .map((groupKey) => {
@@ -153,6 +190,12 @@ async function main() {
     );
 
     // Product assignments
+    await prisma.ingredientProductAssignment.deleteMany({
+      where: {
+        ingredientId: ing.id,
+        productType: { notIn: params.productTypes as never },
+      },
+    });
     await Promise.all(
       params.productTypes.map((productType) =>
         prisma.ingredientProductAssignment.upsert({
@@ -224,7 +267,6 @@ async function main() {
 
   // Exfoliator / Treatment oil pools (keep their separate ids)
   for (const i of OIL_CARRIERS) {
-    const sharedBase = i.id === 'jojoba';
     await upsertIngredient({
       slug: i.id,
       name: i.name,
@@ -234,13 +276,12 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
-      groupKeys: sharedBase ? ['oil_carriers', 'carriers_a'] : ['oil_carriers'],
-      productTypes: sharedBase ? ['EXFOLIATOR', 'TREATMENT_OIL', 'BALM', 'CLEANER'] : ['EXFOLIATOR', 'TREATMENT_OIL'],
+      groupKeys: ['oil_carriers'],
+      productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }
   for (const i of OIL_ACTIVES) {
-    const sharedBase = i.id === 'vitaminE';
     await upsertIngredient({
       slug: i.id,
       name: i.name,
@@ -250,8 +291,8 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
-      groupKeys: sharedBase ? ['oil_actives', 'actives_b'] : ['oil_actives'],
-      productTypes: sharedBase ? ['EXFOLIATOR', 'TREATMENT_OIL', 'BALM', 'CLEANER'] : ['EXFOLIATOR', 'TREATMENT_OIL'],
+      groupKeys: ['oil_actives'],
+      productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
     });
     if (++n % 25 === 0) console.log(`  … ${n} items`);
   }

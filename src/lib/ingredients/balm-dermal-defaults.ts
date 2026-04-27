@@ -51,6 +51,7 @@ const OVERRIDES: Record<string, BalmDermal> = {
   pumpkin: 'dry',
 
   // Essential oils (subset — sebum / acne vs dry–soothing)
+  neroli: 'dry',
   geranium: 'oily',
   teatree: 'oily',
   bergamotfcf: 'oily',
@@ -60,9 +61,12 @@ const OVERRIDES: Record<string, BalmDermal> = {
   chamomile_german: 'dry',
   rose_otto: 'dry',
   myrrh: 'dry',
-  sandalwood: 'dry',
+  sandalwood: 'universal',
+  oud: 'dry',
   patchouli: 'dry',
   vanilla_abs: 'dry',
+  rosemary: 'oily',
+  peppermint: 'oily',
   benzoin_abs: 'dry',
   benzoin_resinoid: 'dry',
   yylang: 'oily', // sebum copy

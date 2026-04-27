@@ -16,7 +16,8 @@ function toIngredient(i: { slug: string; name: string; desc: string; benefits: R
 let idCounter = 200;
 
 export function CleanerFormulaBuilder() {
-  const { groups } = useIngredientGroups('CLEANER');
+  const [mode, setMode] = useState<'face' | 'body'>('body');
+  const { groups } = useIngredientGroups('CLEANER', 'all', mode);
   const db = useMemo(() => {
     const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(x => toIngredient(x))]) ?? []);
     return {
@@ -34,7 +35,6 @@ export function CleanerFormulaBuilder() {
     { key: 'eo' as const, label: 'Essential Oils', data: db.eo, max: 12, color: '#534AB7' },
   ]), [db]);
 
-  const [mode, setMode] = useState<'face' | 'body'>('body');
   const [batchSize, setBatchSize] = useState(100);
   const [beeswaxOn, setBeeswaxOn] = useState(true);
   const [cPct, setCPct] = useState(8);

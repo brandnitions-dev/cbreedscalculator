@@ -14,7 +14,7 @@ function toIngredient(i: { slug: string; name: string; desc: string; benefits: R
 export default function FormulaBuilder() {
   const [mode, setMode] = useState<'face' | 'body'>('face');
   const [product, setProduct] = useState<'balm' | 'scrub'>('balm');
-  const { groups } = useIngredientGroups(product === 'balm' ? 'BALM' : 'CLEANER');
+  const { groups } = useIngredientGroups(product === 'balm' ? 'BALM' : 'CLEANER', 'all', mode);
   const db = useMemo(() => {
     const byKey = new Map(groups?.map(g => [g.key, g.ingredients.map(x => toIngredient(x))]) ?? []);
     return {
