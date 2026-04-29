@@ -212,7 +212,7 @@ function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefin
     ].filter(section => section.lines.length > 0),
     callouts: [
       mode === 'eyes'
-        ? 'Eye Serum v2: Includes Olivem 1000 emulsifier (6%), Geogard Ultra preservative (1.5%), phytic acid chelator (0.1%). Oil phase reduced to 14%. Vitamin E 0.5% (oil phase). pH target: 5.0–5.5. Shelf life: 6 months.'
+        ? 'Eye serum emulsion with Olivem 1000 emulsifier and Geogard Ultra preservative. pH target 5.0–5.5.'
         : 'Percentages are normalized from the saved weight scores and scaled to the saved batch size.',
     ],
   };

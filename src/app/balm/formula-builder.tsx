@@ -264,11 +264,9 @@ export function BalmFormulaBuilder() {
             </p>
           )}
           {mode === 'eyes' && (
-            <div className="mb-3.5 rounded-sm border border-accent-emerald/20 bg-accent-emerald/[0.06] px-3 py-2 text-xs text-text-secondary space-y-1">
-              <p className="font-semibold text-accent-emerald-light">Eye Serum v2 — Corrected emulsion formula</p>
-              <p>Water phase 60.5%: 35% aloe + 20% green tea hydrosol + 5.5% glycerin. Oil phase 14%: 8% squalane + 4% jojoba + ~2% luxury oils. Emulsifier 6%: Olivem 1000 (cetearyl olivate). Preservative 1.5%: Geogard Ultra. Actives 8%: caffeine + gotu kola + licorice root + bakuchiol. Vitamin E 0.5%. Chelator 0.1%.</p>
-              <p className="text-text-muted">pH target: 5.0–5.5 · Shelf life: 6 months · No essential oils near eyes.</p>
-            </div>
+            <p className="mb-3.5 rounded-sm border border-accent-emerald/20 bg-accent-emerald/[0.06] px-3 py-2 text-xs text-text-secondary">
+              Eye serum emulsion: 35% aloe, 20% green tea hydrosol, 5.5% glycerin, 8% squalane, 4% jojoba, 6% Olivem 1000 emulsifier, 1.5% Geogard Ultra preservative, 8% eye actives, 0.5% vitamin E. pH 5.0–5.5. No essential oils near eyes.
+            </p>
           )}
           <div className="flex items-center gap-3">
             <span className="text-xs font-semibold uppercase tracking-wider text-text-muted whitespace-nowrap">Batch</span>
