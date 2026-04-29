@@ -32,6 +32,16 @@ const DEFAULT_POOLS: Record<BalmMode, { a: Omit<PoolRow, 'id'>[]; b: Omit<PoolRo
     ],
     eo: [],
   },
+  eyes_balm: {
+    a: [{ ingId: 'pricklypear', weight: 3 }, { ingId: 'camellia', weight: 2 }],
+    b: [
+      { ingId: 'bakuchiol', weight: 3 },
+      { ingId: 'coffeeoil', weight: 2 },
+      { ingId: 'gotukola', weight: 2 },
+      { ingId: 'calendula', weight: 1 },
+    ],
+    eo: [],
+  },
 };
 
 function withRowIds(rows: Omit<PoolRow, 'id'>[]) {
@@ -42,7 +52,8 @@ export function BalmFormulaBuilder() {
   const [dermalMode, setDermalMode] = useState<'all' | 'dry' | 'oily'>('all');
 
   const [mode, setMode] = useState<BalmMode>('face');
-  const { groups } = useIngredientGroups('BALM', mode === 'face' || mode === 'body' ? dermalMode : 'all', mode);
+  const usageFilter = mode === 'eyes_balm' ? 'eyes' : mode;
+  const { groups } = useIngredientGroups('BALM', mode === 'face' || mode === 'body' ? dermalMode : 'all', usageFilter);
   const [batchSize, setBatchSize] = useState(100);
   const [beeswaxOn, setBeeswaxOn] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Record<string, number | null>>({});
@@ -72,7 +83,7 @@ export function BalmFormulaBuilder() {
 
   const POOLS_CONFIG = useMemo(() => ([
     { key: 'a' as const, label: 'Carrier Oils (A)', data: db.a, max: 4, color: '#85B7EB' },
-    { key: 'b' as const, label: 'Active Botanicals (B)', data: db.b, max: mode === 'eyes' ? 4 : 3, color: '#D85A30' },
+    { key: 'b' as const, label: 'Active Botanicals (B)', data: db.b, max: (mode === 'eyes' || mode === 'eyes_balm') ? 4 : 3, color: '#D85A30' },
     { key: 'eo' as const, label: 'Essential Oils', data: db.eo, max: 12, color: '#534AB7' },
   ]).filter(cfg => cfg.key !== 'eo' || mode === 'face' || mode === 'body'), [db, mode]);
 
@@ -83,7 +94,7 @@ export function BalmFormulaBuilder() {
 
   const selectMode = useCallback((nextMode: BalmMode) => {
     setMode(nextMode);
-    if (nextMode === 'lips' || nextMode === 'eyes') {
+    if (nextMode === 'lips' || nextMode === 'eyes' || nextMode === 'eyes_balm') {
       const defaults = DEFAULT_POOLS[nextMode];
       setPools({
         a: withRowIds(defaults.a),
@@ -175,8 +186,8 @@ export function BalmFormulaBuilder() {
       if (!s || s.v !== 1 || !s.pools) return;
       setBatchSize(b);
       if (s.dermal === 'all' || s.dermal === 'dry' || s.dermal === 'oily') setDermalMode(s.dermal);
-      if (s.mode === 'face' || s.mode === 'body' || s.mode === 'lips' || s.mode === 'eyes') setMode(s.mode);
-      else if (m === 'face' || m === 'body' || m === 'lips' || m === 'eyes') setMode(m);
+      if (s.mode === 'face' || s.mode === 'body' || s.mode === 'lips' || s.mode === 'eyes' || s.mode === 'eyes_balm') setMode(s.mode);
+      else if (m === 'face' || m === 'body' || m === 'lips' || m === 'eyes' || m === 'eyes_balm') setMode(m);
       setBeeswaxOn(s.beeswaxOn);
       let c = 0;
       const allowA = new Set(db.a.map(x => x.id));
@@ -208,7 +219,7 @@ export function BalmFormulaBuilder() {
         <GlassCard>
           <p className="text-[11px] text-text-muted mb-2 font-medium uppercase tracking-wider">Formula type</p>
           <p className="text-xs text-text-secondary mb-2.5 leading-relaxed">
-            Face/body stay tallow balm. Lips uses a higher-wax, castor-rich occlusive base. Eyes switches to a bio eye treatment base with aloe, green tea, squalane, caffeine, tremella, and pigment-support botanicals.
+            Face/body stay tallow balm. Lips uses a higher-wax, castor-rich occlusive base. Eye Serum is a water-oil emulsion with emulsifier and preservative. Eye Balm is an anhydrous tallow base — no water, no emulsifier, no preservative needed.
           </p>
           <div className="flex gap-3 flex-wrap items-center mb-3.5">
             <div className="flex flex-wrap gap-1.5">
@@ -217,7 +228,8 @@ export function BalmFormulaBuilder() {
                   { id: 'face' as const, label: 'Face (1% EO)' },
                   { id: 'body' as const, label: 'Body (2% EO)' },
                   { id: 'lips' as const, label: 'Lips (no EO)' },
-                  { id: 'eyes' as const, label: 'Eyes (no EO)' },
+                  { id: 'eyes' as const, label: 'Eye Serum' },
+                  { id: 'eyes_balm' as const, label: 'Eye Balm' },
                 ] as const
               ).map(m => (
                 <button key={m.id} onClick={() => selectMode(m.id)} className={cn(
@@ -266,6 +278,11 @@ export function BalmFormulaBuilder() {
           {mode === 'eyes' && (
             <p className="mb-3.5 rounded-sm border border-accent-emerald/20 bg-accent-emerald/[0.06] px-3 py-2 text-xs text-text-secondary">
               Eye serum emulsion: 35% aloe, 20% green tea hydrosol, 5.5% glycerin, 8% squalane, 4% jojoba, 6% Olivem 1000 emulsifier, 1.5% Geogard Ultra preservative, 8% eye actives, 0.5% vitamin E. pH 5.0–5.5. No essential oils near eyes.
+            </p>
+          )}
+          {mode === 'eyes_balm' && (
+            <p className="mb-3.5 rounded-sm border border-accent-gold/20 bg-accent-gold/[0.06] px-3 py-2 text-xs text-text-secondary">
+              Anhydrous eye balm: 42% tallow, 16% squalane, 10% jojoba, 6.5% shea, 5% beeswax, 10% luxury carriers, 10% oil-soluble eye actives, 0.5% vitamin E. No water, no emulsifier, no preservative needed. Shelf life 12–18 months. No essential oils near eyes.
             </p>
           )}
           <div className="flex items-center gap-3">

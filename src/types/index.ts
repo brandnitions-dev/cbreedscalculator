@@ -61,7 +61,7 @@ export interface FormulaResult {
   eoPct: number;
   cPct: number;
   scale: number;
-  product: 'balm' | 'scrub' | 'soap' | 'lips' | 'eyes';
+  product: 'balm' | 'scrub' | 'soap' | 'lips' | 'eyes' | 'eyes_balm';
 }
 
 /* ── Soap-specific types ────────────────────────────────────────────── */

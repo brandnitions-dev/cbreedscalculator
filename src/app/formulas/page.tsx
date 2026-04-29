@@ -139,9 +139,9 @@ function lineFromFraction(name: string, pct: number, batchSize: number, unit: 'm
 
 function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefined): FormulaDetail {
   const snapshot = asRecord(row.ingredients);
-  const mode: BalmMode = snapshot?.mode === 'face' || snapshot?.mode === 'body' || snapshot?.mode === 'lips' || snapshot?.mode === 'eyes'
+  const mode: BalmMode = snapshot?.mode === 'face' || snapshot?.mode === 'body' || snapshot?.mode === 'lips' || snapshot?.mode === 'eyes' || snapshot?.mode === 'eyes_balm'
     ? snapshot.mode
-    : row.mode === 'face' || row.mode === 'body' || row.mode === 'lips' || row.mode === 'eyes'
+    : row.mode === 'face' || row.mode === 'body' || row.mode === 'lips' || row.mode === 'eyes' || row.mode === 'eyes_balm'
       ? row.mode
       : 'body';
   const beeswaxOn = snapshot?.beeswaxOn !== false;
@@ -200,7 +200,7 @@ function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefin
       { label: 'Formula', value: mode },
       ...(mode === 'face' || mode === 'body' ? [{ label: 'Beeswax', value: beeswaxOn ? 'Included' : 'Off' }] : []),
       ...(mode === 'lips' ? [{ label: 'Essential oils', value: '0% (lip-safe)' }] : []),
-      ...(mode === 'eyes' ? [{ label: 'Essential oils', value: '0% (eye-safe)' }] : []),
+      ...(mode === 'eyes' || mode === 'eyes_balm' ? [{ label: 'Essential oils', value: '0% (eye-safe)' }] : []),
       ...(row.productType === 'CLEANER' ? [{ label: 'Exfoliant phase', value: formatPct(cPct) }] : []),
     ],
     sections: [
@@ -213,7 +213,9 @@ function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefin
     callouts: [
       mode === 'eyes'
         ? 'Eye serum emulsion with Olivem 1000 emulsifier and Geogard Ultra preservative. pH target 5.0–5.5.'
-        : 'Percentages are normalized from the saved weight scores and scaled to the saved batch size.',
+        : mode === 'eyes_balm'
+          ? 'Anhydrous tallow eye balm. No water, no emulsifier, no preservative. Shelf life 12–18 months.'
+          : 'Percentages are normalized from the saved weight scores and scaled to the saved batch size.',
     ],
   };
 }

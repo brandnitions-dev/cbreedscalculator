@@ -5,7 +5,7 @@
 
 import type { PoolRow, FormulaSplit, FixedIngredient, FormulaResult } from '@/types';
 
-export type BalmMode = 'face' | 'body' | 'lips' | 'eyes';
+export type BalmMode = 'face' | 'body' | 'lips' | 'eyes' | 'eyes_balm';
 
 export const FB_COLORS: Record<string, string> = {
   tallow: '#B4B2A9', beeswax: '#FAC775', jojoba: '#97C459', vite: '#F0997B',
@@ -73,10 +73,7 @@ export function calcFormula(
     }
 
     if (mode === 'eyes') {
-      // CORRECTED EYE SERUM FORMULA (v2 — post-audit)
-      // Water phase: 60.5% | Oil phase: 14% | Emulsifier: 6% | Actives: 8%
-      // Preservative: 1.5% | Chelator: 0.1% | Vitamin E: 0.5% | Carrier A: 9.4%
-      // pH target: 5.0–5.5 | Shelf life: 6 months
+      // EYE SERUM — water-oil emulsion (complex, requires emulsifier + preservative)
       const fixed: FixedIngredient[] = [
         { name: 'Aloe vera juice', pct: 0.35, color: FB_COLORS.aloe },
         { name: 'Green tea hydrosol', pct: 0.20, color: FB_COLORS.greenTea },
@@ -88,8 +85,6 @@ export function calcFormula(
         { name: 'Phytic acid (chelator)', pct: 0.001, color: FB_COLORS.chelator },
         { name: 'Vitamin E', pct: 0.005, color: FB_COLORS.vite },
       ];
-      // Carrier A pool: prickly pear + rosehip combined at ~4% (reduced from 10%)
-      // Active B pool: caffeine, gotu kola, licorice root (≤2%), bakuchiol — total 8%
       return {
         fixed,
         aSplit: splitPool(pools.a, 0.094),
@@ -100,6 +95,32 @@ export function calcFormula(
         cPct: 0,
         scale: 1,
         product: 'eyes',
+      };
+    }
+
+    if (mode === 'eyes_balm') {
+      // ANHYDROUS EYE BALM — tallow-based, no water = no emulsifier, no preservative
+      // Shelf life: 12–18 months | No pH control needed | Simple melt-mix-pour
+      const fixed: FixedIngredient[] = [
+        { name: 'Tallow', pct: 0.42, color: FB_COLORS.tallow },
+        { name: 'Squalane', pct: 0.16, color: FB_COLORS.squalane },
+        { name: 'Jojoba', pct: 0.10, color: FB_COLORS.jojoba },
+        { name: 'Shea butter', pct: 0.065, color: FB_COLORS.shea },
+        { name: 'Beeswax', pct: 0.05, color: FB_COLORS.beeswax },
+        { name: 'Vitamin E', pct: 0.005, color: FB_COLORS.vite },
+      ];
+      // Carrier A pool: 10% — prickly pear, camellia, rosehip (luxury eye-area oils)
+      // Active B pool: 10% — bakuchiol (2%), coffee oil, gotu kola, calendula (all oil-soluble)
+      return {
+        fixed,
+        aSplit: splitPool(pools.a, 0.10),
+        bSplit: splitPool(pools.b, 0.10),
+        cSplit: [],
+        eoSplit: [],
+        eoPct: 0,
+        cPct: 0,
+        scale: 1,
+        product: 'eyes_balm',
       };
     }
 
