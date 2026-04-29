@@ -125,6 +125,8 @@ export function ExfoliatorFormulaBuilder() {
   const loadPreset = useCallback((presetId: string) => {
     const preset = OIL_PRESETS.find(p => p.id === presetId);
     if (!preset) return;
+    if (typeof preset.activePct === 'number') setActivePct(preset.activePct);
+    if (typeof preset.eoPct === 'number') setEoPct(preset.eoPct);
     setPools({
       carriers: preset.carriers.filter(c => allowed.carriers.has(c.ingId)).map(c => ({ id: idCounter++, ingId: c.ingId, weight: c.weight })),
       actives: preset.actives.filter(a => allowed.actives.has(a.ingId)).map(a => ({ id: idCounter++, ingId: a.ingId, weight: a.weight })),
@@ -269,7 +271,7 @@ export function ExfoliatorFormulaBuilder() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-text-muted whitespace-nowrap">EOs</span>
-              <input type="range" min={0.03} max={0.15} step={0.005} value={eoPct} onChange={e => setEoPct(+e.target.value)} className="flex-1 accent-accent-violet h-1.5" />
+              <input type="range" min={0} max={0.15} step={0.005} value={eoPct} onChange={e => setEoPct(+e.target.value)} className="flex-1 accent-accent-violet h-1.5" />
               <span className="text-sm font-bold text-accent-violet min-w-[40px] text-right">{(eoPct * 100).toFixed(1)}%</span>
             </div>
           </GlassCard>

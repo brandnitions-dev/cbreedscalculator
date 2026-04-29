@@ -15,7 +15,7 @@ export type IngredientFeedItem = {
   tips: { low: string; mid: string; high: string };
   meta: Record<string, unknown>;
   balmDermalFocus?: 'universal' | 'dry' | 'oily';
-  usageFocus?: 'universal' | 'face' | 'body';
+  usageFocus?: 'universal' | 'face' | 'body' | 'lips' | 'eyes';
 };
 
 export type IngredientFeedGroup = {
@@ -28,7 +28,7 @@ export type IngredientFeedGroup = {
 export function useIngredientGroups(
   productType: string,
   balmDermal: 'all' | 'dry' | 'oily' = 'all',
-  usage: 'all' | 'face' | 'body' = 'all',
+  usage: 'all' | 'face' | 'body' | 'lips' | 'eyes' = 'all',
 ) {
   const [groups, setGroups] = useState<IngredientFeedGroup[] | null>(null);
   const [error, setError] = useState<string>('');

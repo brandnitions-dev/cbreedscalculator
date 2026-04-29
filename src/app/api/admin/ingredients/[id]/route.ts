@@ -23,7 +23,7 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
     groupKeys?: string[];
     productTypes?: string[];
     balmDermalFocus?: 'universal' | 'dry' | 'oily';
-    usageFocus?: 'universal' | 'face' | 'body';
+    usageFocus?: 'universal' | 'face' | 'body' | 'lips' | 'eyes';
   };
 
   const updated = await prisma.ingredient.update({

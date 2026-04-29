@@ -26,10 +26,10 @@ export const OIL_CARRIERS: OilIngredient[] = [
 ];
 
 export const OIL_ACTIVES: OilIngredient[] = [
-  { id: 'willowbark', name: 'Willow Bark Extract', desc: 'Natural salicin (BHA precursor) — gentle exfoliation without synthetic salicylic acid burn.', color: '#FCD34D', benefits: { exfoliation: 3, poreClearing: 3, antiinflammatory: 2 }, maxPct: 0.15, tips: { low: 'Gentle BHA activity — daily use safe.', mid: 'Good exfoliation — pores clearing noticeably.', high: 'Strong willow bark — maximum natural BHA, may tingle.' } },
-  { id: 'bisabolol', name: 'Alpha-Bisabolol', desc: 'Chamomile-derived — stops redness and irritation instantly. Anti-inflammatory powerhouse.', color: '#FDE68A', benefits: { soothing: 3, antiinflammatory: 3, healing: 2 }, maxPct: 0.02, tips: { low: 'Trace calming — good baseline.', mid: 'Good anti-redness dose.', high: 'Strong bisabolol — maximum soothing, excellent post-extraction.' } },
+  { id: 'willowbark', name: 'Willow Bark Extract', desc: 'Natural salicin (BHA precursor) — gentle exfoliation without synthetic salicylic acid burn.', color: '#FCD34D', benefits: { exfoliation: 3, poreClearing: 3, antiinflammatory: 2 }, maxPct: 0.02, tips: { low: 'Gentle BHA activity — daily use safe.', mid: '2% BHA ceiling — pores clearing without pushing irritation.', high: 'Above target — keep clinical prep blends at the safe 2% BHA ceiling.' } },
+  { id: 'bisabolol', name: 'Alpha-Bisabolol', desc: 'Chamomile-derived — stops redness and irritation instantly. Anti-inflammatory powerhouse.', color: '#FDE68A', benefits: { soothing: 3, antiinflammatory: 3, healing: 2 }, maxPct: 0.06, tips: { low: 'Trace calming — good baseline.', mid: 'Good anti-redness dose.', high: '6% clinical prep dose — strong soothing before treatment.' } },
   { id: 'allantoin', name: 'Allantoin', desc: 'Cell proliferant — speeds healing, softens skin. Very gentle.', color: '#FEF3C7', benefits: { healing: 3, softening: 3, soothing: 2 }, maxPct: 0.02, tips: { low: 'Gentle healing support.', mid: 'Good cell renewal.', high: 'Strong allantoin — maximum healing acceleration.' } },
-  { id: 'vitaminE', name: 'Vitamin E (Tocopherol)', desc: 'Antioxidant — prevents oil oxidation, extends shelf life. Skin healing.', color: '#FBBF24', benefits: { antioxidant: 3, stability: 3, healing: 2 }, maxPct: 0.01, tips: { low: 'Baseline antioxidant protection.', mid: 'Good stability and healing.', high: 'Strong vitamin E — maximum shelf life.' } },
+  { id: 'vitaminE', name: 'Vitamin E (Tocopherol)', desc: 'Antioxidant — prevents oil oxidation, extends shelf life. Skin healing.', color: '#FBBF24', benefits: { antioxidant: 3, stability: 3, healing: 2 }, maxPct: 0.02, tips: { low: 'Baseline antioxidant protection.', mid: 'Good stability and barrier support.', high: '2% stability dose — stronger antioxidant protection for rosehip-heavy blends.' } },
 ];
 
 export const OIL_EOS: OilIngredient[] = [
@@ -46,6 +46,8 @@ export interface OilFormula {
   id: string;
   name: string;
   desc: string;
+  activePct?: number;
+  eoPct?: number;
   carriers: { ingId: string; weight: number }[];
   actives: { ingId: string; weight: number }[];
   eos: { ingId: string; weight: number }[];
@@ -55,11 +57,13 @@ export interface OilFormula {
 export const OIL_PRESETS: OilFormula[] = [
   {
     id: 'bha_penetrating',
-    name: 'BHA Penetrating Oil',
-    desc: 'Deep pore treatment for home/spa use — replaces steam. Jojoba mimics sebum to "trick" pores into accepting BHA.',
-    carriers: [{ ingId: 'jojoba', weight: 6 }, { ingId: 'rosehip', weight: 2 }],
-    actives: [{ ingId: 'willowbark', weight: 5 }],
-    eos: [{ ingId: 'frankincense', weight: 4 }, { ingId: 'wintergreen', weight: 3 }, { ingId: 'teatree', weight: 3 }],
+    name: 'The Purge — BHA Penetration Oil',
+    desc: 'Corrected clinic-prep BHA oil: jojoba for sebum-like pore softening, grapeseed for light linoleic flow, rosehip repair, and low-irritation rosemary.',
+    activePct: 0.13,
+    eoPct: 0.02,
+    carriers: [{ ingId: 'grapeseed', weight: 35 }, { ingId: 'jojoba', weight: 30 }, { ingId: 'rosehip', weight: 20 }],
+    actives: [{ ingId: 'bisabolol', weight: 6 }, { ingId: 'willowbark', weight: 2 }, { ingId: 'vitaminE', weight: 2 }],
+    eos: [{ ingId: 'rosemary', weight: 2 }],
     shelfLife: '8-10mo',
   },
   {

@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     groupKeys?: string[];
     productTypes?: string[];
     balmDermalFocus?: 'universal' | 'dry' | 'oily';
-    usageFocus?: 'universal' | 'face' | 'body';
+    usageFocus?: 'universal' | 'face' | 'body' | 'lips' | 'eyes';
   };
 
   if (!body?.slug || !body?.name || !body?.desc) {
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
       tips: (body.tips ?? { low: '', mid: '', high: '' }) as Prisma.InputJsonValue,
       meta: (body.meta ?? {}) as Prisma.InputJsonValue,
       balmDermalFocus: (body.balmDermalFocus ?? 'universal') as 'universal' | 'dry' | 'oily',
-      usageFocus: (body.usageFocus ?? 'universal') as 'universal' | 'face' | 'body',
+      usageFocus: (body.usageFocus ?? 'universal') as 'universal' | 'face' | 'body' | 'lips' | 'eyes',
       groups: body.groupKeys?.length
         ? {
             create: body.groupKeys.map(k => ({

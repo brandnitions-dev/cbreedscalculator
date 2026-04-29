@@ -6,7 +6,7 @@ import { ArrowUpRight, Eye, Loader2, Trash2, X } from 'lucide-react';
 import { ExportCardActions } from '@/components/formula';
 import { GlassCard } from '@/components/ui';
 import { calculateSoap } from '@/lib/chemistry';
-import { calcFormula, FB_COLORS } from '@/lib/formula-engine';
+import { calcFormula, FB_COLORS, type BalmMode } from '@/lib/formula-engine';
 import {
   PRODUCT_TYPE_LABEL,
   PRODUCT_TYPE_ROUTE,
@@ -139,9 +139,9 @@ function lineFromFraction(name: string, pct: number, batchSize: number, unit: 'm
 
 function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefined): FormulaDetail {
   const snapshot = asRecord(row.ingredients);
-  const mode = snapshot?.mode === 'face' || snapshot?.mode === 'body'
+  const mode: BalmMode = snapshot?.mode === 'face' || snapshot?.mode === 'body' || snapshot?.mode === 'lips' || snapshot?.mode === 'eyes'
     ? snapshot.mode
-    : row.mode === 'face' || row.mode === 'body'
+    : row.mode === 'face' || row.mode === 'body' || row.mode === 'lips' || row.mode === 'eyes'
       ? row.mode
       : 'body';
   const beeswaxOn = snapshot?.beeswaxOn !== false;
@@ -197,8 +197,10 @@ function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefin
   return {
     stats: [
       { label: 'Batch', value: `${row.batchSize}ml` },
-      { label: 'Surface', value: mode },
-      { label: 'Beeswax', value: beeswaxOn ? 'Included' : 'Off' },
+      { label: 'Formula', value: mode },
+      ...(mode === 'face' || mode === 'body' ? [{ label: 'Beeswax', value: beeswaxOn ? 'Included' : 'Off' }] : []),
+      ...(mode === 'lips' ? [{ label: 'Essential oils', value: '0% (lip-safe)' }] : []),
+      ...(mode === 'eyes' ? [{ label: 'Essential oils', value: '0% (eye-safe)' }] : []),
       ...(row.productType === 'CLEANER' ? [{ label: 'Exfoliant phase', value: formatPct(cPct) }] : []),
     ],
     sections: [
@@ -209,7 +211,9 @@ function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefin
       { title: 'Essential oils', lines: eos },
     ].filter(section => section.lines.length > 0),
     callouts: [
-      'Percentages are normalized from the saved weight scores and scaled to the saved batch size.',
+      mode === 'eyes'
+        ? 'Eye treatment uses a bio water/lipid base. Use a proper broad-spectrum preservative system for stored batches.'
+        : 'Percentages are normalized from the saved weight scores and scaled to the saved batch size.',
     ],
   };
 }

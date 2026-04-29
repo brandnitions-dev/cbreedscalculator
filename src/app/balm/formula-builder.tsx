@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui';
 import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
-import { calcFormula, FB_COLORS, BENEFIT_LABELS, FB_BENEFIT_COLORS } from '@/lib/formula-engine';
+import { calcFormula, FB_COLORS, BENEFIT_LABELS, FB_BENEFIT_COLORS, type BalmMode } from '@/lib/formula-engine';
 import type { PoolRow, Ingredient } from '@/types';
 
 function toIngredient(i: { slug: string; name: string; desc: string; benefits: Record<string, number>; tips: { low: string; mid: string; high: string }; potency: Ingredient['potency'] | null }): Ingredient {
@@ -14,11 +14,35 @@ function toIngredient(i: { slug: string; name: string; desc: string; benefits: R
 
 let idCounter = 0;
 
+const DEFAULT_POOLS: Record<BalmMode, { a: Omit<PoolRow, 'id'>[]; b: Omit<PoolRow, 'id'>[]; eo: Omit<PoolRow, 'id'>[] }> = {
+  face: { a: [], b: [], eo: [] },
+  body: { a: [], b: [], eo: [] },
+  lips: {
+    a: [{ ingId: 'castor', weight: 14 }, { ingId: 'rosehip', weight: 6 }],
+    b: [{ ingId: 'calendula', weight: 3 }],
+    eo: [],
+  },
+  eyes: {
+    a: [{ ingId: 'pricklypear', weight: 2 }, { ingId: 'rosehip', weight: 2 }],
+    b: [
+      { ingId: 'caffeine_extract', weight: 3 },
+      { ingId: 'gotukola', weight: 2 },
+      { ingId: 'licorice_root', weight: 2 },
+      { ingId: 'bakuchiol', weight: 1 },
+    ],
+    eo: [],
+  },
+};
+
+function withRowIds(rows: Omit<PoolRow, 'id'>[]) {
+  return rows.map(row => ({ id: idCounter++, ...row }));
+}
+
 export function BalmFormulaBuilder() {
   const [dermalMode, setDermalMode] = useState<'all' | 'dry' | 'oily'>('all');
 
-  const [mode, setMode] = useState<'face' | 'body'>('face');
-  const { groups } = useIngredientGroups('BALM', dermalMode, mode);
+  const [mode, setMode] = useState<BalmMode>('face');
+  const { groups } = useIngredientGroups('BALM', mode === 'face' || mode === 'body' ? dermalMode : 'all', mode);
   const [batchSize, setBatchSize] = useState(100);
   const [beeswaxOn, setBeeswaxOn] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Record<string, number | null>>({});
@@ -48,14 +72,26 @@ export function BalmFormulaBuilder() {
 
   const POOLS_CONFIG = useMemo(() => ([
     { key: 'a' as const, label: 'Carrier Oils (A)', data: db.a, max: 4, color: '#85B7EB' },
-    { key: 'b' as const, label: 'Active Botanicals (B)', data: db.b, max: 3, color: '#D85A30' },
+    { key: 'b' as const, label: 'Active Botanicals (B)', data: db.b, max: mode === 'eyes' ? 4 : 3, color: '#D85A30' },
     { key: 'eo' as const, label: 'Essential Oils', data: db.eo, max: 12, color: '#534AB7' },
-  ]), [db]);
+  ]).filter(cfg => cfg.key !== 'eo' || mode === 'face' || mode === 'body'), [db, mode]);
 
   const formula = useMemo(() =>
     calcFormula(mode, 'balm', { ...pools, c: [] }, 0.08, beeswaxOn),
     [mode, pools, beeswaxOn]
   );
+
+  const selectMode = useCallback((nextMode: BalmMode) => {
+    setMode(nextMode);
+    if (nextMode === 'lips' || nextMode === 'eyes') {
+      const defaults = DEFAULT_POOLS[nextMode];
+      setPools({
+        a: withRowIds(defaults.a),
+        b: withRowIds(defaults.b),
+        eo: withRowIds(defaults.eo),
+      });
+    }
+  }, []);
 
   const toggleIng = useCallback((pool: 'a' | 'b' | 'eo', ingId: string) => {
     setPools(prev => {
@@ -131,7 +167,7 @@ export function BalmFormulaBuilder() {
     (ingredients: unknown, b: number, m: string | null) => {
       const s = ingredients as {
         v: number;
-        mode?: 'face' | 'body';
+        mode?: BalmMode;
         beeswaxOn: boolean;
         dermal?: 'all' | 'dry' | 'oily';
         pools: { a: { ingId: string; weight: number }[]; b: { ingId: string; weight: number }[]; eo: { ingId: string; weight: number }[] };
@@ -139,8 +175,8 @@ export function BalmFormulaBuilder() {
       if (!s || s.v !== 1 || !s.pools) return;
       setBatchSize(b);
       if (s.dermal === 'all' || s.dermal === 'dry' || s.dermal === 'oily') setDermalMode(s.dermal);
-      if (s.mode === 'face' || s.mode === 'body') setMode(s.mode);
-      else if (m === 'face' || m === 'body') setMode(m);
+      if (s.mode === 'face' || s.mode === 'body' || s.mode === 'lips' || s.mode === 'eyes') setMode(s.mode);
+      else if (m === 'face' || m === 'body' || m === 'lips' || m === 'eyes') setMode(m);
       setBeeswaxOn(s.beeswaxOn);
       let c = 0;
       const allowA = new Set(db.a.map(x => x.id));
@@ -170,48 +206,70 @@ export function BalmFormulaBuilder() {
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
       <div className="space-y-5">
         <GlassCard>
-          <p className="text-[11px] text-text-muted mb-2 font-medium uppercase tracking-wider">Fatty acid focus</p>
+          <p className="text-[11px] text-text-muted mb-2 font-medium uppercase tracking-wider">Formula type</p>
           <p className="text-xs text-text-secondary mb-2.5 leading-relaxed">
-            Linoleic (LA) leans toward oily, acne-prone skin; α-linolenic (ALA) and similar lipids support dry, sensitive, barrier-focused work.
-            “All” shows every active Balm item; Dry/Oily limit the picker to that profile (plus universal picks).
+            Face/body stay tallow balm. Lips uses a higher-wax, castor-rich occlusive base. Eyes switches to a bio eye treatment base with aloe, green tea, squalane, caffeine, tremella, and pigment-support botanicals.
           </p>
-          <div className="flex flex-wrap gap-1.5 mb-3.5">
-            {(
-              [
-                { id: 'all' as const, label: 'All' },
-                { id: 'dry' as const, label: 'Dry / sensitive (ALA-leaning)' },
-                { id: 'oily' as const, label: 'Oily / acne (LA-leaning)' },
-              ] as const
-            ).map(opt => (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setDermalMode(opt.id)}
-                className={cn(
-                  'px-3 py-2 rounded-xs text-xs font-medium border transition-all',
-                  dermalMode === opt.id
-                    ? 'bg-accent-gold/15 border-accent-gold/40 text-accent-gold-light'
-                    : 'bg-surface-input border-border text-text-tertiary hover:text-text-secondary hover:border-border-strong',
-                )}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
           <div className="flex gap-3 flex-wrap items-center mb-3.5">
-            <div className="flex gap-1.5">
-              {(['face', 'body'] as const).map(m => (
-                <button key={m} onClick={() => setMode(m)} className={cn(
+            <div className="flex flex-wrap gap-1.5">
+              {(
+                [
+                  { id: 'face' as const, label: 'Face (1% EO)' },
+                  { id: 'body' as const, label: 'Body (2% EO)' },
+                  { id: 'lips' as const, label: 'Lips (no EO)' },
+                  { id: 'eyes' as const, label: 'Eyes (no EO)' },
+                ] as const
+              ).map(m => (
+                <button key={m.id} onClick={() => selectMode(m.id)} className={cn(
                   'px-3 py-2 rounded-xs text-xs font-medium border transition-all',
-                  mode === m ? 'bg-accent-indigo/15 border-accent-indigo/30 text-accent-indigo-light' : 'bg-surface-input border-border text-text-tertiary hover:text-text-secondary hover:border-border-strong'
-                )}>{m === 'face' ? 'Face (1% EO)' : 'Body (2% EO)'}</button>
+                  mode === m.id ? 'bg-accent-indigo/15 border-accent-indigo/30 text-accent-indigo-light' : 'bg-surface-input border-border text-text-tertiary hover:text-text-secondary hover:border-border-strong'
+                )}>{m.label}</button>
               ))}
             </div>
-            <label className="flex items-center gap-2 text-[13px] cursor-pointer text-text-secondary">
-              <input type="checkbox" checked={beeswaxOn} onChange={e => setBeeswaxOn(e.target.checked)} className="w-4 h-4 accent-accent-indigo" />
-              Beeswax (8%)
-            </label>
           </div>
+          {(mode === 'face' || mode === 'body') && (
+            <>
+              <div className="flex flex-wrap gap-1.5 mb-3.5">
+                {(
+                  [
+                    { id: 'all' as const, label: 'All' },
+                    { id: 'dry' as const, label: 'Dry / sensitive (ALA-leaning)' },
+                    { id: 'oily' as const, label: 'Oily / acne (LA-leaning)' },
+                  ] as const
+                ).map(opt => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setDermalMode(opt.id)}
+                    className={cn(
+                      'px-3 py-2 rounded-xs text-xs font-medium border transition-all',
+                      dermalMode === opt.id
+                        ? 'bg-accent-gold/15 border-accent-gold/40 text-accent-gold-light'
+                        : 'bg-surface-input border-border text-text-tertiary hover:text-text-secondary hover:border-border-strong',
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <label className="mb-3.5 flex items-center gap-2 text-[13px] cursor-pointer text-text-secondary">
+                <input type="checkbox" checked={beeswaxOn} onChange={e => setBeeswaxOn(e.target.checked)} className="w-4 h-4 accent-accent-indigo" />
+                Beeswax (8%)
+              </label>
+            </>
+          )}
+          {mode === 'lips' && (
+            <p className="mb-3.5 rounded-sm border border-accent-gold/20 bg-accent-gold/[0.06] px-3 py-2 text-xs text-text-secondary">
+              Professional lip ratio: 32% tallow, 18% beeswax, 10% shea, 15% jojoba, 20% carrier gloss phase, 3% healing active phase, 2% vitamin E.
+            </p>
+          )}
+          {mode === 'eyes' && (
+            <div className="mb-3.5 rounded-sm border border-accent-emerald/20 bg-accent-emerald/[0.06] px-3 py-2 text-xs text-text-secondary space-y-1">
+              <p className="font-semibold text-accent-emerald-light">Eye Serum v2 — Corrected emulsion formula</p>
+              <p>Water phase 60.5%: 35% aloe + 20% green tea hydrosol + 5.5% glycerin. Oil phase 14%: 8% squalane + 4% jojoba + ~2% luxury oils. Emulsifier 6%: Olivem 1000 (cetearyl olivate). Preservative 1.5%: Geogard Ultra. Actives 8%: caffeine + gotu kola + licorice root + bakuchiol. Vitamin E 0.5%. Chelator 0.1%.</p>
+              <p className="text-text-muted">pH target: 5.0–5.5 · Shelf life: 6 months · No essential oils near eyes.</p>
+            </div>
+          )}
           <div className="flex items-center gap-3">
             <span className="text-xs font-semibold uppercase tracking-wider text-text-muted whitespace-nowrap">Batch</span>
             <input type="range" min={25} max={500} step={5} value={batchSize} onChange={e => setBatchSize(+e.target.value)} className="flex-1 accent-accent-indigo h-1.5" />

@@ -21,11 +21,19 @@ const ACTIVE_INGREDIENT_SLUGS = new Set([
 
   // Carrier oils A
   'rosehip',
+  'castor',
+  'pricklypear',
   'grapeseed',
   'sesame',
 
   // Active oils B
   'blackseed',
+  'bakuchiol',
+  'calendula',
+  'gotukola',
+  'caffeine_extract',
+  'licorice_root',
+  'tremella',
 
   // Essential oils
   'sandalwood',
@@ -46,10 +54,17 @@ const ACTIVE_INGREDIENT_SLUGS = new Set([
   'bisabolol',
 ]);
 
-function getDefaultUsageFocusForSlug(slug: string): 'universal' | 'face' | 'body' {
+function getDefaultUsageFocusForSlug(slug: string): 'universal' | 'face' | 'body' | 'lips' | 'eyes' {
+  if (['castor', 'calendula'].includes(slug)) {
+    return 'lips';
+  }
+
+  if (['pricklypear', 'bakuchiol', 'gotukola', 'caffeine_extract', 'licorice_root', 'tremella'].includes(slug)) {
+    return 'eyes';
+  }
+
   if (
     [
-      'rosehip',
       'grapeseed',
       'blackseed',
       'ground_ginger',
@@ -126,7 +141,7 @@ async function main() {
     groupKeys: string[];
     productTypes: Array<'BALM' | 'CLEANER' | 'EXFOLIATOR' | 'SOAP' | 'TREATMENT_OIL'>;
     balmDermalFocus?: 'universal' | 'dry' | 'oily';
-    usageFocus?: 'universal' | 'face' | 'body';
+    usageFocus?: 'universal' | 'face' | 'body' | 'lips' | 'eyes';
   }) => {
     const dermal = params.balmDermalFocus ?? 'universal';
     const usageFocus = params.usageFocus ?? getDefaultUsageFocusForSlug(params.slug);

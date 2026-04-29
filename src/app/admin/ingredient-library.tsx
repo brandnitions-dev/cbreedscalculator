@@ -23,7 +23,7 @@ type AdminIngredient = {
   tips: Tips;
   meta: Record<string, unknown>;
   balmDermalFocus: 'universal' | 'dry' | 'oily';
-  usageFocus: 'universal' | 'face' | 'body';
+  usageFocus: 'universal' | 'face' | 'body' | 'lips' | 'eyes';
   updatedAt: string;
   groupKeys: string[];
   productTypes: string[];
@@ -45,7 +45,7 @@ type Draft = {
   tips: Tips;
   meta: Record<string, string>;
   balmDermalFocus: 'universal' | 'dry' | 'oily';
-  usageFocus: 'universal' | 'face' | 'body';
+  usageFocus: 'universal' | 'face' | 'body' | 'lips' | 'eyes';
 };
 
 const PRODUCT_TYPES = [
@@ -66,12 +66,16 @@ const BENEFIT_OPTIONS = [
   'brightening',
   'calming',
   'conditioning',
+  'circulation',
+  'depuffing',
   'exfoliation',
   'firming',
   'healing',
   'hydrating',
   'moisturizing',
   'poreClearing',
+  'plumping',
+  'pigment',
   'regenerating',
   'scarring',
   'sebumControl',
@@ -827,18 +831,20 @@ export default function AdminIngredientLibrary() {
                     )}
 
                     <div className="rounded-md border border-border-subtle/80 bg-surface-elevated/30 p-3">
-                      <div className="form-label">Face / body usage</div>
+                      <div className="form-label">Formula usage</div>
                       <p className="mb-2 text-[11px] leading-relaxed text-text-muted">
-                        Formula builders show “Universal” ingredients in both modes. Face-only and body-only ingredients are filtered by the selected batch surface.
+                        Formula builders show “Universal” ingredients in every mode. Mode-only ingredients are filtered by the selected product surface.
                       </p>
                       <select
                         className="input"
                         value={draft.usageFocus}
                         onChange={e => setDraftValue('usageFocus', e.target.value as Draft['usageFocus'])}
                       >
-                        <option value="universal">Universal — face and body</option>
+                        <option value="universal">Universal — all modes</option>
                         <option value="face">Face only</option>
                         <option value="body">Body only</option>
+                        <option value="lips">Lips only</option>
+                        <option value="eyes">Eyes only</option>
                       </select>
                     </div>
                   </div>

@@ -38,6 +38,8 @@ enum IngredientUsageFocus {
   universal
   face
   body
+  lips
+  eyes
 }
 
 model User {

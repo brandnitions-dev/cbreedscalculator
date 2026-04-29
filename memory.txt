@@ -209,3 +209,41 @@ Build passes cleanly (12 static pages, 0 errors).
 - Builder page (`/builder`) may be deprecated — each product has own formula builder now
 - Old `/oils` directory can be cleaned up if still present
 - Git commit + push pending
+
+## Eye Revival Serum Formula Audit (2026-04-29)
+### Problem
+Original eye serum formula (eyes mode in balm builder) had critical flaws:
+- No emulsifier — 60% water + 28% oil will separate immediately
+- No preservative — water-based formula at severe microbial risk near eyes
+- Oil phase 28% too heavy for eye area (standard: 5–15%)
+- Vitamin E at 2% overdosed (should be 0.5% antioxidant, not preservative)
+- Licorice root at 3.2% above safe range (max 2%)
+- No pH specification (actives are pH-sensitive)
+- Wrong product classification ("Tallow Balm" — it contains no tallow)
+
+### Corrected Formula (v2)
+- Water phase 60.5%: Aloe 35%, Green tea hydrosol 20%, Glycerin 5.5%
+- Oil phase ~14%: Squalane 8%, Jojoba 4%, Carrier A 9.4% (prickly pear + rosehip shared)
+- Emulsifier 6%: Olivem 1000 (Cetearyl Olivate + Sorbitan Olivate) — EcoCert
+- Preservative 1.5%: Geogard Ultra (Gluconolactone + Sodium Benzoate)
+- Chelator 0.1%: Phytic acid (prevents rosehip oxidation)
+- Vitamin E 0.5%: Oil-phase antioxidant, add before emulsification
+- Actives 8%: Caffeine ~2.9%, Gotu kola ~2%, Licorice root ≤2%, Bakuchiol ~1%
+- pH target: 5.0–5.5
+- Shelf life: 6 months (3M PAO)
+
+### Default Pool Changes (formula-builder.tsx)
+- Carrier A: pricklypear weight 6→2, rosehip weight 4→2
+- Active B: caffeine_extract weight 2→3, tremella→gotukola (weight 2), licorice_root weight 2 (unchanged), bakuchiol weight 1 (unchanged)
+
+### Files Changed
+- `src/lib/formula-engine.ts` — new fixed ingredients (emulsifier, preservative, chelator), corrected percentages, new color tokens
+- `src/app/balm/formula-builder.tsx` — updated default pools and info banner
+- `docs/compliance/inci-eye-serum.md` — NEW: full INCI label draft with manufacturing process
+
+### Remaining (manual)
+- Confirm licorice root extract solubility with supplier (water vs oil soluble)
+- PET (Preservative Efficacy Test) required before selling
+- Accelerated stability testing at 40°C/75% RH
+- PIF must be updated: "Eye Serum / Leave-on emulsion" NOT "Tallow Balm"
+- Bakuchiol at ~1% = no retinol-alternative claims (needs 2% for efficacy claims)

@@ -15,7 +15,7 @@ const PUBLIC_GROUP_KEYS: Record<string, string[]> = {
  * Query params:
  * - productType: BALM | CLEANER | EXFOLIATOR | SOAP | TREATMENT_OIL
  * - dermal: all | dry | oily — only for BALM: filter by balmDermalFocus
- * - usage: all | face | body — filter by formula surface
+ * - usage: all | face | body | lips | eyes — filter by formula surface
  */
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -31,7 +31,8 @@ export async function GET(req: Request) {
   const dermalMode =
     productType === 'BALM' && (dermal === 'dry' || dermal === 'oily') ? dermal : null;
   const usage = searchParams.get('usage');
-  const usageMode = usage === 'face' || usage === 'body' ? usage : null;
+  const usageMode =
+    usage === 'face' || usage === 'body' || usage === 'lips' || usage === 'eyes' ? usage : null;
 
   const groups = await prisma.ingredientGroup.findMany({
     where: { key: { in: groupKeys } },
