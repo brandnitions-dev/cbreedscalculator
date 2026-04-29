@@ -10,6 +10,7 @@ export type BalmMode = 'face' | 'body' | 'lips' | 'eyes' | 'eyes_balm';
 export const FB_COLORS: Record<string, string> = {
   tallow: '#B4B2A9', beeswax: '#FAC775', jojoba: '#97C459', vite: '#F0997B',
   shea: '#EACB8A', aloe: '#8BE3B0', greenTea: '#7FB069', glycerin: '#9BD8D8', squalane: '#7DD3C0',
+  rosehip: '#E8937A', pricklypear: '#A8D86E', calendula: '#F5C34D',
   emulsifier: '#E8A87C', preservative: '#A3C4BC', chelator: '#C9B1FF',
   a0: '#85B7EB', a1: '#5DCAA5', a2: '#AFA9EC', a3: '#ED93B1',
   b0: '#D85A30', b1: '#993C1D', b2: '#BA7517', b3: '#D4537E',
@@ -99,22 +100,23 @@ export function calcFormula(
     }
 
     if (mode === 'eyes_balm') {
-      // ANHYDROUS EYE BALM — tallow-based, no water = no emulsifier, no preservative
-      // Shelf life: 12–18 months | No pH control needed | Simple melt-mix-pour
+      // ANHYDROUS EYE OIL SERUM — pure oil, zero tallow, zero beeswax
+      // No water = no emulsifier, no preservative, no pH control
+      // Shelf life: 12–18 months | Ultra-light liquid for 0.5mm under-eye skin
       const fixed: FixedIngredient[] = [
-        { name: 'Tallow', pct: 0.42, color: FB_COLORS.tallow },
-        { name: 'Squalane', pct: 0.16, color: FB_COLORS.squalane },
-        { name: 'Jojoba', pct: 0.10, color: FB_COLORS.jojoba },
-        { name: 'Shea butter', pct: 0.065, color: FB_COLORS.shea },
-        { name: 'Beeswax', pct: 0.05, color: FB_COLORS.beeswax },
-        { name: 'Vitamin E', pct: 0.005, color: FB_COLORS.vite },
+        { name: 'Squalane', pct: 0.50, color: FB_COLORS.squalane },
+        { name: 'Jojoba', pct: 0.20, color: FB_COLORS.jojoba },
+        { name: 'Rosehip', pct: 0.10, color: FB_COLORS.rosehip },
+        { name: 'Prickly pear blend', pct: 0.08, color: FB_COLORS.pricklypear },
+        { name: 'Calendula oil', pct: 0.08, color: FB_COLORS.calendula },
+        { name: 'Vitamin E', pct: 0.02, color: FB_COLORS.vite },
       ];
-      // Carrier A pool: 10% — prickly pear, camellia, rosehip (luxury eye-area oils)
-      // Active B pool: 10% — bakuchiol (2%), coffee oil, gotu kola, calendula (all oil-soluble)
+      // No pools — this is a complete fixed-ratio oil serum
+      // Optional: 2% from vitamin E budget can shift to active B pool if needed
       return {
         fixed,
-        aSplit: splitPool(pools.a, 0.10),
-        bSplit: splitPool(pools.b, 0.10),
+        aSplit: splitPool(pools.a, 0),
+        bSplit: splitPool(pools.b, 0.02),
         cSplit: [],
         eoSplit: [],
         eoPct: 0,

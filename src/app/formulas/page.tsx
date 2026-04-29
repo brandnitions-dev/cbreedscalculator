@@ -214,7 +214,7 @@ function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefin
       mode === 'eyes'
         ? 'Eye serum emulsion with Olivem 1000 emulsifier and Geogard Ultra preservative. pH target 5.0–5.5.'
         : mode === 'eyes_balm'
-          ? 'Anhydrous tallow eye balm. No water, no emulsifier, no preservative. Shelf life 12–18 months.'
+          ? 'Anhydrous eye oil serum. Zero tallow, zero beeswax, zero water. Shelf life 12–18 months.'
           : 'Percentages are normalized from the saved weight scores and scaled to the saved batch size.',
     ],
   };
