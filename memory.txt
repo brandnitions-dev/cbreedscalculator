@@ -247,3 +247,40 @@ Original eye serum formula (eyes mode in balm builder) had critical flaws:
 - Accelerated stability testing at 40°C/75% RH
 - PIF must be updated: "Eye Serum / Leave-on emulsion" NOT "Tallow Balm"
 - Bakuchiol at ~1% = no retinol-alternative claims (needs 2% for efficacy claims)
+
+## Type B: Anhydrous Eye Balm (2026-04-29)
+### Rationale
+Added a second eye-area mode — anhydrous tallow-based eye balm.
+No water phase = no emulsifier needed, no preservative needed, no pH control, no microbial risk.
+Simple melt-mix-pour manufacturing. Shelf life 12–18 months.
+
+### Formula
+- Tallow 42% — lighter than face balm (58%) for thin eye skin
+- Squalane 16% — primary light carrier, oxidation-stable
+- Jojoba 10% — sebum-mimetic
+- Shea butter 6.5% — emollient barrier
+- Beeswax 5% — minimal structure (less than face 8%)
+- Carrier A 10%: prickly pear (wt 3), camellia (wt 2) — luxury eye-area oils
+- Active B 10%: bakuchiol (wt 3, hits ~2% therapeutic dose), coffee oil (wt 2), gotu kola (wt 2), calendula (wt 1) — ALL oil-soluble
+- Vitamin E 0.5%
+- No essential oils (eye area)
+
+### Key Differences vs Eye Serum
+| | Eye Serum | Eye Balm |
+|---|---|---|
+| Base | Water-oil emulsion | Anhydrous tallow |
+| Emulsifier | Olivem 1000 (6%) | Not needed |
+| Preservative | Geogard Ultra (1.5%) | Not needed |
+| pH control | Required (5.0–5.5) | Not applicable |
+| Shelf life | 6 months | 12–18 months |
+| Manufacturing | Complex (heat phases, emulsify, pH adjust) | Simple (melt, mix, pour) |
+| Actives | Water + oil soluble (caffeine, etc.) | Oil-soluble only (bakuchiol, coffee oil) |
+| Texture | Light serum | Rich balm |
+| Best for | Daytime, under makeup | Nighttime, intensive repair |
+
+### Files Changed
+- `src/lib/formula-engine.ts` — added eyes_balm mode calculation
+- `src/app/balm/formula-builder.tsx` — added Eye Balm button, defaults, banner
+- `src/app/formulas/page.tsx` — handles eyes_balm in saved formula display
+- `src/types/index.ts` — added 'eyes_balm' to FormulaResult product type
+
