@@ -40,6 +40,7 @@
 - **Local one-shot (need VPS `DATABASE_URL`):** `TARGET_DATABASE_URL=...` `MIGRATE_FORMULAS_OWNER_EMAIL=admin@mosskynlab.com` `npm run db:migrate-formulas:to-vps` (`scripts/migrate-neon-to-vps.cjs` pulls Neon as source).
 - **On VPS (Postgres not on host):** copy `scripts/migrate-formulas-neon-to-neon.ts` + a file containing Neon URL to e.g. `/tmp/`, `docker cp` into `web` container, `docker compose exec web` with `SOURCE_DATABASE_URL` and `TARGET_DATABASE_URL=$DATABASE_URL`. Repeatable shell: `scripts/vps-run-migrate-formulas.sh` (expects `/tmp/neon_source_url.txt` + script on server).
 - **Core script:** `scripts/migrate-formulas-neon-to-neon.ts` (generic two-URL migrate).
+- **After changing the “Purge” exfoliator preset** (`OIL_PRESETS.bha_penetrating` in `src/lib/ingredients/treatment-oils.ts`): saved rows still store a JSON snapshot — run **`npm run db:sync-purge-formulas`** against each database that has old Purge saves (uses `DATABASE_URL`); optional **`SYNC_PURGE_DRY_RUN=1`**.
 
 ### Cursor / deploy history (parent transcript IDs — for humans)
 - **VPS Docker + nginx + `mosskynlab.brandnitions.agency`:** [177dc7f1-c5b9-4da2-9b4c-7e4c06b66f2e](177dc7f1-c5b9-4da2-9b4c-7e4c06b66f2e)

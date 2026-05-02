@@ -13,6 +13,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:migrate-formulas": "tsx scripts/migrate-formulas-neon-to-neon.ts",
     "db:migrate-formulas:to-vps": "node scripts/migrate-neon-to-vps.cjs",
+    "db:sync-purge-formulas": "tsx scripts/sync-purge-saved-formulas.ts",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
   },

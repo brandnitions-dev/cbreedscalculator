@@ -110,10 +110,10 @@ export function ExfoliatorChemistry() {
                 ['Wintergreen EO', '3%', 'Methyl salicylate — toxic at high doses. 1 tsp = ~7g aspirin.'],
                 ['Tea Tree EO', '5%', 'Contact sensitizer at high concentrations. 1-2% is therapeutic.'],
                 ['Frankincense EO', '5%', 'Generally safe. Anti-inflammatory boswellic acids.'],
-                ['Willow Bark Extract', '2%', 'BHA ceiling for clinic prep; do not push higher for leave-on use.'],
-                ['Alpha-Bisabolol', '6%', 'High-calming clinic prep dose. Rarely sensitizing.'],
-                ['Vitamin E', '2%', 'Antioxidant and barrier support; avoid heavy overuse in facial oil.'],
-                ['Total EO blend', '2%', 'Corrected leave-on target for facial prep blends.'],
+                ['Willow Bark Extract', '5%', 'The Purge targets ~5% as primary BHA (salicin-rich extract); bisabolol supports irritation.'],
+                ['Alpha-Bisabolol', '2%', 'Supportive calming dose; higher % rarely beats more willow for this product goal.'],
+                ['Vitamin E', '2%', 'Max in DB for flexibility; Purge preset uses ~1% as stabiliser with lower rosehip.'],
+                ['Total EO blend', '1%', 'Facial prep cap for rosemary-led blend in The Purge.'],
               ].map(([ing, max, note]) => (
                 <tr key={ing} className="border-b border-border-subtle/50">
                   <td className="py-2 font-medium text-text-primary">{ing}</td>

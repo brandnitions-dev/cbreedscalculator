@@ -26,10 +26,10 @@ export const OIL_CARRIERS: OilIngredient[] = [
 ];
 
 export const OIL_ACTIVES: OilIngredient[] = [
-  { id: 'willowbark', name: 'Willow Bark Extract', desc: 'Natural salicin (BHA precursor) — gentle exfoliation without synthetic salicylic acid burn.', color: '#FCD34D', benefits: { exfoliation: 3, poreClearing: 3, antiinflammatory: 2 }, maxPct: 0.02, tips: { low: 'Gentle BHA activity — daily use safe.', mid: '2% BHA ceiling — pores clearing without pushing irritation.', high: 'Above target — keep clinical prep blends at the safe 2% BHA ceiling.' } },
-  { id: 'bisabolol', name: 'Alpha-Bisabolol', desc: 'Chamomile-derived — stops redness and irritation instantly. Anti-inflammatory powerhouse.', color: '#FDE68A', benefits: { soothing: 3, antiinflammatory: 3, healing: 2 }, maxPct: 0.06, tips: { low: 'Trace calming — good baseline.', mid: 'Good anti-redness dose.', high: '6% clinical prep dose — strong soothing before treatment.' } },
+  { id: 'willowbark', name: 'Willow Bark Extract', desc: 'Natural salicin (BHA precursor) — gentle exfoliation without synthetic salicylic acid burn.', color: '#FCD34D', benefits: { exfoliation: 3, poreClearing: 3, antiinflammatory: 2 }, maxPct: 0.05, tips: { low: 'Gentle BHA activity — daily prep.', mid: 'Stronger natural BHA — The Purge therapeutic band.', high: '5% ceiling for salicin-rich extract in clinic-prep oil; assess tolerance; photosensitivity.' } },
+  { id: 'bisabolol', name: 'Alpha-Bisabolol', desc: 'Chamomile-derived — stops redness and irritation instantly. Anti-inflammatory powerhouse.', color: '#FDE68A', benefits: { soothing: 3, antiinflammatory: 3, healing: 2 }, maxPct: 0.06, tips: { low: 'Trace calming around BHA.', mid: '~2% typical — soothes willow bark without stealing the actives budget.', high: 'Higher % rarely adds benefit vs lead BHA; reserve % for willow first.' } },
   { id: 'allantoin', name: 'Allantoin', desc: 'Cell proliferant — speeds healing, softens skin. Very gentle.', color: '#FEF3C7', benefits: { healing: 3, softening: 3, soothing: 2 }, maxPct: 0.02, tips: { low: 'Gentle healing support.', mid: 'Good cell renewal.', high: 'Strong allantoin — maximum healing acceleration.' } },
-  { id: 'vitaminE', name: 'Vitamin E (Tocopherol)', desc: 'Antioxidant — prevents oil oxidation, extends shelf life. Skin healing.', color: '#FBBF24', benefits: { antioxidant: 3, stability: 3, healing: 2 }, maxPct: 0.02, tips: { low: 'Baseline antioxidant protection.', mid: 'Good stability and barrier support.', high: '2% stability dose — stronger antioxidant protection for rosehip-heavy blends.' } },
+  { id: 'vitaminE', name: 'Vitamin E (Tocopherol)', desc: 'Antioxidant — prevents oil oxidation, extends shelf life. Skin healing.', color: '#FBBF24', benefits: { antioxidant: 3, stability: 3, healing: 2 }, maxPct: 0.02, tips: { low: 'Stabiliser baseline (~1%) for rosehip-light BHA oils.', mid: 'Moderate antioxidant.', high: 'Higher % if formula is very oxidation-prone — avoid crowding actives.' } },
 ];
 
 export const OIL_EOS: OilIngredient[] = [
@@ -58,12 +58,12 @@ export const OIL_PRESETS: OilFormula[] = [
   {
     id: 'bha_penetrating',
     name: 'The Purge — BHA Penetration Oil',
-    desc: 'Corrected clinic-prep BHA oil: jojoba for sebum-like pore softening, grapeseed for light linoleic flow, rosehip repair, and low-irritation rosemary.',
-    activePct: 0.13,
-    eoPct: 0.02,
-    carriers: [{ ingId: 'grapeseed', weight: 35 }, { ingId: 'jojoba', weight: 30 }, { ingId: 'rosehip', weight: 20 }],
-    actives: [{ ingId: 'bisabolol', weight: 6 }, { ingId: 'willowbark', weight: 2 }, { ingId: 'vitaminE', weight: 2 }],
-    eos: [{ ingId: 'rosemary', weight: 2 }],
+    desc: 'BHA-forward prep: 5% willow bark (primary), 2% bisabolol (support), 1% vitamin E (stabiliser). Carriers ~41/35/15 grapeseed/jojoba/rosehip at reduced rosehip; rosemary EO 1%.',
+    activePct: 0.08,
+    eoPct: 0.01,
+    carriers: [{ ingId: 'grapeseed', weight: 38 }, { ingId: 'jojoba', weight: 33 }, { ingId: 'rosehip', weight: 14 }],
+    actives: [{ ingId: 'willowbark', weight: 5 }, { ingId: 'bisabolol', weight: 2 }, { ingId: 'vitaminE', weight: 1 }],
+    eos: [{ ingId: 'rosemary', weight: 1 }],
     shelfLife: '8-10mo',
   },
   {
