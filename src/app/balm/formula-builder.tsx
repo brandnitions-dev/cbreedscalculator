@@ -80,7 +80,7 @@ export function BalmFormulaBuilder() {
     { key: 'a' as const, label: 'Carrier Oils (A)', data: db.a, max: 4, color: '#85B7EB' },
     { key: 'b' as const, label: 'Active Botanicals (B)', data: db.b, max: (mode === 'eyes' || mode === 'eyes_balm') ? 4 : 3, color: '#D85A30' },
     { key: 'eo' as const, label: 'Essential Oils', data: db.eo, max: 12, color: '#534AB7' },
-  ]).filter(cfg => cfg.key !== 'eo' || mode === 'face' || mode === 'body'), [db, mode]);
+  ]).filter(cfg => cfg.key !== 'eo' || mode === 'face' || mode === 'body' || mode === 'lips'), [db, mode]);
 
   const formula = useMemo(() =>
     calcFormula(mode, 'balm', { ...pools, c: [] }, 0.08, beeswaxOn),
@@ -222,7 +222,7 @@ export function BalmFormulaBuilder() {
                 [
                   { id: 'face' as const, label: 'Face (1% EO)' },
                   { id: 'body' as const, label: 'Body (2% EO)' },
-                  { id: 'lips' as const, label: 'Lips (no EO)' },
+                  { id: 'lips' as const, label: 'Lips (1% EO)' },
                   { id: 'eyes' as const, label: 'Eye Serum' },
                   { id: 'eyes_balm' as const, label: 'Eye Oil' },
                 ] as const
@@ -267,7 +267,7 @@ export function BalmFormulaBuilder() {
           )}
           {mode === 'lips' && (
             <p className="mb-3.5 rounded-sm border border-accent-gold/20 bg-accent-gold/[0.06] px-3 py-2 text-xs text-text-secondary">
-              Professional lip ratio: 32% tallow, 18% beeswax, 10% shea, 15% jojoba, 20% carrier gloss phase, 3% healing active phase, 2% vitamin E.
+              Professional lip ratio: 32% tallow, 18% beeswax, 10% shea, 15% jojoba, up to 20% carrier gloss phase, 3% healing active phase, 2% vitamin E. When you add essential oils, 1% of the batch is reserved for the EO blend (carrier phase uses 19% so the total stays 100%). Oils tagged universal or lips in the library are shown here.
             </p>
           )}
           {mode === 'eyes' && (

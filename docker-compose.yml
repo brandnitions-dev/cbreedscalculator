@@ -1,0 +1,39 @@
+# Mosskyn Lab — isolated stack (no Postgres port on host; app only on 127.0.0.1:4050).
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mosskynlab
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: mosskynlab
+    volumes:
+      - mosskynlab_pgdata:/var/lib/postgresql/data
+    networks:
+      - mosskynlab_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mosskynlab -d mosskynlab"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    ports:
+      - "127.0.0.1:4050:3000"
+    networks:
+      - mosskynlab_internal
+
+networks:
+  mosskynlab_internal:
+    name: mosskynlab_internal
+    driver: bridge
+
+volumes:
+  mosskynlab_pgdata:
+    name: mosskynlab_pgdata

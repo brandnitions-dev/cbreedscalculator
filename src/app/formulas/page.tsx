@@ -199,7 +199,7 @@ function buildBalmOrCleanerDetail(row: Row, payload: IngredientPayload | undefin
       { label: 'Batch', value: `${row.batchSize}ml` },
       { label: 'Formula', value: mode },
       ...(mode === 'face' || mode === 'body' ? [{ label: 'Beeswax', value: beeswaxOn ? 'Included' : 'Off' }] : []),
-      ...(mode === 'lips' ? [{ label: 'Essential oils', value: '0% (lip-safe)' }] : []),
+      ...(mode === 'lips' ? [{ label: 'Essential oils', value: formatPct(result.eoPct) }] : []),
       ...(mode === 'eyes' || mode === 'eyes_balm' ? [{ label: 'Essential oils', value: '0% (eye-safe)' }] : []),
       ...(row.productType === 'CLEANER' ? [{ label: 'Exfoliant phase', value: formatPct(cPct) }] : []),
     ],

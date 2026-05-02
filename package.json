@@ -11,6 +11,8 @@
     "db:sync:netlify": "node scripts/sync-neon-from-netlify.cjs",
     "netlify:wire-neon": "node scripts/wire-neon-to-netlify.cjs",
     "db:seed": "tsx prisma/seed.ts",
+    "db:migrate-formulas": "tsx scripts/migrate-formulas-neon-to-neon.ts",
+    "db:migrate-formulas:to-vps": "node scripts/migrate-neon-to-vps.cjs",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
   },

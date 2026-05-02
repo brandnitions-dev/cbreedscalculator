@@ -7,6 +7,44 @@
 - Default branch: `main`
 - When the user asks to commit/push calculator changes, `cd` into `crownbreedscalculator` then `git add` / `commit` / `push`.
 
+## Production & data — Netlify, Neon, VPS (keep in sync when setup changes)
+**Last updated:** 2026-05-01
+
+### Canonical live app (Docker on VPS)
+- **Public URL:** https://mosskynlab.brandnitions.agency — spelling is **`brandnitions`** (with **n**), not “branditions”.
+- **VPS:** `194.62.157.119` — this dev machine is typically **SSH-auth’d** as `root` (BatchMode / key auth).
+- **App root on server:** `/opt/mosskynlab` (Docker Compose stack).
+- **Compose:** services `web` + `db` (Postgres **not** exposed on host; DB only on Docker network `mosskynlab_internal`).
+- **App port:** host `127.0.0.1:4050` → container `3000`; host **Nginx** reverse-proxies HTTPS for the domain; **Let’s Encrypt** certs managed on the VPS (same pattern as other `*.brandnitions.agency` sites).
+- **Secrets:** live in `/opt/mosskynlab/.env` (`POSTGRES_PASSWORD`, `DATABASE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`) — **never commit**; tarball/deploy excludes `.env`.
+- **Seeded admin (Prisma seed):** `admin@mosskynlab.com` — saved formulas are per **user id**; migrations should map to this email on the VPS DB when copying from Neon.
+
+### Neon (managed Postgres — formula source & old Netlify DB)
+- **Org id (neonctl, non-interactive):** `org-holy-shadow-57548995`
+- **Project id:** `calm-tooth-00446342` (Neon console name e.g. **mosskynlab**)
+- **Branch:** `production`
+- **CLI connection string (pooled, Prisma):**  
+  `npx neonctl connection-string production --project-id calm-tooth-00446342 --pooled --prisma --org-id org-holy-shadow-57548995`
+- **Role:** Holds the **original** saved formulas (and is still the DB behind the **Netlify** test site below). **VPS production uses local Postgres in Docker**, not Neon.
+
+### Netlify (separate site — not the VPS)
+- **Linked project (CLI `netlify status`):** `crownbreeds-calc-2026`
+- **Site ID:** `96a5d2e1-6833-45b0-9552-0e3f0a54bfe4`
+- **Default URL:** https://crownbreeds-calc-2026.netlify.app
+- **Team:** `altasbenda` (account email used for Netlify is **not** necessarily the same as lab login).
+- **Production env:** `DATABASE_URL` points at **Neon** (not the VPS Postgres). `NEXTAUTH_URL` must match the Netlify host if you use that site.
+- **Repo helpers:** `npm run netlify:wire-neon` → `scripts/wire-neon-to-netlify.cjs`; `npm run db:sync:netlify` → `scripts/sync-neon-from-netlify.cjs`.
+
+### Saved formulas: Neon → VPS Postgres
+- **Why:** `/formulas` is empty on the VPS if the Docker DB was never seeded with `Formula` rows; API filters by **logged-in user**.
+- **Local one-shot (need VPS `DATABASE_URL`):** `TARGET_DATABASE_URL=...` `MIGRATE_FORMULAS_OWNER_EMAIL=admin@mosskynlab.com` `npm run db:migrate-formulas:to-vps` (`scripts/migrate-neon-to-vps.cjs` pulls Neon as source).
+- **On VPS (Postgres not on host):** copy `scripts/migrate-formulas-neon-to-neon.ts` + a file containing Neon URL to e.g. `/tmp/`, `docker cp` into `web` container, `docker compose exec web` with `SOURCE_DATABASE_URL` and `TARGET_DATABASE_URL=$DATABASE_URL`. Repeatable shell: `scripts/vps-run-migrate-formulas.sh` (expects `/tmp/neon_source_url.txt` + script on server).
+- **Core script:** `scripts/migrate-formulas-neon-to-neon.ts` (generic two-URL migrate).
+
+### Cursor / deploy history (parent transcript IDs — for humans)
+- **VPS Docker + nginx + `mosskynlab.brandnitions.agency`:** [177dc7f1-c5b9-4da2-9b4c-7e4c06b66f2e](177dc7f1-c5b9-4da2-9b4c-7e4c06b66f2e)
+- **Netlify / Neon / formulas UI / Lips–Eyes / Purge preset (long thread):** [ff43f2e6-7ab9-4534-af3c-04c89e694ded](ff43f2e6-7ab9-4534-af3c-04c89e694ded)
+
 ## Which HTML files matter
 - `tallow_blend_pro_v5.html` — main tallow blend tool (includes 50 ml pack-out / jar UI).
 - `index.html` — should stay in sync with `tallow_blend_pro_v5.html` when that is the deployed entry (copy or identical changes).

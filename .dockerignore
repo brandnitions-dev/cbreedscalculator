@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+# Never ship local secrets in build context (tarballs should also exclude .env).
+*.md
+.netlify
+npm-debug.log*
+.DS_Store
+memory.txt
+docs
+*.html
+formula_builder*.js
+product_config.js
+skin_chemistry_blueprint.html

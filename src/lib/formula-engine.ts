@@ -60,13 +60,16 @@ export function calcFormula(
         { name: 'Jojoba', pct: 0.15, color: FB_COLORS.jojoba },
         { name: 'Vitamin E', pct: 0.02, color: FB_COLORS.vite },
       ];
+      const hasEo = pools.eo.length > 0;
+      const lipEoPct = hasEo ? 0.01 : 0;
+      const lipAPct = 0.2 - lipEoPct;
       return {
         fixed,
-        aSplit: splitPool(pools.a, 0.20),
+        aSplit: splitPool(pools.a, lipAPct),
         bSplit: splitPool(pools.b, 0.03),
         cSplit: [],
-        eoSplit: [],
-        eoPct: 0,
+        eoSplit: splitPool(pools.eo, lipEoPct),
+        eoPct: lipEoPct,
         cPct: 0,
         scale: 1,
         product: 'lips',
