@@ -8,7 +8,7 @@
 - When the user asks to commit/push calculator changes, `cd` into `crownbreedscalculator` then `git add` / `commit` / `push`.
 
 ## Production & data — Netlify, Neon, VPS (keep in sync when setup changes)
-**Last updated:** 2026-05-01
+**Last updated:** 2026-05-20
 
 ### Canonical live app (Docker on VPS)
 - **Public URL:** https://mosskynlab.brandnitions.agency — spelling is **`brandnitions`** (with **n**), not “branditions”.
@@ -40,7 +40,41 @@
 - **Local one-shot (need VPS `DATABASE_URL`):** `TARGET_DATABASE_URL=...` `MIGRATE_FORMULAS_OWNER_EMAIL=admin@mosskynlab.com` `npm run db:migrate-formulas:to-vps` (`scripts/migrate-neon-to-vps.cjs` pulls Neon as source).
 - **On VPS (Postgres not on host):** copy `scripts/migrate-formulas-neon-to-neon.ts` + a file containing Neon URL to e.g. `/tmp/`, `docker cp` into `web` container, `docker compose exec web` with `SOURCE_DATABASE_URL` and `TARGET_DATABASE_URL=$DATABASE_URL`. Repeatable shell: `scripts/vps-run-migrate-formulas.sh` (expects `/tmp/neon_source_url.txt` + script on server).
 - **Core script:** `scripts/migrate-formulas-neon-to-neon.ts` (generic two-URL migrate).
-- **After changing the “Purge” exfoliator preset** (`OIL_PRESETS.bha_penetrating` in `src/lib/ingredients/treatment-oils.ts`): saved rows still store a JSON snapshot — run **`npm run db:sync-purge-formulas`** against each database that has old Purge saves (uses `DATABASE_URL`); optional **`SYNC_PURGE_DRY_RUN=1`**.
+- **After changing the “Purge” exfoliator preset** (`OIL_PRESETS.bha_penetrating` in `src/lib/ingredients/treatment-oils.ts`): saved rows still store a JSON snapshot — run **`npm run db:sync-purge-formulas`** against each database that has old Purge saves (uses `DATABASE_URL`); optional **`SYNC_PURGE_DRY_RUN=1`**. Matcher also refreshes rows that already use `salicylic_acid` or still have `willowbark` in the snapshot.
+
+### VPS deploy (one-shot, from repo root — PowerShell)
+Excludes `node_modules`, `.next`, `.git`, `.env` (server secrets stay on VPS).
+
+```powershell
+cd "c:\Users\xheih\OneDrive\Documents\DEC2025 WIN BUILDZ\WinBuildsBackup1\random agent\crownbreedscalculator"
+tar.exe -czf "$env:TEMP\mosskynlab-deploy.tgz" --exclude=node_modules --exclude=.next --exclude=.git --exclude=.env .
+scp -o BatchMode=yes "$env:TEMP\mosskynlab-deploy.tgz" root@194.62.157.119:/tmp/mosskynlab-deploy.tgz
+ssh -o BatchMode=yes root@194.62.157.119 "tar -xzf /tmp/mosskynlab-deploy.tgz -C /opt/mosskynlab && cd /opt/mosskynlab && docker compose build web && docker compose up -d && docker compose exec -T web npm run db:seed && docker compose exec -T web npx tsx scripts/sync-purge-saved-formulas.ts"
+```
+
+- **Latest VPS deploy (Purge SA restructure):** commit **`a6bbcd0`** — pure salicylic acid, squalane, bakuchiol, manufacturing note on saved card + builder.
+- **Remotes:** `origin` (cbreedscalculator), `moss` (mosskynlab) — both on `main`.
+
+### The Purge — BHA Penetration Oil (canonical preset `bha_penetrating`)
+**Source:** `src/lib/ingredients/treatment-oils.ts` — `PURGE_BHA_MANUFACTURING_NOTE` exported for UI + saved snapshot field `manufacturingNote`.
+
+| Phase | Ingredient | Batch % |
+|-------|------------|---------|
+| Carriers 91% | Jojoba | 40% |
+| | Grapeseed | 35% |
+| | Rosehip | 10% |
+| | Squalane | 6% |
+| Actives 8% | Salicylic acid (PubChem CID 338) | 2% |
+| | Bakuchiol | 2% |
+| | Alpha-bisabolol | 3% |
+| | Vitamin E | 1% |
+| EO 1% | Rosemary | 0.5% |
+| | Tea tree | 0.5% |
+
+- **Willow bark removed** — inconsistent salicin → SA conversion; use pure SA only in this product.
+- **Rationale (short):** Jojoba + squalane fluidise stratum corneum / pilosebaceous duct (steam replacement); SA 2% keratolyzes plug; bakuchiol 2% renews cleared follicle; bisabolol 3% calms SA irritation; rosemary + tea tree antimicrobial/antioxidant synergy.
+- **Manufacturing:** Warm jojoba ~40°C → dissolve SA until clear → cool <35°C → vitamin E + bakuchiol → bisabolol last → EOs <30°C. Anhydrous oil — SA releases at skin surface where water is present.
+- **Sync saved row on VPS:** `docker compose exec -T web npx tsx scripts/sync-purge-saved-formulas.ts` (after deploy). Canonical name: **The Purge — BHA Penetration Oil**.
 
 ### Cursor / deploy history (parent transcript IDs — for humans)
 - **VPS Docker + nginx + `mosskynlab.brandnitions.agency`:** [177dc7f1-c5b9-4da2-9b4c-7e4c06b66f2e](177dc7f1-c5b9-4da2-9b4c-7e4c06b66f2e)
@@ -215,7 +249,7 @@
 - `src/lib/ingredients/actives-b.ts` — 15 active botanicals (shared: Balm, Cleaner)
 - `src/lib/ingredients/essential-oils.ts` — 37 EOs (shared: Balm, Cleaner, Soap)
 - `src/lib/ingredients/exfoliants-c.ts` — 6 physical exfoliants (Cleaner only)
-- `src/lib/ingredients/treatment-oils.ts` — OIL_CARRIERS (8), OIL_ACTIVES (4), OIL_EOS (7), OIL_PRESETS (2) (Exfoliator only)
+- `src/lib/ingredients/treatment-oils.ts` — OIL_CARRIERS (+ squalane), OIL_ACTIVES (salicylic_acid, bakuchiol, bisabolol, vitaminE, willowbark legacy), OIL_EOS, OIL_PRESETS (`bha_penetrating` = The Purge, `pore_purge`) (Exfoliator only)
 - `src/lib/ingredients/soap-oils.ts` — Soap oils with SAP values
 - `src/lib/ingredients/soap-additives.ts` — Soap additives
 
