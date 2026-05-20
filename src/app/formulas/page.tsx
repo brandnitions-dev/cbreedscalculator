@@ -252,7 +252,7 @@ function buildExfoliatorDetail(row: Row, payload: IngredientPayload | undefined)
   ];
   if (usesSalicylic) {
     callouts.push(
-      'Pure salicylic acid (PubChem CID 338) replaces willow bark for consistent measurable BHA activity.',
+      'Pure salicylic acid (PubChem CID 338) — Purge clinical ~6.2% batch, short-contact peel (see Live Metadata / manufacturing protocol). Not leave-on.',
     );
   }
   if (manufacturingNote) {

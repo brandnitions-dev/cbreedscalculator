@@ -45,6 +45,8 @@ interface IngredientChipGridProps {
   onRemove: (rowId: number) => void;
   onWeightChange: (rowId: number, weight: number) => void;
   onExpandToggle?: (rowId: number | null) => void;
+  /** Batch % dose note (e.g. salicylic acid bands from bha_serum_formula-builder.jsx). */
+  getDoseNote?: (ingId: string, batchPct: number) => { label: string; color: string } | null;
   className?: string;
 }
 
@@ -65,6 +67,7 @@ export function IngredientChipGrid({
   onRemove,
   onWeightChange,
   onExpandToggle,
+  getDoseNote,
   className,
 }: IngredientChipGridProps) {
   const selectedIds = useMemo(() => new Set(selected.map(s => s.ingId)), [selected]);
@@ -128,6 +131,8 @@ export function IngredientChipGrid({
             const sp = splits.find(s => s.id === row.id);
             const pct = sp ? (sp.pct * 100).toFixed(1) : '—';
             const ml = sp ? (sp.pct * batchSize).toFixed(1) : '—';
+            const batchPct = sp ? sp.pct * 100 : 0;
+            const doseNote = getDoseNote?.(row.ingId, batchPct);
             const tipLevel = getTipLevel(row.weight);
             const tip = ing.tips[tipLevel];
             const isExpanded = expandedId === row.id;
@@ -169,6 +174,11 @@ export function IngredientChipGrid({
                   <span className="text-[10px] text-text-muted min-w-[36px] text-right">
                     {ml}ml
                   </span>
+                  {doseNote && (
+                    <span className="text-[9px] font-medium max-w-[120px] truncate hidden sm:inline" style={{ color: doseNote.color }} title={doseNote.label}>
+                      {doseNote.label}
+                    </span>
+                  )}
 
                   {/* Expand / Remove */}
                   <button
@@ -202,6 +212,11 @@ export function IngredientChipGrid({
                           {tipLevel}:
                         </span>
                         {tip}
+                      </div>
+                    )}
+                    {doseNote && (
+                      <div className="text-[10px] font-medium" style={{ color: doseNote.color }}>
+                        {doseNote.label}
                       </div>
                     )}
                     {ing.warn && (

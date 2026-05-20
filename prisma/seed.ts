@@ -294,6 +294,7 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
+      meta: (i.meta ?? {}) as Prisma.InputJsonObject,
       groupKeys: sharedSelectable ? ['oil_carriers', 'carriers_a'] : ['oil_carriers'],
       productTypes: sharedSelectable ? ['EXFOLIATOR', 'TREATMENT_OIL', 'BALM', 'CLEANER'] : ['EXFOLIATOR', 'TREATMENT_OIL'],
       balmDermalFocus: sharedSelectable ? getDefaultBalmDermalForSlug(i.id) : undefined,
@@ -310,6 +311,7 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
+      meta: (i.meta ?? {}) as Prisma.InputJsonObject,
       groupKeys: ['oil_actives'],
       productTypes: ['EXFOLIATOR', 'TREATMENT_OIL'],
     });
@@ -326,6 +328,7 @@ async function main() {
       warn: i.warn ?? false,
       benefits: i.benefits,
       tips: i.tips,
+      meta: (i.meta ?? {}) as Prisma.InputJsonObject,
       groupKeys: sharedSelectable ? ['oil_eos', 'essential_oils'] : ['oil_eos'],
       productTypes: sharedSelectable ? ['EXFOLIATOR', 'TREATMENT_OIL', 'BALM', 'CLEANER', 'SOAP'] : ['EXFOLIATOR', 'TREATMENT_OIL'],
       balmDermalFocus: sharedSelectable ? getDefaultBalmDermalForSlug(i.id) : undefined,

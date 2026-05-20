@@ -110,12 +110,13 @@ export function ExfoliatorChemistry() {
                 ['Wintergreen EO', '3%', 'Methyl salicylate — toxic at high doses. 1 tsp = ~7g aspirin.'],
                 ['Tea Tree EO', '5%', 'Contact sensitizer at high concentrations. 1-2% is therapeutic.'],
                 ['Frankincense EO', '5%', 'Generally safe. Anti-inflammatory boswellic acids.'],
-                ['Salicylic Acid (pure)', '2%', 'The Purge BHA — PubChem CID 338; warm-dissolve in jojoba; EU/FDA leave-on ceiling.'],
-                ['Bakuchiol', '2%', 'Renewal into SA-cleared follicle; oil-soluble retinoid analogue.'],
-                ['Alpha-Bisabolol', '3%', 'Anti-inflammatory anchor vs stronger SA irritation.'],
-                ['Vitamin E', '1%', 'Antioxidant stabiliser — protects reduced rosehip + carrier unsaturates.'],
-                ['Rosemary + Tea Tree EO', '0.5% each', '1% total EO band — antioxidant + terpinen-4-ol antimicrobial synergy with BHA.'],
-                ['Willow Bark Extract', '—', 'Deprecated in The Purge — inconsistent salicin conversion; use pure SA.'],
+                ['Salicylic Acid (pure)', '6.2% (Purge)', 'PubChem CID 338; clinical steam-replacement peel — short contact. ≤2% leave-on only.'],
+                ['Salicylic Acid (pure)', '2%', 'EU/FDA cosmetic leave-on ceiling — not the Purge clinical dose.'],
+                ['Bakuchiol', '0.6%', 'Trace renewal alongside high SA — Purge preset.'],
+                ['Alpha-Bisabolol', '0.6%', 'Calms post-peel inflammation at clinical SA load.'],
+                ['Vitamin E', '0.6%', 'Antioxidant — stabilises rosehip + carriers.'],
+                ['Rosemary EO', '1%', 'Full EO band in Purge — antioxidant, shelf stability.'],
+                ['Willow Bark Extract', '—', 'Deprecated — use pure SA for measurable BHA.'],
               ].map(([ing, max, note]) => (
                 <tr key={ing} className="border-b border-border-subtle/50">
                   <td className="py-2 font-medium text-text-primary">{ing}</td>

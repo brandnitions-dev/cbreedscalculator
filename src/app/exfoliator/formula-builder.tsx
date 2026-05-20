@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { AlertTriangle, Zap } from 'lucide-react';
 import { GlassCard } from '@/components/ui';
 import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
-import { OIL_PRESETS, PURGE_BHA_MANUFACTURING_NOTE } from '@/lib/ingredients/treatment-oils';
+import { OIL_PRESETS, PURGE_BHA_MANUFACTURING_NOTE, salicylicDoseFlag } from '@/lib/ingredients/treatment-oils';
 import type { OilIngredient } from '@/lib/ingredients/treatment-oils';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
 
@@ -158,6 +158,22 @@ export function ExfoliatorFormulaBuilder() {
     name: l.name, pct: l.pct, ml: l.pct * batchSize, color: l.color,
   })), [allLayers, batchSize]);
 
+  const carrierTotal = formula.carrierSplit.reduce((s, r) => s + r.pct, 0);
+  const activesTotal = formula.activeSplit.reduce((s, r) => s + r.pct, 0);
+  const eosTotal = formula.eoSplit.reduce((s, r) => s + r.pct, 0);
+  const grandTotal = carrierTotal + activesTotal + eosTotal;
+  const totalOk = Math.abs(grandTotal - 1) < 0.005;
+
+  const saBatchPct = useMemo(() => {
+    const row = formula.activeSplit.find(r => r.ingId === 'salicylic_acid');
+    return row ? row.pct * 100 : 0;
+  }, [formula.activeSplit]);
+
+  const getDoseNote = useCallback((ingId: string, batchPct: number) => {
+    if (ingId === 'salicylic_acid') return salicylicDoseFlag(batchPct);
+    return null;
+  }, []);
+
   const benefitScores = useMemo(() => {
     const scores: Record<string, number> = {};
     const addScores = (splits: SplitRow[], data: OilIngredient[], w: number) => {
@@ -302,6 +318,7 @@ export function ExfoliatorFormulaBuilder() {
                   onRemove={(rowId) => removeIng(def.key, rowId)}
                   onWeightChange={(rowId, w) => updateWeight(def.key, rowId, w)}
                   onExpandToggle={(id) => setExpandedIds(prev => ({ ...prev, [def.key]: id }))}
+                  getDoseNote={def.key === 'actives' ? getDoseNote : undefined}
                 />
               </GlassCard>
             );
@@ -350,11 +367,11 @@ export function ExfoliatorFormulaBuilder() {
                 <>
                   <li>Warm jojoba to ~40°C in a heat-safe vessel</li>
                   <li>Dissolve salicylic acid powder until the oil is fully clear</li>
-                  <li>Cool below 35°C; add grapeseed, rosehip, and squalane</li>
+                  <li>Cool below 35°C; add grapeseed and rosehip carriers</li>
                   <li>Add vitamin E, then bakuchiol; bisabolol last</li>
-                  <li>Below 30°C add rosemary and tea tree; cap and invert 10×</li>
+                  <li>Below 30°C add rosemary EO; cap and invert 10×</li>
                   <li>Label with date, batch size, and shelf life (8–10 mo)</li>
-                  <li>Apply 3–5 drops; massage 60s — chemical follicular softening replaces steam</li>
+                  <li>Clinical use: short contact only at ~6% SA — rinse after massage; not daily leave-on</li>
                 </>
               ) : (
                 <>
@@ -392,6 +409,87 @@ export function ExfoliatorFormulaBuilder() {
                 <span><strong>Salicylic acid + bakuchiol</strong> increase photosensitivity. Use SPF 30+ for 24h after treatment.</span>
               </div>
             )}
+            {saBatchPct > 2 && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-accent-gold/30 bg-accent-gold/[0.06] px-3 py-2.5 text-xs text-accent-gold">
+                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                <span>
+                  <strong>Salicylic acid at {saBatchPct.toFixed(1)}%</strong>
+                  {salicylicDoseFlag(saBatchPct) ? ` — ${salicylicDoseFlag(saBatchPct)!.label}` : ''}. Purge preset targets clinical steam-replacement peel, not leave-on.
+                </span>
+              </div>
+            )}
+          </GlassCard>
+
+          <GlassCard id="exf-live-meta-card">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Live Metadata</h3>
+              <ExportCardActions targetId="exf-live-meta-card" filename="mosskyn-exfoliator-live-metadata" />
+            </div>
+            <div id="exf-live-meta" className="font-mono text-[11px] text-text-tertiary leading-relaxed space-y-2">
+              <div>
+                <div className="text-accent-indigo-light font-bold mb-1">BATCH</div>
+                <div>Size: {batchSize}ml</div>
+                <div>
+                  Total:{' '}
+                  <span className={totalOk ? 'text-accent-emerald font-bold' : 'text-accent-rose font-bold'}>
+                    {(grandTotal * 100).toFixed(1)}% {totalOk ? '✓' : '⚠ not 100%'}
+                  </span>
+                </div>
+              </div>
+              <div className="border-t border-border-subtle pt-2">
+                <div className="text-accent-emerald font-bold mb-1">
+                  CARRIERS — {(carrierTotal * 100).toFixed(1)}% / {(carrierTotal * batchSize).toFixed(1)}ml
+                </div>
+                {formula.carrierSplit.map(r => (
+                  <div key={r.ingId}>
+                    {db.carriers.find(x => x.id === r.ingId)?.name ?? r.ingId}: {(r.pct * 100).toFixed(1)}% → {(r.pct * batchSize).toFixed(1)}ml
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-border-subtle pt-2">
+                <div className="text-accent-gold font-bold mb-1">
+                  ACTIVES — {(activesTotal * 100).toFixed(1)}% / {(activesTotal * batchSize).toFixed(1)}ml
+                </div>
+                {formula.activeSplit.map(r => {
+                  const flag = r.ingId === 'salicylic_acid' ? salicylicDoseFlag(r.pct * 100) : null;
+                  return (
+                    <div key={r.ingId}>
+                      {db.actives.find(x => x.id === r.ingId)?.name ?? r.ingId}: {(r.pct * 100).toFixed(1)}% → {(r.pct * batchSize).toFixed(1)}ml
+                      {flag && <span style={{ color: flag.color }}> — {flag.label}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="border-t border-border-subtle pt-2">
+                <div className="text-accent-violet font-bold mb-1">
+                  EOS — {(eosTotal * 100).toFixed(1)}% / {(eosTotal * batchSize).toFixed(1)}ml
+                </div>
+                {formula.eoSplit.map(r => (
+                  <div key={r.ingId}>
+                    {db.eos.find(x => x.id === r.ingId)?.name ?? r.ingId}: {(r.pct * 100).toFixed(1)}% → {(r.pct * batchSize).toFixed(1)}ml
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-border-subtle pt-2">
+                <div className="text-accent-indigo-light font-bold mb-1">RATIOS</div>
+                <div>Carriers : Actives : EOs</div>
+                <div className="text-text-primary font-bold">
+                  {(carrierTotal * 100).toFixed(1)} : {(activesTotal * 100).toFixed(1)} : {(eosTotal * 100).toFixed(1)}
+                </div>
+                <div>
+                  Active load:{' '}
+                  <span className={activesTotal > 0.08 ? 'text-accent-rose font-bold' : activesTotal > 0.05 ? 'text-accent-gold font-bold' : 'text-accent-emerald font-bold'}>
+                    {activesTotal > 0.08 ? 'Heavy ⚠' : activesTotal > 0.05 ? 'Medium' : 'Light ✓'}
+                  </span>
+                </div>
+                <div>
+                  EO safety:{' '}
+                  <span className={eosTotal > 0.03 ? 'text-accent-rose font-bold' : eosTotal > 0.02 ? 'text-accent-gold font-bold' : 'text-accent-emerald font-bold'}>
+                    {eosTotal > 0.03 ? '⚠ Too high' : eosTotal > 0.02 ? 'Caution' : '✓ Safe'}
+                  </span>
+                </div>
+              </div>
+            </div>
           </GlassCard>
 
           <GlassCard id="exf-batch-card">
