@@ -24,21 +24,24 @@ function asRecord(v: unknown): Record<string, unknown> | null {
   return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
 }
 
-function isOldPurgeSnapshot(ingredients: unknown): boolean {
-  const root = asRecord(ingredients);
-  if (!root || root.v !== 1) return false;
-  if (root.activePct !== 0.13) return false;
-  const pools = asRecord(root.pools);
+function activesInclude(ingredients: unknown, slug: string): boolean {
+  const pools = asRecord(asRecord(ingredients)?.pools);
   const actives = pools?.actives;
-  if (!Array.isArray(actives) || actives.length === 0) return false;
-  const first = actives[0] as { ingId?: string; weight?: number };
-  if (first.ingId === 'bisabolol' && first.weight === 6) return true;
-  // Mid-iteration preset: same totals, willow-first weights 5,2,2 @ 13% (or similar order)
-  const carriers = pools?.carriers as { ingId?: string; weight?: number }[] | undefined;
-  const cg = carriers?.find(c => c.ingId === 'grapeseed')?.weight;
-  const cj = carriers?.find(c => c.ingId === 'jojoba')?.weight;
-  const cr = carriers?.find(c => c.ingId === 'rosehip')?.weight;
-  return cg === 35 && cj === 30 && cr === 20;
+  if (!Array.isArray(actives)) return false;
+  return actives.some(a => (a as { ingId?: string }).ingId === slug);
+}
+
+function shouldSyncPurge(row: { name: string; ingredients: unknown }): boolean {
+  if (CANONICAL_NAMES.has(row.name)) return true;
+  if (activesInclude(row.ingredients, 'willowbark')) return true;
+  if (activesInclude(row.ingredients, 'salicylic_acid')) {
+    // Already on SA — still refresh to latest preset ratios/protocol
+    return true;
+  }
+  const root = asRecord(row.ingredients);
+  if (!root || root.v !== 1) return false;
+  if (root.activePct === 0.13) return true;
+  return false;
 }
 
 async function main() {
@@ -51,6 +54,7 @@ async function main() {
     v: 1,
     activePct: p.activePct,
     eoPct: p.eoPct,
+    manufacturingNote: p.manufacturingNote ?? undefined,
     pools: {
       carriers: p.carriers,
       actives: p.actives,
@@ -66,9 +70,7 @@ async function main() {
     select: { id: true, name: true, ingredients: true },
   });
 
-  const targets = rows.filter(
-    r => CANONICAL_NAMES.has(r.name) || isOldPurgeSnapshot(r.ingredients),
-  );
+  const targets = rows.filter(r => shouldSyncPurge(r));
 
   console.log(
     `Found ${targets.length} saved formula(s) to sync to Purge preset (dryRun=${dry}).`,

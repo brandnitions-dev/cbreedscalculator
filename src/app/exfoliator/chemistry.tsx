@@ -110,10 +110,12 @@ export function ExfoliatorChemistry() {
                 ['Wintergreen EO', '3%', 'Methyl salicylate — toxic at high doses. 1 tsp = ~7g aspirin.'],
                 ['Tea Tree EO', '5%', 'Contact sensitizer at high concentrations. 1-2% is therapeutic.'],
                 ['Frankincense EO', '5%', 'Generally safe. Anti-inflammatory boswellic acids.'],
-                ['Willow Bark Extract', '5%', 'The Purge targets ~5% as primary BHA (salicin-rich extract); bisabolol supports irritation.'],
-                ['Alpha-Bisabolol', '2%', 'Supportive calming dose; higher % rarely beats more willow for this product goal.'],
-                ['Vitamin E', '2%', 'Max in DB for flexibility; Purge preset uses ~1% as stabiliser with lower rosehip.'],
-                ['Total EO blend', '1%', 'Facial prep cap for rosemary-led blend in The Purge.'],
+                ['Salicylic Acid (pure)', '2%', 'The Purge BHA — PubChem CID 338; warm-dissolve in jojoba; EU/FDA leave-on ceiling.'],
+                ['Bakuchiol', '2%', 'Renewal into SA-cleared follicle; oil-soluble retinoid analogue.'],
+                ['Alpha-Bisabolol', '3%', 'Anti-inflammatory anchor vs stronger SA irritation.'],
+                ['Vitamin E', '1%', 'Antioxidant stabiliser — protects reduced rosehip + carrier unsaturates.'],
+                ['Rosemary + Tea Tree EO', '0.5% each', '1% total EO band — antioxidant + terpinen-4-ol antimicrobial synergy with BHA.'],
+                ['Willow Bark Extract', '—', 'Deprecated in The Purge — inconsistent salicin conversion; use pure SA.'],
               ].map(([ing, max, note]) => (
                 <tr key={ing} className="border-b border-border-subtle/50">
                   <td className="py-2 font-medium text-text-primary">{ing}</td>

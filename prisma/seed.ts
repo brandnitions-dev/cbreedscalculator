@@ -51,6 +51,7 @@ const ACTIVE_INGREDIENT_SLUGS = new Set([
 
   // Clinical actives - BHA oil only
   'willowbark',
+  'salicylic_acid',
   'bisabolol',
 ]);
 
@@ -72,6 +73,7 @@ function getDefaultUsageFocusForSlug(slug: string): 'universal' | 'face' | 'body
       'neroli',
       'rosemary',
       'willowbark',
+      'salicylic_acid',
       'bisabolol',
     ].includes(slug)
   ) {

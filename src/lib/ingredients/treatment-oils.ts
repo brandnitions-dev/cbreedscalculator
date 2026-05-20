@@ -25,9 +25,39 @@ export const OIL_CARRIERS: OilIngredient[] = [
   { id: 'meadowfoam', name: 'Meadowfoam Oil', desc: 'Long-chain fatty acids — extends shelf life of other oils. Cushioned film.', color: '#A5F3FC', benefits: { stability: 3, barrier: 2, moisturizing: 2 }, tips: { low: 'Subtle stability boost.', mid: 'Good shelf life extension.', high: 'Meadowfoam-heavy — very stable formula.' } },
 ];
 
+export const PURGE_BHA_MANUFACTURING_NOTE =
+  'Salicylic acid must be fully dissolved before combining phases. Warm jojoba to ~40°C, add SA powder, stir until fully clear (dissolves well in warm oil). Cool to <35°C before adding vitamin E and bakuchiol. Add bisabolol last. Essential oils when temp is below 30°C. Anhydrous oil system — SA releases at the skin surface where water is present.';
+
 export const OIL_ACTIVES: OilIngredient[] = [
-  { id: 'willowbark', name: 'Willow Bark Extract', desc: 'Natural salicin (BHA precursor) — gentle exfoliation without synthetic salicylic acid burn.', color: '#FCD34D', benefits: { exfoliation: 3, poreClearing: 3, antiinflammatory: 2 }, maxPct: 0.05, tips: { low: 'Gentle BHA activity — daily prep.', mid: 'Stronger natural BHA — The Purge therapeutic band.', high: '5% ceiling for salicin-rich extract in clinic-prep oil; assess tolerance; photosensitivity.' } },
-  { id: 'bisabolol', name: 'Alpha-Bisabolol', desc: 'Chamomile-derived — stops redness and irritation instantly. Anti-inflammatory powerhouse.', color: '#FDE68A', benefits: { soothing: 3, antiinflammatory: 3, healing: 2 }, maxPct: 0.06, tips: { low: 'Trace calming around BHA.', mid: '~2% typical — soothes willow bark without stealing the actives budget.', high: 'Higher % rarely adds benefit vs lead BHA; reserve % for willow first.' } },
+  {
+    id: 'salicylic_acid',
+    name: 'Salicylic Acid (pure)',
+    desc: 'PubChem CID 338. Oil-soluble BHA — dissolves in warm jojoba. 2% is clinical leave-on ceiling (EU/FDA). Comedolytic, keratolytic, antimicrobial.',
+    color: '#F97316',
+    benefits: { exfoliation: 3, poreClearing: 3, acne: 3 },
+    maxPct: 0.02,
+    warn: true,
+    tips: {
+      low: 'Sub-therapeutic trace — not for Purge-class prep.',
+      mid: '2% batch dose — measurable BHA, consistent vs willow extract.',
+      high: 'Do not exceed 2% leave-on; warm-dissolve in jojoba before other actives.',
+    },
+  },
+  {
+    id: 'bakuchiol',
+    name: 'Bakuchiol',
+    desc: 'Oil-soluble retinol analogue — collagen renewal after BHA clears the follicle. Anti-inflammatory, non-photosensitising.',
+    color: '#C084FC',
+    benefits: { antiaging: 3, firming: 3, healing: 2 },
+    maxPct: 0.03,
+    tips: {
+      low: 'Introductory renewal support.',
+      mid: '2% with SA — cell turnover into opened follicular channel.',
+      high: 'Strong plant-retinoid activity — patch test if stacking with other retinoids.',
+    },
+  },
+  { id: 'willowbark', name: 'Willow Bark Extract', desc: 'Natural salicin precursor — inconsistent topical conversion to SA. Not used in The Purge (replaced by pure SA).', color: '#FCD34D', benefits: { exfoliation: 2, poreClearing: 2, antiinflammatory: 2 }, maxPct: 0.05, tips: { low: 'Gentle legacy natural BHA.', mid: 'Variable salicin activity.', high: 'Prefer pure salicylic acid for measurable clinic prep.' } },
+  { id: 'bisabolol', name: 'Alpha-Bisabolol', desc: 'Chamomile-derived — suppresses post-BHA inflammatory cascade. Anti-inflammatory anchor.', color: '#FDE68A', benefits: { soothing: 3, antiinflammatory: 3, healing: 2 }, maxPct: 0.03, tips: { low: 'Light calming.', mid: '3% in Purge — counters SA irritation vs willow-era 2%.', high: 'Do not crowd out SA/bakuchiol in the actives budget.' } },
   { id: 'allantoin', name: 'Allantoin', desc: 'Cell proliferant — speeds healing, softens skin. Very gentle.', color: '#FEF3C7', benefits: { healing: 3, softening: 3, soothing: 2 }, maxPct: 0.02, tips: { low: 'Gentle healing support.', mid: 'Good cell renewal.', high: 'Strong allantoin — maximum healing acceleration.' } },
   { id: 'vitaminE', name: 'Vitamin E (Tocopherol)', desc: 'Antioxidant — prevents oil oxidation, extends shelf life. Skin healing.', color: '#FBBF24', benefits: { antioxidant: 3, stability: 3, healing: 2 }, maxPct: 0.02, tips: { low: 'Stabiliser baseline (~1%) for rosehip-light BHA oils.', mid: 'Moderate antioxidant.', high: 'Higher % if formula is very oxidation-prone — avoid crowding actives.' } },
 ];
@@ -52,19 +82,34 @@ export interface OilFormula {
   actives: { ingId: string; weight: number }[];
   eos: { ingId: string; weight: number }[];
   shelfLife: string;
+  manufacturingNote?: string;
 }
 
 export const OIL_PRESETS: OilFormula[] = [
   {
     id: 'bha_penetrating',
     name: 'The Purge — BHA Penetration Oil',
-    desc: 'BHA-forward prep: 5% willow bark (primary), 2% bisabolol (support), 1% vitamin E (stabiliser). Carriers ~41/35/15 grapeseed/jojoba/rosehip at reduced rosehip; rosemary EO 1%.',
+    desc: 'Steam-replacement prep: jojoba + squalane open the follicular pathway; pure SA 2% (CID 338) keratolyzes the plug; bakuchiol 2% renews the cleared channel; bisabolol 3% calms; rosemary + tea tree 0.5% each.',
     activePct: 0.08,
     eoPct: 0.01,
-    carriers: [{ ingId: 'grapeseed', weight: 38 }, { ingId: 'jojoba', weight: 33 }, { ingId: 'rosehip', weight: 14 }],
-    actives: [{ ingId: 'willowbark', weight: 5 }, { ingId: 'bisabolol', weight: 2 }, { ingId: 'vitaminE', weight: 1 }],
-    eos: [{ ingId: 'rosemary', weight: 1 }],
+    carriers: [
+      { ingId: 'jojoba', weight: 40 },
+      { ingId: 'grapeseed', weight: 35 },
+      { ingId: 'rosehip', weight: 10 },
+      { ingId: 'squalane', weight: 6 },
+    ],
+    actives: [
+      { ingId: 'salicylic_acid', weight: 2 },
+      { ingId: 'bakuchiol', weight: 2 },
+      { ingId: 'bisabolol', weight: 3 },
+      { ingId: 'vitaminE', weight: 1 },
+    ],
+    eos: [
+      { ingId: 'rosemary', weight: 1 },
+      { ingId: 'teatree', weight: 1 },
+    ],
     shelfLife: '8-10mo',
+    manufacturingNote: PURGE_BHA_MANUFACTURING_NOTE,
   },
   {
     id: 'pore_purge',

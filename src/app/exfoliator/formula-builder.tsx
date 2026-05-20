@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { AlertTriangle, Zap } from 'lucide-react';
 import { GlassCard } from '@/components/ui';
 import { IngredientChipGrid, CompositionBar, RatioBars, BenefitBars, ExportCardActions, FormulaSaveBar } from '@/components/formula';
-import { OIL_PRESETS } from '@/lib/ingredients/treatment-oils';
+import { OIL_PRESETS, PURGE_BHA_MANUFACTURING_NOTE } from '@/lib/ingredients/treatment-oils';
 import type { OilIngredient } from '@/lib/ingredients/treatment-oils';
 import { useIngredientGroups } from '@/lib/use-ingredient-groups';
 
@@ -85,6 +85,7 @@ export function ExfoliatorFormulaBuilder() {
     actives: [{ id: idCounter++, ingId: 'vitaminE', weight: 5 }],
     eos: [],
   });
+  const [manufacturingNote, setManufacturingNote] = useState('');
 
   useEffect(() => {
     setPools(p => ({
@@ -127,6 +128,7 @@ export function ExfoliatorFormulaBuilder() {
     if (!preset) return;
     if (typeof preset.activePct === 'number') setActivePct(preset.activePct);
     if (typeof preset.eoPct === 'number') setEoPct(preset.eoPct);
+    setManufacturingNote(preset.manufacturingNote ?? '');
     setPools({
       carriers: preset.carriers.filter(c => allowed.carriers.has(c.ingId)).map(c => ({ id: idCounter++, ingId: c.ingId, weight: c.weight })),
       actives: preset.actives.filter(a => allowed.actives.has(a.ingId)).map(a => ({ id: idCounter++, ingId: a.ingId, weight: a.weight })),
@@ -193,13 +195,14 @@ export function ExfoliatorFormulaBuilder() {
       v: 1 as const,
       activePct,
       eoPct,
+      manufacturingNote: manufacturingNote.trim() || undefined,
       pools: {
         carriers: pools.carriers.map(({ ingId, weight }) => ({ ingId, weight })),
         actives: pools.actives.map(({ ingId, weight }) => ({ ingId, weight })),
         eos: pools.eos.map(({ ingId, weight }) => ({ ingId, weight })),
       },
     }),
-    [activePct, eoPct, pools],
+    [activePct, eoPct, pools, manufacturingNote],
   );
 
   const onLoaded = useCallback(
@@ -208,6 +211,7 @@ export function ExfoliatorFormulaBuilder() {
         v: number;
         activePct: number;
         eoPct: number;
+        manufacturingNote?: string;
         pools: {
           carriers: { ingId: string; weight: number }[];
           actives: { ingId: string; weight: number }[];
@@ -218,6 +222,7 @@ export function ExfoliatorFormulaBuilder() {
       setBatchSize(b);
       setActivePct(s.activePct);
       setEoPct(s.eoPct);
+      setManufacturingNote(s.manufacturingNote ?? '');
       let c = 300;
       const mapP = (rows: { ingId: string; weight: number }[], allow: Set<string>) =>
         rows.filter(r => allow.has(r.ingId)).map(r => ({ id: c++, ingId: r.ingId, weight: r.weight }));
@@ -341,13 +346,33 @@ export function ExfoliatorFormulaBuilder() {
               <ExportCardActions targetId="exf-production-card" filename="mosskyn-exfoliator-production-steps" />
             </div>
             <ol className="pl-5 text-[13px] text-text-secondary leading-[1.8] list-decimal">
-              <li>Measure carrier oils into glass dropper bottle</li>
-              <li>Add active ingredients; swirl gently to combine</li>
-              <li>Add essential oils last; cap and invert 10x to mix</li>
-              <li>Label with date, formula name, and shelf life</li>
-              <li>Apply 3-5 drops to face; massage 60s in circular motions</li>
-              <li>Steam or warm towel 2min; wipe — blackheads roll out</li>
+              {pools.actives.some(r => r.ingId === 'salicylic_acid') ? (
+                <>
+                  <li>Warm jojoba to ~40°C in a heat-safe vessel</li>
+                  <li>Dissolve salicylic acid powder until the oil is fully clear</li>
+                  <li>Cool below 35°C; add grapeseed, rosehip, and squalane</li>
+                  <li>Add vitamin E, then bakuchiol; bisabolol last</li>
+                  <li>Below 30°C add rosemary and tea tree; cap and invert 10×</li>
+                  <li>Label with date, batch size, and shelf life (8–10 mo)</li>
+                  <li>Apply 3–5 drops; massage 60s — chemical follicular softening replaces steam</li>
+                </>
+              ) : (
+                <>
+                  <li>Measure carrier oils into glass dropper bottle</li>
+                  <li>Add active ingredients; swirl gently to combine</li>
+                  <li>Add essential oils last; cap and invert 10x to mix</li>
+                  <li>Label with date, formula name, and shelf life</li>
+                  <li>Apply 3-5 drops to face; massage 60s in circular motions</li>
+                  <li>Warm towel 2min; wipe — extract softened plugs</li>
+                </>
+              )}
             </ol>
+            {(manufacturingNote || pools.actives.some(r => r.ingId === 'salicylic_acid')) && (
+              <div className="mt-3 rounded-md border border-accent-gold/25 bg-accent-gold/[0.06] px-3 py-2.5 text-xs text-text-secondary leading-relaxed">
+                <p className="font-semibold text-accent-gold-light mb-1">Manufacturing protocol</p>
+                <p>{manufacturingNote || PURGE_BHA_MANUFACTURING_NOTE}</p>
+              </div>
+            )}
             {/* Dynamic warnings based on selected ingredients */}
             {pools.eos.some(r => r.ingId === 'wintergreen') && (
               <div className="mt-3 flex items-start gap-2 rounded-md border border-accent-rose/30 bg-accent-rose/[0.06] px-3 py-2.5 text-xs text-accent-rose">
@@ -361,10 +386,10 @@ export function ExfoliatorFormulaBuilder() {
                 <span><strong>Tea Tree</strong> at high concentrations can cause skin sensitization. Keep total EO under 5% for facial use.</span>
               </div>
             )}
-            {pools.actives.some(r => r.ingId === 'bisabolol') && (
+            {pools.actives.some(r => r.ingId === 'salicylic_acid' || r.ingId === 'bakuchiol') && (
               <div className="mt-3 flex items-start gap-2 rounded-md border border-accent-emerald/30 bg-accent-emerald/[0.06] px-3 py-2.5 text-xs text-accent-emerald">
                 <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-                <span><strong>BHA/Bisabolol</strong> increases photosensitivity. Use SPF 30+ after treatment.</span>
+                <span><strong>Salicylic acid + bakuchiol</strong> increase photosensitivity. Use SPF 30+ for 24h after treatment.</span>
               </div>
             )}
           </GlassCard>

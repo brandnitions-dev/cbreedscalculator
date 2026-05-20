@@ -243,6 +243,21 @@ function buildExfoliatorDetail(row: Row, payload: IngredientPayload | undefined)
   const carriers = buildLines(pools.carriers, 1 - activePct - eoPct, '#5DCAA5');
   const actives = buildLines(pools.actives, activePct, '#FCD34D');
   const eos = buildLines(pools.eos, eoPct, '#C4B5FD');
+  const manufacturingNote =
+    typeof snapshot?.manufacturingNote === 'string' ? snapshot.manufacturingNote.trim() : '';
+  const usesSalicylic = pools.actives.some(r => r.ingId === 'salicylic_acid');
+
+  const callouts: string[] = [
+    'Formula is rebuilt from the saved carrier, active, and EO phase percentages.',
+  ];
+  if (usesSalicylic) {
+    callouts.push(
+      'Pure salicylic acid (PubChem CID 338) replaces willow bark for consistent measurable BHA activity.',
+    );
+  }
+  if (manufacturingNote) {
+    callouts.push(`Manufacturing protocol: ${manufacturingNote}`);
+  }
 
   return {
     stats: [
@@ -256,7 +271,7 @@ function buildExfoliatorDetail(row: Row, payload: IngredientPayload | undefined)
       { title: 'Active ingredients', lines: actives },
       { title: 'Essential oils', lines: eos },
     ].filter(section => section.lines.length > 0),
-    callouts: ['Formula is rebuilt from the saved carrier, active, and EO phase percentages.'],
+    callouts,
   };
 }
 
